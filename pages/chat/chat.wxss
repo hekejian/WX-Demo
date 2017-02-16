@@ -37,7 +37,7 @@
 .avatar {
     width: 84rpx;
     height: 84rpx;
-    border: #a5a5a7 1rpx solid;
+    border-radius:50%;
     display: inline-block;
     vertical-align: top;
 }
@@ -53,21 +53,23 @@
 }
 .text .nickname {
     color: #737373;
-    font-size: 14px;
+    font-size: 24rpx;
     margin-bottom: 6rpx;
 }
 .text .content {
-    border: #ccc 1rpx solid;
-    border-radius: 4px;
+    border: #fff 1rpx solid;
+    border-radius: 20rpx;
     background: #fff;
-    font-size: 36rpx;
-    line-height: 36rpx;
+    font-size: 30rpx;
+    line-height: 30rpx;
     padding: 20rpx;
     position: relative;
 }
 .user-message.me .text .content {
-    background: #a0e75b;
-    border: #70b44d 1rpx solid;
+    background: #6C5BB7;
+    border: #6C5BB7 1rpx solid;
+    border-radius: 30rpx;
+    color:#fff;
 }
 .text .content::after,.text .content::before {
     font-size: 0;
@@ -84,7 +86,7 @@
 }
 .user-message.other .text .content::before {
     top: 18rpx;
-    border-right-color: #ccc;
+    border-right-color: #fff;
 }
 .user-message.other .text .content::after {
     border: 12rpx solid transparent;
@@ -104,7 +106,7 @@
 .user-message.me .text .content::after {
     border: 12rpx solid transparent;
     top: 19rpx;
-    border-left-color: #a0e75b;
+    border-left-color: #6C5BB7;
 }
 .text .content.img {
     border: #ccc 1rpx solid;
@@ -155,12 +157,12 @@
 
     .user-message.me .text .content::before {
         top: 22rpx;
-        border-left-color: #70b44d;
+        border-left-color: #6C5BB7;
     }
     .user-message.me .text .content::after {
         border: 14rpx solid transparent;
         top: 23rpx;
-        border-left-color: #a0e75b;
+        border-left-color: #6C5BB7;
     }
 
     
@@ -192,6 +194,7 @@
 .send-input {
     flex: 1;
     height: 72rpx;
+    
     background: #fff;
     border-top-style: none;
     border-left-style: none;
@@ -207,4 +210,32 @@
     line-height: 72rpx;
     border-color: #fff;
     background-color: #f5f5f7
+}
+
+.user-message.me .textContainer{
+    width: 60%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-content: center;
+    align-items: center;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.user-message.other .textContainer{
+    width: 60%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+.user-message.other .avatar{
+    margin-top: 18rpx;
+}
+.user-message.other .nickname{
+    padding-left: 10rpx;
 }

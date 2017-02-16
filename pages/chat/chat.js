@@ -43,6 +43,7 @@ Page({
         messages: [],
         inputContent: '大家好啊',
         lastMessageId: 'none',
+        scrollTop:99999,
     },
 
     /**
