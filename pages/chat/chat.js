@@ -44,6 +44,28 @@ Page({
         inputContent: '大家好啊',
         lastMessageId: 'none',
         scrollTop:99999,
+        list:[{
+            id:1,
+            open:false,
+            nickName:"wagada1",
+            url:"../materials/Image.jpg"
+        },{
+            id:2,
+            open:false,
+            nickName:"wagada2",
+            url:"../materials/Image.jpg"
+        },{
+            id:3,
+            open:false,
+            nickName:"wagada3",
+            url:"../materials/Image.jpg"
+        }
+        ],
+        show:false,
+        interval:2000,
+        duration:500,
+        indicatorDots: true,
+        autoplay: true,
     },
 
     /**
@@ -221,5 +243,30 @@ Page({
         });
     },
 
+    kindToggle: function () {
+       var show = !this.data.show
+       console.log(show)
+       this.setData({
+           show:show
+       })
+  },
     
+    chatPerson:function(e){
+        //var id = currentTarget.id
+        wx.navigateTo({
+          url: '../index/index',
+          success: function(res){
+              console.log('success')
+            // success
+          },
+          fail: function() {
+              console.log('fail')
+              // fail
+          },
+          complete: function() {
+            // complete
+             console.log('complete')
+          }
+        })
+    }
 });

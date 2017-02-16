@@ -1,11 +1,41 @@
 <view class="page-wrap">
+<view class = "navigation1">
     <view class="navigation">
-        <view class="groupName">
-            <image style="width:70rpx;height:70rpx;border-radius: 50%;margin-left:10rpx;margin-right:10rpx" src="../materials/Image.jpg"></image>
-            <image style="width:70rpx;height:70rpx;border-radius: 50%;margin-left:10rpx;margin-right:10rpx"  src="../materials/Image.jpg"></image>
-            <image style="width:70rpx;height:70rpx;border-radius: 50%;margin-left:10rpx;margin-right:10rpx" src="../materials/Image.jpg"></image>
+        <view class="GroupAvatars" bindtap="kindToggle">
+            <block wx:for-items="{{list}}" wx:key="{{item.id}}">
+                 <image class="kind-list-img" src="{{item.url}}"></image>
+                </block>
         </view>
-  </view>
+
+        <swiper indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
+             <block wx:for-items="{{list}}" wx:key="{{item.id}}">
+                    <swiper-item>
+                        <image class="kind-list-img"  src="{{item.url}}"></image>
+                    </swiper-item>
+                </block>
+        </swiper>
+    </view>
+    <view class="showAvatars {{show ? 'show-Avatars':''}}">
+        <view class="navigator-box {{show ? 'navigator-box-show':''}}">
+             <block wx:for-items="{{list}}" wx:key="{{item.id}}">
+                <view id="{{item.id}}" class="detailInfo" bindtap="chatPerson">
+                    <image class="personAvatar" src="{{item.url}}"  ></image>
+                    <text class="personName">{{item.nickName}}</text> 
+                </view>
+            </block>
+        </view>
+           
+    </view>
+</view>
+
+<swiper indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
+             <block wx:for-items="{{list}}" wx:key="{{item.id}}">
+                    <swiper-item>
+                        <image class="kind-list-img"  src="{{item.url}}"></image>
+                    </swiper-item>
+                </block>
+        </swiper>
+
     <scroll-view class="chat-container" scroll-y scroll-into-view="{{lastMessageId}}" scroll-top="9999999999">
         <view wx:for="{{messages}}" wx:for-item="message" wx:key="id" id="{{message.id}}" class="message {{message.type}}">
             <view wx:if="{{message.type == 'speak'}}" class="user-message {{message.isMe ? 'me' : 'other'}}">
