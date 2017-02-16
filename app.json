@@ -1,12 +1,43 @@
 {
     "pages": [
+        "pages/chat/chat",
         "pages/index/index",
-        "pages/chat/chat"
+        
+        "pages/story/story"
     ],
     "window": {
-        "backgroundTextStyle": "light",
-        "navigationBarBackgroundColor": "#333",
-        "navigationBarTitleText": "腾讯云小程序解决方案",
+        "backgroundTextStyle": "black",
+        "navigationBarBackgroundColor": "#6C5BB7",
+        "navigationBarTitleText": "Brief Encounter",
         "navigationBarTextStyle": "white"
-    }
+    },
+
+    "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#6C5BB7",
+    "borderStyle": "white",
+    "backgroundColor": "#ffffff",
+    "list": [{
+      "pagePath": "pages/index/index",
+      "iconPath": "pages/materials/friend.jpg",
+      "selectedIconPath": "pages/materials/friend.jpg",
+      "text": "friends"
+    },{
+      "pagePath": "pages/index/index",
+      "iconPath": "pages/materials/Camera.jpg",
+      "selectedIconPath": "pages/materials/story.png",
+      "text": "notes"
+    },{
+      "pagePath": "pages/story/story",
+      "iconPath": "pages/materials/story.png",
+      "selectedIconPath": "pages/materials/story.png",
+      "text": "story"
+    }]
+  },
+   "networkTimeout": {
+    "request": 10000,
+    "connectSocket": 10000,
+    "uploadFile": 10000,
+    "downloadFile": 10000
+  }
 }

@@ -49,7 +49,7 @@ Page({
      * 页面渲染完成后，启动聊天室
      * */
     onReady() {
-        wx.setNavigationBarTitle({ title: '三木聊天室' });
+        wx.setNavigationBarTitle({ title: '520520' });
 
         if (!this.pageReady) {
             this.pageReady = true;
@@ -219,4 +219,6 @@ Page({
             }
         });
     },
+
+    
 });
