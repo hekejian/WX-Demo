@@ -16,15 +16,12 @@ App({
      */
     onLaunch() {
         qcloud.setLoginUrl(config.service.loginUrl);
-        var that;
+        var that = this;
         qcloud.login({
-             that = this,
             success(result) {
                 showSuccess('登录成功');
                 console.log('登录成功', result);
-                user = result;
-                 console.log(user.nickName+"出来了");
-                 console.log(that.globalData.userNickName+"dayin1")
+                that.globalData.userInfo = result;
             },
             fail(error) {
                 showModel('登录失败', error);
@@ -45,14 +42,6 @@ App({
     },
 
     globalData:{
-        userInfo:{},
-        userAvatarUrl:"../materials/Image.jpg",
-        userNickName:"wagada",
-        province:"GuangDong",
-        userCity:"ShenZhen",
-        gender:1,
-        country:"CN",
-        language:"zh_cn"
-
+        userInfo:null
     }
 });
