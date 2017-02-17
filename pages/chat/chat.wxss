@@ -294,3 +294,17 @@
   opacity: 1;
   transform: translateY(0);
 }
+.swiper1{
+    background: #fff;
+    height: 100rpx; 
+    width: 30%;
+}
+.swiper2{
+    background: #70b44d;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    
+}

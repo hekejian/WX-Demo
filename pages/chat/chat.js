@@ -254,13 +254,14 @@ Page({
     chatPerson:function(e){
         //var id = currentTarget.id
         wx.navigateTo({
-          url: '../index/index',
+          url: '../personalChat/personalChat',
           success: function(res){
               console.log('success')
             // success
           },
-          fail: function() {
+          fail: function(res) {
               console.log('fail')
+              console.log(res)
               // fail
           },
           complete: function() {

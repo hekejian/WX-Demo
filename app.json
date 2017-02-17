@@ -1,9 +1,10 @@
 {
     "pages": [
-        "pages/chat/chat",
+        "pages/story/story",
         "pages/index/index",
+        "pages/chat/chat",
+        "pages/personalChat/personalChat"
         
-        "pages/story/story"
     ],
     "window": {
         "backgroundTextStyle": "black",
@@ -11,7 +12,6 @@
         "navigationBarTitleText": "Brief Encounter",
         "navigationBarTextStyle": "white"
     },
-
     "tabBar": {
     "color": "#7A7E83",
     "selectedColor": "#6C5BB7",
