@@ -63,7 +63,11 @@ Page({
 
     onLoad:function(options){
         var that = this
-        console.log(appInstance.global.userInfo)
+        appInstance.getUserInfo(function(userInfo){
+                that.setData({
+                    userInfo:userInfo
+                })
+            })
     },
 
     doRequest() {

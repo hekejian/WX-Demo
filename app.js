@@ -31,14 +31,36 @@ App({
                
             }
         });
-        console.log(that.globalData.userNickName+"dayin1")
-        console.log(that.globalData.userAvatarUrl + "dayin2")
         var tunnel= new qcloud.Tunnel(config.service.tunnelUrl);
         tunnel.on('connect', () =>{
             console.log('connect success')
         });
-        
+    },
 
+    getUserInfo:function(arg){
+        var that = this;
+        if(this.globalData.userInfo){
+            console.log("我已经有数据了")
+            typeof arg=="function" && arg(this.globalData.userInfo)
+        }else{
+            console.log("我还没有数据")
+            qcloud.login({
+                success(result) {
+                    showSuccess('登录成功');
+                    console.log('登录成功', result);
+                    that.globalData.userInfo = result;
+                    typeof arg=="function" && arg(this.globalData.userInfo)
+            },
+            fail(error) {
+                showModel('登录失败', error);
+                console.log('登录失败', error);
+            },
+            complete(){
+               
+            }
+        });
+        }
+        
     },
 
     globalData:{
