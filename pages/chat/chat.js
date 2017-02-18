@@ -1,7 +1,3 @@
-/**
- * @fileOverview 聊天室综合 Demo 示例
- */
-
 
 // 引入 QCloud 小程序增强 SDK
 var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
@@ -44,35 +40,55 @@ Page({
         inputContent: '大家好啊',
         lastMessageId: 'none',
         scrollTop:99999,
+        title:"520520",
         list:[{
             id:1,
-            open:false,
             nickName:"wagada1",
             url:"../materials/Image.jpg"
         },{
             id:2,
-            open:false,
             nickName:"wagada2",
             url:"../materials/Image.jpg"
         },{
             id:3,
-            open:false,
             nickName:"wagada3",
             url:"../materials/Image.jpg"
-        }
-        ],
+        }],
         show:false,
-        interval:2000,
-        duration:500,
-        indicatorDots: true,
-        autoplay: true,
+    },
+   
+    onLoad(options){
+        console.log(options)
+        requsetFriends("")
     },
 
+    //拉取群数据
+    requsetFriends(url) {
+            var that = this
+        // qcloud.request() 方法和 wx.request() 方法使用是一致的，不过如果用户已经登录的情况下，会把用户的会话信息带给服务器，服务器可以跟踪用户
+            qcloud.request({
+            // 要请求的地址
+            url: url,
+            // 请求之前是否登陆，如果该项指定为 true，会在请求之前进行登录
+            login: true,
+            success(result) {
+                console.log('request success', result);
+                //appInstance.global.friends = result;
+                that.setData({
+                    list:result
+                })
+            },
+            fail(error) {
+                showModel('加入讨论失败', error);
+                console.log('request fail', error);
+            },
+        });
+    },
     /**
      * 页面渲染完成后，启动聊天室
      * */
     onReady() {
-        wx.setNavigationBarTitle({ title: '520520' });
+        wx.setNavigationBarTitle({ title: this.data.title });
 
         if (!this.pageReady) {
             this.pageReady = true;
@@ -252,22 +268,12 @@ Page({
   },
     
     chatPerson:function(e){
-        //var id = currentTarget.id
-        wx.navigateTo({
-          url: '../personalChat/personalChat',
-          success: function(res){
-              console.log('success')
-            // success
-          },
-          fail: function(res) {
-              console.log('fail')
-              console.log(res)
-              // fail
-          },
-          complete: function() {
-            // complete
-             console.log('complete')
-          }
-        })
+        console.log(e)
+        var nickName = e.currentTarget.dataset.nickName
+        var id = e.currentTarget.dataset.id
+        var avatarUrl = e.currentTarget.dataset.avatarUrl
+        var isFriend = false
+        var url = "../personalChat/personalChat?nickName="+nickName+"&id="+id+"&avatarUrl="+avatarUrl+"&isFriend="+isFriend
+        wx.navigateTo({ url: url});
     }
 });

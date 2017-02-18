@@ -35,12 +35,16 @@ Page({
     data: {
         friends:[{
             id:0,
+                              avatarUrl:"http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0",
+            nickName:"memeda",
             lastMessage:"初始数据，我们把服务地址显示在页面上",
             unReadMessage:"使用 Page 初始化页面，具体可参考微信公众平台上的文档",
             unreadNumber:3,
             lastTime:"14:00",
         },{
             id:1,
+            avatarUrl:"http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0",
+            nickName:"heheda",
             lastMessage:"qcloud.request() 方法和 wx.request() 方法使用是一致的",
             unReadMessage:"使用 Page 初始化页面，具体可参考微信公众平台上的文档",
             unreadNumber:0,
@@ -67,13 +71,12 @@ Page({
             })
     },
 
-    doRequest() {
-        showBusy('正在请求');
-
+    requsetFriends(url) {
+            var that = this
         // qcloud.request() 方法和 wx.request() 方法使用是一致的，不过如果用户已经登录的情况下，会把用户的会话信息带给服务器，服务器可以跟踪用户
-        qcloud.request({
+            qcloud.request({
             // 要请求的地址
-            url: this.data.requestUrl,
+            url: url,
 
             // 请求之前是否登陆，如果该项指定为 true，会在请求之前进行登录
             login: true,
@@ -81,16 +84,16 @@ Page({
             success(result) {
                 showSuccess('请求成功完成');
                 console.log('request success', result);
+                //appInstance.global.friends = result;
+                that.setData({
+                    friends:result
+                })
             },
-
             fail(error) {
                 showModel('请求失败', error);
                 console.log('request fail', error);
             },
 
-            complete() {
-                console.log('request complete');
-            }
         });
     },
 
@@ -140,9 +143,19 @@ Page({
     /**
      * 点击「聊天室」按钮，跳转到聊天室综合 Demo 的页面
      */
-    openChat() {
-        // 微信只允许一个信道再运行，聊天室使用信道前，我们先把当前的关闭
-        wx.navigateTo({ url: '../personalChat/personalChat?a=1&b=2' });
+    openChat(args) {
+        var nickName = args.currentTarget.dataset.nickName
+        var id = args.currentTarget.dataset.id
+        var avatarUrl = args.currentTarget.dataset.avatarUrl
+        var isFriend = true
+        var url = "../personalChat/personalChat?nickName="+nickName+"&id="+id+"&avatarUrl="+avatarUrl+"&isFriend="+isFriend
+        wx.navigateTo({ url: url});
     },
+
+    openGoupChat(args){
+        wx.navigateTo({
+          url: '../chat/chat',
+        })
+    }
 
 });

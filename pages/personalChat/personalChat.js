@@ -1,6 +1,4 @@
-Page({
-    
-})
+
 // 引入 QCloud 小程序增强 SDK
 var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
 
@@ -16,10 +14,6 @@ function msgUuid() {
     }
     return 'msg-' + (++msgUuid.next);
 }
-
-/**
- * 生成聊天室的系统消息
- */
 function createSystemMessage(content) {
     return { id: msgUuid(), type: 'system', content };
 }
@@ -31,155 +25,25 @@ function createUserMessage(content, user, isMe) {
     return { id: msgUuid(), type: 'speak', content, user, isMe };
 }
 
-// 声明聊天室页面
 Page({
-
-    /**
-     * 聊天室使用到的数据，主要是消息集合以及当前输入框的文本
-     */
-    data: {
-        messages: [],
-        inputContent: '大家好啊',
-        lastMessageId: 'none',
-        scrollTop:99999,
-        friends:[{
-            id:0,
-            nickName:""
-        }],
-
-        list:[{
-            id:1,
-            open:false,
-            nickName:"wagada1",
-            url:"../materials/Image.jpg"
-        },{
-            id:2,
-            open:false,
-            nickName:"wagada2",
-            url:"../materials/Image.jpg"
-        },{
-            id:3,
-            open:false,
-            nickName:"wagada3",
-            url:"../materials/Image.jpg"
-        }
-        ],
-        show:false,
-        interval:2000,
-        duration:500,
-        indicatorDots: true,
-        autoplay: true,
+    data:{
+         messages: [],
+         friendInfo:{},
+         lastMessageId:'none'
     },
 
-    /**
-     * 页面渲染完成后，启动聊天室
-     * */
-    onLoad: function(options){
-        console.log(options.a +"  " +options.b)
-        console.log("进来一次"+options)
+    onLoad(options){
+        console.log(options)
+        this.setData({
+            friendInfo:options
+        })
     },
-
     onReady() {
-        wx.setNavigationBarTitle({ title: '520520' });
+        wx.setNavigationBarTitle({ title: this.data.friendInfo.nickName});
 
-        if (!this.pageReady) {
-            this.pageReady = true;
-            this.enter();
-        }
+        
     },
 
-    /**
-     * 后续后台切换回前台的时候，也要重新启动聊天室
-     */
-    onShow() {
-        if (this.pageReady) {
-            this.enter();
-        }
-    },
-
-    /**
-     * 页面卸载时，退出聊天室
-     */
-    onUnload() {
-        this.quit();
-    },
-
-    /**
-     * 页面切换到后台运行时，退出聊天室
-     */
-    onHide() {
-        this.quit();
-    },
-
-    /**
-     * 启动聊天室
-     */
-    enter() {
-        this.pushMessage(createSystemMessage('正在登录...'));
-
-        // 如果登录过，会记录当前用户在 this.me 上
-       
-    },
-
-    /**
-     * 连接到聊天室信道服务
-     */
-    connect() {
-        this.amendMessage(createSystemMessage('正在加入群聊...'));
-
-        // 创建信道
-        var tunnel = this.tunnel = new qcloud.Tunnel(config.service.tunnelUrl);
-
-        // 连接成功后，去掉「正在加入群聊」的系统提示
-        tunnel.on('connect', () => this.popMessage());
-
-        // 聊天室有人加入或退出，反馈到 UI 上
-        tunnel.on('people', people => {
-            const { total, enter, leave } = people;
-
-            if (enter) {
-                this.pushMessage(createSystemMessage(`${enter.nickName}已加入群聊，当前共 ${total} 人`));
-            } else {
-                this.pushMessage(createSystemMessage(`${leave.nickName}已退出群聊，当前共 ${total} 人`));
-            }
-        });
-
-        // 有人说话，创建一条消息
-        tunnel.on('speak', speak => {
-            const { word, who } = speak;
-            this.pushMessage(createUserMessage(word, who, who.openId === this.me.openId));
-        });
-
-        // 信道关闭后，显示退出群聊
-        tunnel.on('close', () => {
-            this.pushMessage(createSystemMessage('您已退出群聊'));
-        });
-
-        // 重连提醒
-        tunnel.on('reconnecting', () => {
-            this.pushMessage(createSystemMessage('已断线，正在重连...'));
-        });
-
-        tunnel.on('reconnect', () => {
-            this.amendMessage(createSystemMessage('重连成功'));
-        });
-
-        // 打开信道
-        tunnel.open();
-    },
-
-    /**
-     * 退出聊天室
-     */
-    quit() {
-        if (this.tunnel) {
-            this.tunnel.close();
-        }
-    },
-
-    /**
-     * 通用更新当前消息集合的方法
-     */
     updateMessages(updater) {
         var messages = this.data.messages;
         updater(messages);
@@ -239,32 +103,5 @@ Page({
             }
         });
     },
-
-    kindToggle: function () {
-       var show = !this.data.show
-       console.log(show)
-       this.setData({
-           show:show
-       })
-  },
     
-    chatPerson:function(e){
-        //var id = currentTarget.id
-        wx.navigateTo({
-          url: '../personalChat/personalChat',
-          success: function(res){
-              console.log('success')
-            // success
-          },
-          fail: function(res) {
-              console.log('fail')
-              console.log(res)
-              // fail
-          },
-          complete: function() {
-            // complete
-             console.log('complete')
-          }
-        })
-    }
-});
+})

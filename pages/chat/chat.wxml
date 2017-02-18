@@ -4,13 +4,13 @@
         <view class="GroupAvatars" bindtap="kindToggle">
             <block wx:for-items="{{list}}" wx:key="{{item.id}}">
                  <image class="kind-list-img" src="{{item.url}}"></image>
-                </block>
+            </block>
         </view>
     </view>
     <view class="showAvatars {{show ? 'show-Avatars':''}}">
         <view class="navigator-box {{show ? 'navigator-box-show':''}}">
              <block wx:for-items="{{list}}" wx:key="{{item.id}}">
-                <view id="{{item.id}}" class="detailInfo" bindtap="chatPerson">
+                <view id="{{item.id}}" class="detailInfo" bindtap="chatPerson" data-nick-name="{{item.nickName}}" data-avatar-url="{{item.url}}" data-id = "{{item.id}}">
                     <image class="personAvatar" src="{{item.url}}"  ></image>
                     <text class="personName">{{item.nickName}}</text> 
                 </view>

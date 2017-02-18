@@ -2,7 +2,7 @@
 
 <view class="friends">
   <block wx:for-items="{{friends}}" wx:key="{{item.id}}">
-    <view id="item.id" class="person" bindtap="openChat">
+    <view id="{{item.id}}" data-avatar-url="{{item.avatarUrl}}" data-nick-name="{{item.nickName}}" data-id="{{item.id}}" class="person" bindtap="openChat">
       <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
       <view class="Text">
         <text class="nickName">{{userInfo.nickName}}</text>
@@ -19,7 +19,7 @@
 </view>
  
  
- <view class="person" bindtap="openChat">
+ <view class="person" bindtap="openGoupChat">
   <image class="avatar" src="../materials/Image.jpg"></image>
   <view class="Text">
     <text class="nickName">克俭</text>
@@ -27,7 +27,7 @@
   </view>
    <view class="time">10：00</view>
  </view> 
- <view class="person" bindtap="openChat">
+ <view class="person" bindtap="openGoupChat">
   <image class="avatar" src="../materials/Image.jpg"></image>
   <view class="Text">
     <text class="nickName">wagada</text>
@@ -40,7 +40,7 @@
     </view>
   </view>
  </view> 
- <view class="person" bindtap="openChat">
+ <view class="person" bindtap="openGoupChat">
   <image class="avatar" src="../materials/Image.jpg"></image>
   <view class="Text">
     <text class="nickName">wagada</text>

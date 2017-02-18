@@ -2,9 +2,7 @@
 <view class = "navigation1">
     <view class="navigation">
         <view class="GroupAvatars" bindtap="kindToggle">
-            <block wx:for-items="{{list}}" wx:key="{{item.id}}">
-                 <image class="kind-list-img" src="{{item.url}}"></image>
-                </block>
+                 <image class="kind-list-img" src="{{friendInfo.avatarUrl}}"></image>
         </view>
     </view>
 </view>

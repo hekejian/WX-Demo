@@ -32,9 +32,40 @@ App({
             }
         });
         var tunnel= new qcloud.Tunnel(config.service.tunnelUrl);
-        tunnel.on('connect', () =>{
-            console.log('connect success')
+        tunnel.on('connect', () => {
+            console.log('WebSocket 信道已连接');
+            that.globalData.tunnelStatus = 'connected'
         });
+
+        tunnel.on('close', () => {
+            console.log('WebSocket 信道已断开');
+            that.globalData.tunnelStatus = 'closed'
+        });
+
+        tunnel.on('reconnecting', () => {
+            console.log('WebSocket 信道正在重连...')
+            showBusy('正在重连');
+        });
+
+        tunnel.on('reconnect', () => {
+            console.log('WebSocket 信道重连成功')
+            showSuccess('重连成功');
+        });
+
+        tunnel.on('error', error => {
+            showModel('信道发生错误', error);
+            console.error('信道发生错误：', error);
+        });
+
+        // 监听自定义消息（服务器进行推送）
+        tunnel.on('speak', speak => {
+            showModel('信道消息', speak);
+            console.log('收到说话消息：', speak);
+        });
+
+        // 打开信道
+        tunnel.open();
+        that.globalData.tunnel = tunnel
     },
 
     getUserInfo:function(arg){
@@ -64,6 +95,9 @@ App({
     },
 
     globalData:{
-        userInfo:null
+        userInfo:null,
+        friends:{},
+        tunnelStatus: 'closed',
+        tunnel:null
     }
 });
