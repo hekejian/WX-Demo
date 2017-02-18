@@ -6,8 +6,6 @@ var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
 // 引入配置
 var config = require('../../config');
 
-
-
 // 显示成功提示
 var showSuccess = text => wx.showToast({
     title: text,
@@ -17,7 +15,6 @@ var showSuccess = text => wx.showToast({
 // 显示失败提示
 var showModel = (title, content) => {
     wx.hideToast();
-
     wx.showModal({
         title,
         content: JSON.stringify(content),
@@ -37,19 +34,19 @@ Page({
      */
     data: {
         friends:[{
-            friendInfo:appInstance.globalData.userInfo,
+            id:0,
             lastMessage:"初始数据，我们把服务地址显示在页面上",
             unReadMessage:"使用 Page 初始化页面，具体可参考微信公众平台上的文档",
             unreadNumber:3,
             lastTime:"14:00",
         },{
-            friendInfo:appInstance.globalData.userInfo,
+            id:1,
             lastMessage:"qcloud.request() 方法和 wx.request() 方法使用是一致的",
             unReadMessage:"使用 Page 初始化页面，具体可参考微信公众平台上的文档",
-            unreadNumber:2,
+            unreadNumber:0,
             lastTime:"15:00",
         }],
-
+        userInfo:{},
         loginUrl: config.service.loginUrl,
         requestUrl: config.service.requestUrl,
         tunnelUrl: config.service.tunnelUrl,
@@ -145,9 +142,7 @@ Page({
      */
     openChat() {
         // 微信只允许一个信道再运行，聊天室使用信道前，我们先把当前的关闭
-        wx.navigateTo({ url: '../chat/chat' });
-        console.log(appInstance.globalData.userInfo)
-        console.log(this.data.friends[0].lastTime)
+        wx.navigateTo({ url: '../personalChat/personalChat?a=1&b=2' });
     },
 
 });

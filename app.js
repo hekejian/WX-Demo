@@ -49,7 +49,7 @@ App({
                     showSuccess('登录成功');
                     console.log('登录成功', result);
                     that.globalData.userInfo = result;
-                    typeof arg=="function" && arg(this.globalData.userInfo)
+                    typeof arg=="function" && arg(that.globalData.userInfo)
             },
             fail(error) {
                 showModel('登录失败', error);

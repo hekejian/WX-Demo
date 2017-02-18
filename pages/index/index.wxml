@@ -1,18 +1,23 @@
 <view class="container log-list">
- <view class="person" bindtap="openChat">
-  <image class="avatar" src="../materials/Image.jpg"></image>
-  <view class="Text">
-    <text class="nickName">wagada</text>
-    <text class="info">Linux+Apache+Mysql+PHP</text>
-  </view>
-  <view class="time-message">
-    <view class="time">10：00</view>
-    <view class="messageNumber">
-      <text>2</text>
-    </view>
-  </view>
 
- </view> 
+<view class="friends">
+  <block wx:for-items="{{friends}}" wx:key="{{item.id}}">
+    <view id="item.id" class="person" bindtap="openChat">
+      <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
+      <view class="Text">
+        <text class="nickName">{{userInfo.nickName}}</text>
+        <text class="info">{{item.lastMessage}}</text>
+      </view>
+      <view class="time-message">
+        <view class="time">{{item.lastTime}}</view>
+        <view wx:if="{{item.unreadNumber>0}}" class="messageNumber">
+          <text>{{item.unreadNumber}}</text>
+        </view>
+      </view>
+    </view> 
+  </block>
+</view>
+ 
  
  <view class="person" bindtap="openChat">
   <image class="avatar" src="../materials/Image.jpg"></image>
