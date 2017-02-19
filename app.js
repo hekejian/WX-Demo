@@ -17,7 +17,6 @@ var showBusy = text => wx.showToast({
 
 var showModel = (title, content) => {
     wx.hideToast();
-
     wx.showModal({
         title,
         content: JSON.stringify(content),
