@@ -9,6 +9,32 @@ var showSuccess = text => wx.showToast({
     icon: 'success'
 });
 
+var showBusy = text => wx.showToast({
+    title: text,
+    icon: 'loading',
+    duration: 10000
+});
+
+var showModel = (title, content) => {
+    wx.hideToast();
+
+    wx.showModal({
+        title,
+        content: JSON.stringify(content),
+        showCancel: false
+    });
+};
+function createSystemMessage(content) {
+    return { id: msgUuid(), type: 'system', content };
+}
+
+/**
+ * 生成聊天室的聊天消息
+ */
+function createUserMessage(content, user, isMe) {
+    return { id: msgUuid(), type: 'speak', content, user, isMe };
+}
+
 var user = {};
 App({
     /**
@@ -31,15 +57,26 @@ App({
                
             }
         });
+
+        if(this.globalData.tunnel == null){
+            this.openTunel();
+        }
+        this.getUser()
+    },
+
+    openTunel:function(){
+        var that = this;
         var tunnel= new qcloud.Tunnel(config.service.tunnelUrl);
         tunnel.on('connect', () => {
             console.log('WebSocket 信道已连接');
+             console.log("caonima")
             that.globalData.tunnelStatus = 'connected'
         });
 
         tunnel.on('close', () => {
             console.log('WebSocket 信道已断开');
             that.globalData.tunnelStatus = 'closed'
+            tunnel.open();
         });
 
         tunnel.on('reconnecting', () => {
@@ -50,6 +87,7 @@ App({
         tunnel.on('reconnect', () => {
             console.log('WebSocket 信道重连成功')
             showSuccess('重连成功');
+            that.globalData.tunnelStatus = 'connected'
         });
 
         tunnel.on('error', error => {
@@ -59,14 +97,29 @@ App({
 
         // 监听自定义消息（服务器进行推送）
         tunnel.on('speak', speak => {
-            showModel('信道消息', speak);
-            console.log('收到说话消息：', speak);
+            //const { word, who } = speak;
+            that.globalData.messages.push(speak)
+            console.log('APP init收到说话消息：', speak);
         });
 
         // 打开信道
         tunnel.open();
         that.globalData.tunnel = tunnel
     },
+
+    getUser:function(){
+        var that = this
+         qcloud.request({
+            url: `https://${config.service.host}/user`,
+            login: true,
+            success: (response) => {
+                console.log("卧槽你这是shenm 数据啊"+response)
+                console.log(response)
+                that.globalData.userData = response.data.data.userInfo
+                }
+            });
+    },
+
 
     getUserInfo:function(arg){
         var that = this;
@@ -91,13 +144,13 @@ App({
             }
         });
         }
-        
     },
-
     globalData:{
+        messages:[],
         userInfo:null,
         friends:{},
         tunnelStatus: 'closed',
-        tunnel:null
+        tunnel:null,
+        userData:null
     }
 });

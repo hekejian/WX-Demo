@@ -50,6 +50,8 @@ Page({
             unreadNumber:0,
             lastTime:"15:00",
         }],
+
+        messasges:[],
         userInfo:{},
         loginUrl: config.service.loginUrl,
         requestUrl: config.service.requestUrl,
@@ -64,11 +66,18 @@ Page({
 
     onLoad:function(options){
         var that = this
-        appInstance.getUserInfo(function(userInfo){
+        if(appInstance.globalData.userInfo == null){
+            appInstance.getUserInfo(function(userInfo){
                 that.setData({
                     userInfo:userInfo
                 })
             })
+        }else{
+            that.setData({
+                    userInfo:appInstance.globalData.userInfo
+                })
+        }
+        this.openTunnel();
     },
 
     requsetFriends(url) {
@@ -99,17 +108,16 @@ Page({
 
     openTunnel() {
         // 创建信道，需要给定后台服务地址
-        var tunnel = this.tunnel = new qcloud.Tunnel(this.data.tunnelUrl);
-
+       // var tunnel = this.tunnel = new qcloud.Tunnel(this.data.tunnelUrl);
+        var that = this
+        this.tunnel = appInstance.globalData.tunnel
         // 监听信道内置消息，包括 connect/close/reconnecting/reconnect/error
         tunnel.on('connect', () => {
             console.log('WebSocket 信道已连接');
-            this.setData({ tunnelStatus: 'connected' });
         });
 
         tunnel.on('close', () => {
             console.log('WebSocket 信道已断开');
-            this.setData({ tunnelStatus: 'closed' });
         });
 
         tunnel.on('reconnecting', () => {
@@ -120,6 +128,7 @@ Page({
         tunnel.on('reconnect', () => {
             console.log('WebSocket 信道重连成功')
             showSuccess('重连成功');
+            console.log("wocao laozi yeneng chonglian")
         });
 
         tunnel.on('error', error => {
@@ -129,14 +138,13 @@ Page({
 
         // 监听自定义消息（服务器进行推送）
         tunnel.on('speak', speak => {
-            showModel('信道消息', speak);
-            console.log('收到说话消息：', speak);
+            that.data.messasges.push(speak)
+            this.setData({
+                messasges
+            })
         });
 
         // 打开信道
-        tunnel.open();
-
-        this.setData({ tunnelStatus: 'connecting' });
     },
 
 

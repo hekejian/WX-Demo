@@ -29,6 +29,17 @@ function createUserMessage(content, user, isMe) {
     return { id: msgUuid(), type: 'speak', content, user, isMe };
 }
 
+var showModel = (title, content) => {
+    wx.hideToast();
+
+    wx.showModal({
+        title,
+        content: JSON.stringify(content),
+        showCancel: false
+    });
+};
+
+var appInstance = getApp()
 // 声明聊天室页面
 Page({
 
@@ -36,6 +47,7 @@ Page({
      * 聊天室使用到的数据，主要是消息集合以及当前输入框的文本
      */
     data: {
+        roomid:0,
         messages: [],
         inputContent: '大家好啊',
         lastMessageId: 'none',
@@ -53,13 +65,27 @@ Page({
             id:3,
             nickName:"wagada3",
             url:"../materials/Image.jpg"
+        },{
+            id:4,
+            nickName:"wagada3",
+            url:"../materials/Image.jpg"
+        },{
+            id:5,
+            nickName:"wagada3",
+            url:"../materials/Image.jpg"
+        },{
+            id:6,
+            nickName:"wagada3",
+            url:"../materials/Image.jpg"
         }],
         show:false,
     },
    
     onLoad(options){
+        this.tunnel = appInstance.globalData.tunnel
         console.log(options)
-        requsetFriends("")
+        this.me = appInstance.globalData.userData
+        this.requsetFriends("")
     },
 
     //拉取群数据
@@ -79,7 +105,7 @@ Page({
                 })
             },
             fail(error) {
-                showModel('加入讨论失败', error);
+                //showModel('加入讨论失败', error);
                 console.log('request fail', error);
             },
         });
@@ -106,56 +132,34 @@ Page({
     },
 
     /**
-     * 页面卸载时，退出聊天室
-     */
-    onUnload() {
-        this.quit();
-    },
-
-    /**
-     * 页面切换到后台运行时，退出聊天室
-     */
-    onHide() {
-        this.quit();
-    },
-
-    /**
      * 启动聊天室
      */
     enter() {
-        this.pushMessage(createSystemMessage('正在登录...'));
-
-        // 如果登录过，会记录当前用户在 this.me 上
-        if (!this.me) {
-            qcloud.request({
-                url: `https://${config.service.host}/user`,
-                login: true,
-                success: (response) => {
-                    this.me = response.data.data.userInfo;
-                    this.connect();
-                }
-            });
-        } else {
-            this.connect();
-        }
+        this.pushMessage(createSystemMessage('正在加入群聊...'));
+        this.connect();
     },
 
     /**
      * 连接到聊天室信道服务
      */
     connect() {
-        this.amendMessage(createSystemMessage('正在加入群聊...'));
-
+        var tunnel = this.tunnel;
         // 创建信道
-        var tunnel = this.tunnel = new qcloud.Tunnel(config.service.tunnelUrl);
+       // var tunnel = this.tunnel = new qcloud.Tunnel(config.service.tunnelUrl);
 
         // 连接成功后，去掉「正在加入群聊」的系统提示
-        tunnel.on('connect', () => this.popMessage());
+        tunnel.on('add', () => {
+            console.log('WebSocket 信道已连接 wocaonima zhognyushoudaole ');
+            this.popMessage()
+        });
+        tunnel.on('connect', () =>{
+            console.log("caonima")
+            this.popMessage()
+        } );
 
         // 聊天室有人加入或退出，反馈到 UI 上
         tunnel.on('people', people => {
             const { total, enter, leave } = people;
-
             if (enter) {
                 this.pushMessage(createSystemMessage(`${enter.nickName}已加入群聊，当前共 ${total} 人`));
             } else {
@@ -166,7 +170,8 @@ Page({
         // 有人说话，创建一条消息
         tunnel.on('speak', speak => {
             const { word, who } = speak;
-            this.pushMessage(createUserMessage(word, who, who.openId === this.me.openId));
+            console.log(appInstance.globalData.userData)
+            this.pushMessage(createUserMessage(word, who, who.openId === appInstance.globalData.userData.openId));
         });
 
         // 信道关闭后，显示退出群聊
@@ -182,19 +187,12 @@ Page({
         tunnel.on('reconnect', () => {
             this.amendMessage(createSystemMessage('重连成功'));
         });
-
         // 打开信道
-        tunnel.open();
     },
 
     /**
      * 退出聊天室
      */
-    quit() {
-        if (this.tunnel) {
-            this.tunnel.close();
-        }
-    },
 
     /**
      * 通用更新当前消息集合的方法
@@ -275,5 +273,9 @@ Page({
         var isFriend = false
         var url = "../personalChat/personalChat?nickName="+nickName+"&id="+id+"&avatarUrl="+avatarUrl+"&isFriend="+isFriend
         wx.navigateTo({ url: url});
+    },
+
+    chatPerson1: function(e){
+        console.log(e)
     }
 });
