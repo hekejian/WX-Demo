@@ -12,7 +12,7 @@
 }
 .story{
   margin: 10rpx;
-  background: #F9E79F;
+  background: #FCF3CF;
   display: flex;
   flex-direction: column;
 }
@@ -51,18 +51,15 @@
   display: flex;
   flex-direction: column;
   align-content: center;
-  padding: 20rpx;
+  padding: 10rpx;
 }
 
 .content{
-  font-size: 30rpx
+  font-weight: 500;
+  font-size: 26rpx
 }
 .ImageGroup{
   display: inline-block;
-}
-.imageView{
-  padding-left: 20rpx;
-  padding-right: 20rpx;
 }
 .image1{
   max-width: 710rpx;
@@ -78,6 +75,11 @@
   max-height: 230rpx;
   padding: 5rpx;
 }
+.voice-container{
+}
+.audio{
+  background: #FCF3CF
 
+}
 
 

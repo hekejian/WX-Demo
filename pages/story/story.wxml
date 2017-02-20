@@ -1,30 +1,37 @@
 <view class="contain">
     <view class="navigator">
-        <image class="groupAvatar" src="{{avatar}}"></image>
+        <image class="groupAvatar" src="{{groupInfo.avatar}}"></image>
     </view>
     <scroll-view class="story-container" scroll-y scroll-top="9999999">
-        <view class="story">
-            <view class="storyAuthor">
-                <image class="avatar1" src="../materials/Image.jpg"></image>
-                <view class="AuthorText">
-                    <text class="nickName">wagada</text>
-                    <text class="storyTime">12月13号 14：00</text>
+        <block class="storyGroup" wx:for="{{storys}}" wx:for-item="story" wx:key="storyId">
+            <view class="story" style="background:{{color[index%7]}}">
+                <view class="storyAuthor">
+                    <image class="avatar1" src="{{story.avatar}}"></image>
+                    <view class="AuthorText">
+                        <text class="nickName">{{story.nickName}}</text>
+                        <text class="storyTime">{{story.time}}</text>
+                    </view>
                 </view>
-            </view>
-            <view class="storyContent">
-                <view class = "imageView">
-                    <block class="ImageGroup" wx:for="{{imageList}}" wx:for-item="image">
-                        <image class= "image{{imageList.length}}"  src="{{image}}" bindtap="previewImage" data-src="{{image}}"></image>
-                    </block>
-                </view>
-                <view class="voice"></view>
-                <view class="vidio"></view>
-                <text class="content">Toshiba has asked regulators for an extra month before issuing its earnings report - which will include the size of the loss and details of measures it plans to take to tackle its finances.
-Shares fell by as much as 9% on Tuesday and have lost about 50% since late December, when it first warned about the extent of the problems.</text>
-            </view>
-        </view>
+                <view class="storyContent">
+                    <view class = "imageView">
+                        <block class="ImageGroup" wx:for="{{story.imageList}}" wx:for-item="image">
+                            <image class= "image{{story.imageList.length}}"  src="{{image}}" bindtap="previewImage" data-src="{{image}}"></image>
+                        </block>
+                    </view>
 
-        
+                    <view class="vidio-container" style="text-align: left;">
+                        <video id="myVideo" src="{{story.video.src}}" binderror="videoErrorCallback" enable-danmu danmu-btn controls></video>
+                    </view>
+                    <view class="voice-container" style="text-align: left;">
+                        <audio  style="text-align: left" src="{{story.audio.src}}" poster="{{story.audio.poster}}" name="{{story.audio.name}}" author="{{story.audio.author}}" action="{{story.audio.audioAction}}" controls></audio>
+                    </view>
+                
+                    <view class="content-container">
+                        <text class="content">学校被确定为国家高等教育综合改革试验校。2012年4月，教育部同意建校，并赋予学校探索具有中国特色的现代大学制度、探索创新人才培养模式的重大使命。根据办学目标，学校致力于建设成为聚集和培养拔尖创新人才的学府，以及创造国际一流学术成果、推动科技应用、支撑深圳可持续发展的平台。.</text>
+                    </view>
+                </view>
+            </view>
+        </block>
     </scroll-view>
     
     
