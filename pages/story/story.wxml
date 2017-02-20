@@ -12,14 +12,20 @@
                 </view>
             </view>
             <view class="storyContent">
-                <block class="ImageGroup" wx:for="{{imageList}}" wx:for-item="image">
-                    <image src="{{image}}" style="width:100rpx;height:100rpx" bindtap="previewImage" data-src="{{image}}"></image>
-                </block>
+                <view class = "imageView">
+                    <block class="ImageGroup" wx:for="{{imageList}}" wx:for-item="image">
+                        <image class= "image{{imageList.length}}"  src="{{image}}" bindtap="previewImage" data-src="{{image}}"></image>
+                    </block>
+                </view>
                 <view class="voice"></view>
                 <view class="vidio"></view>
                 <text class="content">Toshiba has asked regulators for an extra month before issuing its earnings report - which will include the size of the loss and details of measures it plans to take to tackle its finances.
 Shares fell by as much as 9% on Tuesday and have lost about 50% since late December, when it first warned about the extent of the problems.</text>
             </view>
         </view>
+
+        
     </scroll-view>
+    
+    
 </view>

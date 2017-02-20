@@ -21,7 +21,7 @@
 </view>
     <scroll-view class="chat-container" scroll-y scroll-into-view="{{lastMessageId}}" scroll-top="9999999999">
         <view wx:for="{{messages}}" wx:for-item="message" wx:key="id" id="{{message.id}}" class="message {{message.type}}">
-            <view wx:if="{{message.type == 'speak'}}" class="user-message {{message.isMe ? 'me' : 'other'}}">
+            <view wx:if="{{message.type == 'speak'}}" class="user-message {{message.isMe ? 'me' : 'other'}}" bindtap="chatPerson1">
                 <image class="avatar" src="{{message.user.avatarUrl}}" ></image>
                <view class="textContainer"> 
                 <view class="text">

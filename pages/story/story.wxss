@@ -53,9 +53,31 @@
   align-content: center;
   padding: 20rpx;
 }
-.ImageGroup{
-  display: block;
-}
+
 .content{
   font-size: 30rpx
 }
+.ImageGroup{
+  display: inline-block;
+}
+.imageView{
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+}
+.image1{
+  max-width: 710rpx;
+  max-height: 710rpx;
+}
+.image2,.image4{
+  max-width:349rpx;
+  max-height: 349rpx;
+  padding: 5rpx;
+}
+.image3,.image5,.image6,.image7,.image8,.image9{
+  max-width: 230rpx;
+  max-height: 230rpx;
+  padding: 5rpx;
+}
+
+
+
