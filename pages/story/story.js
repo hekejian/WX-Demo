@@ -39,21 +39,14 @@ Page({
    },
 
   previewImage: function (e) {
+    console.log(e)
+    console.log(e.target.dataset.imagesSrc)
     console.log(e.target.dataset.src)
-    console.log(this.data.imageList)
     var current = e.target.dataset.src
-
+    var imagesSrc = e.target.dataset.imagesSrc
     wx.previewImage({
       current: current,
-      urls: this.data.imageList,
-      success(args){
-          console.log("成功了")
-          console.log(args)
-      },
-      fail(){
-          console.log("失败了")
-          console.log(args)
-      }
+      urls: imagesSrc,
     })
   }
 

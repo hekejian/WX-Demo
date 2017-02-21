@@ -15,7 +15,7 @@
                 <view class="storyContent">
                     <view class = "imageView">
                         <block class="ImageGroup" wx:for="{{story.imageList}}" wx:for-item="image">
-                            <image class= "image{{story.imageList.length}}"  src="{{image}}" bindtap="previewImage" data-src="{{image}}"></image>
+                            <image class= "image{{story.imageList.length}}"  src="{{image}}" bindtap="previewImage" data-images-src="{{story.imageList}}" data-src="{{image}}"></image>
                         </block>
                     </view>
 

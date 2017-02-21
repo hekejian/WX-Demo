@@ -1,0 +1,43 @@
+<view class = "notes-container">
+    <view class="note-area">
+        <view class = "textarea-wrp">
+            <textarea auto-focus="true" placeholder="留下你的足迹..." placeholder-style="font-size:30rpx"/>
+        </view>
+    </view>
+     <view class="weui-cells">
+          <view class="weui-cell">
+            <view class="weui-cell__bd">
+              <view class="weui-uploader">
+                <view class="weui-uploader__hd">
+                  <view class="weui-uploader__title">点击可预览选好的图片</view>
+                  <view class="weui-uploader__info">{{imageList.length}}/{{count[countIndex]}}</view>
+                </view>
+                <view class="weui-uploader__bd">
+                  <view class="weui-uploader__files">
+                    <block wx:for="{{imageList}}" wx:for-item="image">
+                      <view class="weui-uploader__file">
+                        <image class="weui-uploader__img" src="{{image}}" data-src="{{image}}" bindtap="previewImage"></image>
+                      </view>
+                    </block>
+                  </view>
+                  <view class="weui-uploader__input-box">
+                    <view class="weui-uploader__input" bindtap="chooseImage"></view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class="page-body-info">
+          <block wx:if="{{src === ''}}">
+            <view class="image-plus image-plus-nb" bindtap="chooseVideo">
+              <view class="image-plus-horizontal"></view>
+              <view class="image-plus-vertical"></view>
+            </view>
+            <view class="image-plus-text">添加视频</view>
+          </block>
+          <block wx:if="{{src != ''}}">
+            <video src="{{src}}" class="video"></video>
+          </block>
+      </view>
+</view>
