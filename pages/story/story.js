@@ -48,7 +48,14 @@ Page({
       current: current,
       urls: imagesSrc,
     })
-  }
+  },
 
-
+   note(args){
+        wx.navigateTo({
+          url: '../notes/notes',
+          success: function(res){
+            // success
+          },
+        })
+    }
 })

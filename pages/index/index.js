@@ -164,6 +164,14 @@ Page({
         wx.navigateTo({
           url: '../chat/chat',
         })
-    }
+    },
 
+    note(args){
+        wx.navigateTo({
+          url: '../notes/notes',
+          success: function(res){
+            // success
+          },
+        })
+    }
 });

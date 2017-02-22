@@ -1,8 +1,8 @@
 {
     "pages": [
         "pages/notes/notes",
-        "pages/story/story",
         "pages/index/index",
+        "pages/story/story",
         "pages/chat/chat",
         "pages/personalChat/personalChat"
         
@@ -24,7 +24,7 @@
       "selectedIconPath": "pages/materials/friend.jpg",
       "text": "friends"
     },{
-      "pagePath": "pages/notes/notes",
+      "pagePath": "pages/index/index",
       "iconPath": "pages/materials/Camera.jpg",
       "selectedIconPath": "pages/materials/story.png",
       "text": "notes"

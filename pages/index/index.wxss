@@ -1,3 +1,4 @@
+@import "../common/foot.wxss";
 .person{
   width: 100%;
   background-color: #fff;

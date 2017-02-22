@@ -1,7 +1,7 @@
 <view class = "notes-container">
     <view class="note-area">
         <view class = "textarea-wrp">
-            <textarea auto-focus="true" placeholder="留下你的足迹..." placeholder-style="font-size:30rpx"/>
+            <textarea auto-focus="true" placeholder="留下你的足迹..." placeholder-style="font-size:30rpx" bindblur="bindTextAreaBlur"/>
         </view>
     </view>
      <view class="weui-cells">
@@ -40,4 +40,49 @@
             <video src="{{src}}" class="video"></video>
           </block>
       </view>
+
+    <view class="record-section">
+      <block wx:if="{{recording === false && playing === false && hasRecord === false}}">
+        <view class="page-body-time">
+          <text class="time-big">{{formatedRecordTime}}</text>
+        </view>
+        <view  class="record-begin" bindtap="startRecord">
+          <image src="../materials/record.png"></image>
+        </view>
+      </block>
+
+      <block wx:if="{{recording === true}}">
+        <view class="page-body-time">
+          <text class="time-big">{{formatedRecordTime}}</text>
+        </view>
+        <view  class="recording" bindtap="startRecord">
+          <image src="../materials/stop.png" bindtap="stopRecord"></image>
+        </view>
+      </block>
+
+      <block wx:if="{{hasRecord === true && playing === false}}">
+        <view class="page-body-time">
+          <text class="time-big">{{formatedPlayTime}}</text>
+          <text class="time-small">{{formatedRecordTime}}</text>
+        </view>
+        <view class="page-body-button" bindtap="playVoice">
+            <image src="../materials/play.png"></image>
+        </view>
+      </block>
+
+      <block wx:if="{{hasRecord === true && playing === true}}">
+        <view class="page-body-time">
+          <text class="time-big">{{formatedPlayTime}}</text>
+          <text class="time-small">{{formatedRecordTime}}</text>
+        </view>
+        <view class="page-body-button" bindtap="stopVoice">
+            <image src="../materials/stop.png"></image>
+        </view>
+      </block>
+    </view>
+    <view class="up-container" bindtap="upNotes">
+      <view class="btn">
+        <text class="btn-text">发表</text>
+      </view>
+    </view>
 </view>
