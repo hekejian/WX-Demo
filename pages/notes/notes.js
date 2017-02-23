@@ -29,6 +29,16 @@ Page({
         formatedRecordTime: '00:00:00',
         formatedPlayTime: '00:00:00',
   },
+
+  onLoad: function(e){
+      console.log(e)
+      if(e.imagePath){
+        this.setData({
+          'imageList[0]':e.imagePath
+        })
+      }
+  },
+
   bindTextAreaBlur: function(e){
     console.log(e.detail.value)
     this.setData({
