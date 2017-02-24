@@ -1,3 +1,5 @@
+var Session = require('../../vendor/qcloud-weapp-client-sdk/lib/session')
+var constants = require('../../vendor/qcloud-weapp-client-sdk/lib/constants');
 var sourceType = [ ['camera'], ['album'], ['camera', 'album'] ]
 var sizeType = [ ['compressed'], ['original'], ['compressed', 'original'] ]
 var videoSourceType = [ ['camera'], ['album'], ['camera', 'album'] ]
@@ -8,6 +10,19 @@ var duration = Array.apply(null, {length: 60}).map(function (n, i) {
 var util = require('../../utils/util.js')
 var playTimeInterval
 var recordTimeInterval
+
+var buildAuthHeader = function buildAuthHeader(session) {
+    var header = {};
+
+    if (session && session.id && session.skey) {
+        header[constants.WX_HEADER_ID] = session.id;
+        header[constants.WX_HEADER_SKEY] = session.skey;
+    }
+
+    return header;
+};
+
+
 Page({
      data: {
         text:"",
@@ -186,19 +201,24 @@ onHide: function() {
   },
 
   upNotes: function(){
-      console.log(this.data.text)
+      var that = this
+      var authHeader = buildAuthHeader(Session.get());
 
        wx.uploadFile({
-       url: 'http://example.com/upload',
-       filePath: tempFilePaths[0],
-       name: 'file',
-       formData:{
-        'user': 'test'
-      },
-      success(){
+        header:authHeader,
+        url: 'https://www.bigforce.cn/hkj4/share',
+        filePath: that.data.imageList[0],
+        name: 'file',
+        formData:{
+          'openId': 'test',
+        },
+        
+        success(){
         wx.navigateTo({
           url: '../story/story',
           success: function(res){
+            console.log(".......................")
+            console.log(res)
             // success
           },
           fail: function(res) {
@@ -207,8 +227,8 @@ onHide: function() {
         })
       },
       
-      fail(){
-
+      fail(res){
+        console.log(res)
       }
     })
     

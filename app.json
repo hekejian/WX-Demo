@@ -1,7 +1,7 @@
 {
     "pages": [
         "pages/index/index",
-         "pages/camera/camera",
+        "pages/camera/camera",
         "pages/notes/notes",
         "pages/story/story",
         "pages/chat/chat",

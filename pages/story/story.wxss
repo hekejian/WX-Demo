@@ -75,8 +75,6 @@
   max-height: 230rpx;
   padding: 5rpx;
 }
-.voice-container{
-}
 .audio{
   background: #FCF3CF
 

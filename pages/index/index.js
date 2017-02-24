@@ -110,12 +110,13 @@ Page({
         // 创建信道，需要给定后台服务地址
        // var tunnel = this.tunnel = new qcloud.Tunnel(this.data.tunnelUrl);
         var that = this
-        this.tunnel = appInstance.globalData.tunnel
+        var tunnel = this.tunnel = appInstance.globalData.tunnel
         // 监听信道内置消息，包括 connect/close/reconnecting/reconnect/error
-        tunnel.on('connect', () => {
+       /* tunnel.on('connect', () => {
             console.log('WebSocket 信道已连接');
         });
-
+        
+        
         tunnel.on('close', () => {
             console.log('WebSocket 信道已断开');
         });
@@ -135,9 +136,15 @@ Page({
             showModel('信道发生错误', error);
             console.error('信道发生错误：', error);
         });
+        */
+        tunnel.on('add',add =>{
+            console.log(add)
+        })
 
         // 监听自定义消息（服务器进行推送）
         tunnel.on('speak', speak => {
+            console.log("speak")
+            console.log(speak)
             that.data.messasges.push(speak)
             this.setData({
                 messasges

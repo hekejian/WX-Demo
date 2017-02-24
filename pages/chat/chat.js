@@ -85,7 +85,7 @@ Page({
         this.tunnel = appInstance.globalData.tunnel
         console.log(options)
         this.me = appInstance.globalData.userData
-        this.requsetFriends("")
+        //this.requsetFriends("")
     },
 
     //拉取群数据
@@ -278,4 +278,6 @@ Page({
     chatPerson1: function(e){
         console.log(e)
     }
+
+    
 });
