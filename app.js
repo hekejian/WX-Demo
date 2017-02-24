@@ -22,16 +22,10 @@ var showModel = (title, content) => {
         showCancel: false
     });
 };
-function createSystemMessage(content) {
-    return { id: msgUuid(), type: 'system', content };
-}
 
 /**
  * 生成聊天室的聊天消息
  */
-function createUserMessage(content, user, isMe) {
-    return { id: msgUuid(), type: 'speak', content, user, isMe };
-}
 
 var user = {};
 App({
@@ -42,13 +36,15 @@ App({
         if(this.globalData.userInfo == null){
             this.login()
         }
-        if(this.globalData.tunnel == null){
-            this.openTunel();
-        }
+
         if(this.globalData.userData == null)
             this.getUser()
 
-        this.getGroupId()
+        if(this.globalData.tunnel == null){
+            this.openTunel();
+        }
+        
+
     },
 
     login:function(){
@@ -57,13 +53,25 @@ App({
         qcloud.login({
             success(result) {
                 showSuccess('登录成功');
-                console.log( result);
+                console.log('login', result);
                 that.globalData.userInfo = result;
             },
             fail(error) {
                 showModel('登录失败', error);
             },
         });
+    },
+
+    requestFriends:function(){
+        var that = this
+        qcloud.request({
+            url:"",
+            login: true,
+            success: (response) => {
+                    this.me = response.data.data.userInfo;
+                    this.connect();
+                }
+        })
     },
 
     openTunel:function(){
@@ -137,14 +145,17 @@ App({
 
 
     getGroupId: function(){
+        var that = this
+        var url = `https://${config.service.host}/group/all/`+this.globalData.userData.openId
+        console.log(url)
         qcloud.request({
-            url: `https://${config.service.host}/group/all/oqnwK0RfEX1VAJGE71RTBpHCKW_M`,
+             url:url,
              success: (response) => {
-                 console.log('=========================')
-                console.log(response)
+                var data = response.data.data.list[0]
+                console.log(data)
+                that.globalData.groupInfo = data
                 },
             fail:(error)=> {
-                console.log('shibaile')
                 console.log(error)    
             }
         })
@@ -156,8 +167,9 @@ App({
             url: `https://${config.service.host}/user`,
             login: true,
             success: (response) => {
-                console.log(response)
+                console.log('getUser',response)
                 that.globalData.userData = response.data.data.userInfo
+                that.getGroupId()
                 }
             });
             

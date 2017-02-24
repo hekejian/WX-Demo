@@ -12,7 +12,7 @@
       <view class="time-message">
         <view class="time">{{item.lastTime}}</view>
         <view wx:if="{{item.unreadNumber>0}}" class="messageNumber">
-          <text>{{item.unreadNumber}}</text>
+          <text>{{item.unReadMessage.length}}</text>
         </view>
       </view>
     </view> 
