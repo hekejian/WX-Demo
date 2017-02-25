@@ -5,6 +5,7 @@ var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
 // 引入配置
 var config = require('../../config');
 
+var util = require('../../utils/util.js')
 /**
  * 生成一条聊天室的消息的唯一 ID
  */
@@ -149,7 +150,8 @@ Page({
          tunnel.on('add',add => {
              if(add.targetType == "group" && add.targetId == this.data.groupInfo.groupId ){
                  //其他人加入
-                // this.pushMessage(createSystemMessage(`${enter.nickName}已加入群聊，当前共 ${total} 人`))
+                 var total = this.data.list.length+1
+                 this.pushMessage(createSystemMessage(`${add.data.sourceName}已加入群聊，共 ${total} 人`))
                  //生成一条系统消息，有人加入
                  //刷新list数据
              }
@@ -158,7 +160,16 @@ Page({
         tunnel.on('speak', speak => {
             if(speak.targetType =="group" && speak.targetId == this.data.groupInfo.groupId){
                 var speakData = speak.data //sourceId sourceName date content
-                this.pushMessage(createUserMessage())
+                var isMe = false
+                if(speakData.sourceId == appInstance.globalData.myId){
+                      isMe = true
+                }
+                var who = {
+                    "nickName":speakData.sourceName,
+                    "avatarUrl":speakData.sourceAvatar,
+                }  
+                this.pushMessage(createUserMessage(speakData.content,who,isMe))
+
             }
 
           //  const { word, who } = speak;
@@ -168,14 +179,6 @@ Page({
 
 
         // 聊天室有人加入或退出，反馈到 UI 上
-        tunnel.on('people', people => {
-            const { total, enter, leave } = people;
-            if (enter) {
-                this.pushMessage(createSystemMessage(`${enter.nickName}已加入群聊，当前共 ${total} 人`));
-            } else {
-                this.pushMessage(createSystemMessage(`${leave.nickName}已退出群聊，当前共 ${total} 人`));
-            }
-        });
 
         // 有人说话，创建一条消息
 
@@ -239,7 +242,20 @@ Page({
 
         setTimeout(() => {
             if (this.data.inputContent && this.tunnel) {
-                this.tunnel.emit('speak', { word: this.data.inputContent });
+                //this.tunnel.emit('speak', { word: this.data.inputContent });
+
+                var date = util.formatTime(Date.now())
+                this.tunnel.emit('speak',{
+                    "targetType":"group",
+                    "targetId":this.data.groupInfo.groupId,
+                    "data":{
+                        "sourceId":appInstance.globalData.myId,
+                        "sourceName":appInstance.globalData.userInfo.nickName,
+                        "sourceAvatar":appInstance.globalData.userInfo.avatarUrl,
+                        "date":date,
+                        "content":this.data.inputContent
+                    }
+                })
                 this.setData({ inputContent: '' });
             }
         });
