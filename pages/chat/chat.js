@@ -86,6 +86,10 @@ Page({
         this.setData({
             groupInfo:appInstance.globalData.groupInfo
         })
+
+        if(appInstance.globalData.inGroup == false){
+            this.addGroup()
+        }
        
     },
 
@@ -129,6 +133,23 @@ Page({
         //重新启动需要做什么吗？
     },
 
+    addGroup(){
+         setTimeout(() => {
+            if (this.tunnel) {
+                var date = Date.now()
+                this.tunnel.emit('add',{
+                    "targetType":"group",
+                    "targetId":this.data.groupInfo.groupId,
+                    "data":{
+                        "sourceId":appInstance.globalData.myId,
+                        "sourceName":appInstance.globalData.userInfo.nickName,
+                        "sourceAvatar":appInstance.globalData.userInfo.avatarUrl,
+                        "date":date
+                    }
+                })
+            }
+        });
+    },
     /**
      * 连接到聊天室信道服务
      */
@@ -150,6 +171,9 @@ Page({
          tunnel.on('add',add => {
              if(add.targetType == "group" && add.targetId == this.data.groupInfo.groupId ){
                  //其他人加入
+                 if(add.data.sourceId == appInstance.globalData.myId){
+                    appInstance.globalData.inGroup = true
+                 }
                  var total = this.data.list.length+1
                  this.pushMessage(createSystemMessage(`${add.data.sourceName}已加入群聊，共 ${total} 人`))
                  //生成一条系统消息，有人加入
@@ -244,7 +268,7 @@ Page({
             if (this.data.inputContent && this.tunnel) {
                 //this.tunnel.emit('speak', { word: this.data.inputContent });
 
-                var date = util.formatTime(Date.now())
+                var date = Date.now()
                 this.tunnel.emit('speak',{
                     "targetType":"group",
                     "targetId":this.data.groupInfo.groupId,

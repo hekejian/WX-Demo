@@ -81,37 +81,9 @@ App({
         tunnel.open();
         that.globalData.tunnel = tunnel
         
-        /*tunnel.on('connect', () => {
-            console.log('WebSocket 信道已连接');
-             console.log("caonima")
-            that.globalData.tunnelStatus = 'connected'
-        });
-
-        tunnel.on('close', () => {
-            console.log('WebSocket 信道已断开');
-            that.globalData.tunnelStatus = 'closed'
-            tunnel.open();
-        });
-
-        tunnel.on('reconnecting', () => {
-            console.log('WebSocket 信道正在重连...')
-            showBusy('正在重连');
-        });
-
-        tunnel.on('reconnect', () => {
-            console.log('WebSocket 信道重连成功')
-            showSuccess('重连成功');
-            that.globalData.tunnelStatus = 'connected'
-        });
-
-        tunnel.on('error', error => {
-            showModel('信道发生错误', error);
-            console.error('信道发生错误：', error);
-        });
-        */
+        
         tunnel.on('online',online => {
-            console.log('online')
-            console.log(online)
+            console.log('online',online)
             that.globalData.tunnelStatus = 'connected'
         })
 
@@ -146,13 +118,12 @@ App({
 
     getGroupId: function(){
         var that = this
-        var url = `https://${config.service.host}/group/all/`+this.globalData.userData.openId
-        console.log(url)
+        var url = `https://${config.service.host}/group/all/`+this.globalData.myId
         qcloud.request({
              url:url,
              success: (response) => {
                 var data = response.data.data.list[0]
-                console.log(data)
+                console.log('getGroupId',data)
                 that.globalData.groupInfo = data
                 },
             fail:(error)=> {
@@ -169,10 +140,10 @@ App({
             success: (response) => {
                 console.log('getUser',response)
                 that.globalData.userData = response.data.data.userInfo
+                that.globalData.myId = response.data.data.userInfo.openId
                 that.getGroupId()
                 }
             });
-            
     },
 
 
@@ -185,7 +156,15 @@ App({
                 success(result) {
                     showSuccess('登录成功');
                     console.log('登录成功', result);
+                    
                     that.globalData.userInfo = result;
+                    if(that.globalData.userData == null)
+                        that.getUser()
+
+                    if(that.globalData.tunnel == null){
+                        that.openTunel();
+                         }
+
                     typeof arg=="function" && arg(that.globalData.userInfo)
             },
             fail(error) {
@@ -207,5 +186,6 @@ App({
         groupStory:null,
         groupMember:null,
         groupMessage:[],
+        inGroup:false
     }
 });
