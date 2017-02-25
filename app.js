@@ -196,6 +196,7 @@ App({
         }
     },
     globalData:{
+        myId:null,
         friendsMessages:[],
         userInfo:null,
         friends:{},

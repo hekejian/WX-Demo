@@ -31,7 +31,6 @@ function createUserMessage(content, user, isMe) {
 
 var showModel = (title, content) => {
     wx.hideToast();
-
     wx.showModal({
         title,
         content: JSON.stringify(content),
@@ -47,12 +46,11 @@ Page({
      * 聊天室使用到的数据，主要是消息集合以及当前输入框的文本
      */
     data: {
-        roomid:0,
+        groupInfo:0, // groupId  groupName  groupSign
         messages: [],
         inputContent: '大家好啊',
         lastMessageId: 'none',
         scrollTop:99999,
-        title:"520520",
         list:[{
             id:1,
             nickName:"wagada1",
@@ -83,9 +81,11 @@ Page({
    
     onLoad(options){
         this.tunnel = appInstance.globalData.tunnel
-        console.log(options)
         this.me = appInstance.globalData.userData
-        //this.requsetFriends("")
+        this.setData({
+            groupInfo:appInstance.globalData.groupInfo
+        })
+       
     },
 
     //拉取群数据
@@ -114,48 +114,58 @@ Page({
      * 页面渲染完成后，启动聊天室
      * */
     onReady() {
-        wx.setNavigationBarTitle({ title: this.data.title });
-
-        if (!this.pageReady) {
-            this.pageReady = true;
-            this.enter();
-        }
+        wx.setNavigationBarTitle({ title: this.data.groupInfo.groupName});
+        this.pushMessage(createSystemMessage('正在加入群聊...'));
+        this.tunnelListener()
+         //this.requsetFriends("")
+        this.popMessage() //删除上一条消息
     },
 
     /**
      * 后续后台切换回前台的时候，也要重新启动聊天室
      */
     onShow() {
-        if (this.pageReady) {
-            this.enter();
-        }
-    },
-
-    /**
-     * 启动聊天室
-     */
-    enter() {
-        this.pushMessage(createSystemMessage('正在加入群聊...'));
-        this.connect();
+        //重新启动需要做什么吗？
     },
 
     /**
      * 连接到聊天室信道服务
      */
-    connect() {
+    tunnelListener() {
         var tunnel = this.tunnel;
-        // 创建信道
-       // var tunnel = this.tunnel = new qcloud.Tunnel(config.service.tunnelUrl);
+        // 获取信道
 
-        // 连接成功后，去掉「正在加入群聊」的系统提示
-        tunnel.on('add', () => {
-            console.log('WebSocket 信道已连接 wocaonima zhognyushoudaole ');
-            this.popMessage()
+        tunnel.on('delete',delete1 =>{
+            if(delete1.targetType == "group" && delete1.targetId == this.data.groupInfo.groupId){
+                if(delete1.data.sourceId != appInstance.globalData.myId){
+                    //删除离开的人，刷新List数据
+                }
+                else if(delete1.data.sourceId == appInstance.globalData.myId){
+                    //离开这个讨论群
+                }
+            }
+        })
+
+         tunnel.on('add',add => {
+             if(add.targetType == "group" && add.targetId == this.data.groupInfo.groupId ){
+                 //其他人加入
+                // this.pushMessage(createSystemMessage(`${enter.nickName}已加入群聊，当前共 ${total} 人`))
+                 //生成一条系统消息，有人加入
+                 //刷新list数据
+             }
+        })
+
+        tunnel.on('speak', speak => {
+            if(speak.targetType =="group" && speak.targetId == this.data.groupInfo.groupId){
+                var speakData = speak.data //sourceId sourceName date content
+                this.pushMessage(createUserMessage())
+            }
+
+          //  const { word, who } = speak;
+          // this.pushMessage(createUserMessage(word, who, who.openId === appInstance.globalData.userData.openId));
         });
-        tunnel.on('connect', () =>{
-            console.log("caonima")
-            this.popMessage()
-        } );
+
+
 
         // 聊天室有人加入或退出，反馈到 UI 上
         tunnel.on('people', people => {
@@ -168,31 +178,9 @@ Page({
         });
 
         // 有人说话，创建一条消息
-        tunnel.on('speak', speak => {
-            const { word, who } = speak;
-            console.log(appInstance.globalData.userData)
-            this.pushMessage(createUserMessage(word, who, who.openId === appInstance.globalData.userData.openId));
-        });
 
-        // 信道关闭后，显示退出群聊
-        tunnel.on('close', () => {
-            this.pushMessage(createSystemMessage('您已退出群聊'));
-        });
-
-        // 重连提醒
-        tunnel.on('reconnecting', () => {
-            this.pushMessage(createSystemMessage('已断线，正在重连...'));
-        });
-
-        tunnel.on('reconnect', () => {
-            this.amendMessage(createSystemMessage('重连成功'));
-        });
-        // 打开信道
     },
 
-    /**
-     * 退出聊天室
-     */
 
     /**
      * 通用更新当前消息集合的方法
