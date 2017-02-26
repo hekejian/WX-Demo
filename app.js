@@ -33,16 +33,15 @@ App({
      * 小程序初始化时执行，我们初始化客户端的登录地址，以支持所有的会话操作
      */
     onLaunch() {
+        console.log("onLaunch")
         if(this.globalData.userInfo == null){
+            console.log("wozaihoumian")
             this.login()
         }
 
         if(this.globalData.userData == null)
             this.getUser()
 
-        if(this.globalData.tunnel == null){
-            this.openTunel();
-        }
         
 
     },
@@ -80,7 +79,7 @@ App({
 
         tunnel.open();
         that.globalData.tunnel = tunnel
-        
+        console.log("tunnel 已经打开了")  
         
         tunnel.on('online',online => {
             console.log('online',online)
@@ -141,9 +140,12 @@ App({
                 console.log('getUser',response)
                 that.globalData.userData = response.data.data.userInfo
                 that.globalData.myId = response.data.data.userInfo.openId
-                that.getGroupId()
+                if(that.globalData.tunnel == null){
+                  this.openTunel()
                 }
-            });
+                that.getGroupId()
+            }
+        });
     },
 
 
@@ -160,10 +162,6 @@ App({
                     that.globalData.userInfo = result;
                     if(that.globalData.userData == null)
                         that.getUser()
-
-                    if(that.globalData.tunnel == null){
-                        that.openTunel();
-                         }
 
                     typeof arg=="function" && arg(that.globalData.userInfo)
             },

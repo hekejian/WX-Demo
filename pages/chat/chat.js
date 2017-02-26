@@ -259,7 +259,7 @@ Page({
         if (!this.tunnel || !this.tunnel.isActive()) {
             this.pushMessage(createSystemMessage('您还没有加入群聊，请稍后重试'));
             if (this.tunnel.isClosed()) {
-                this.enter();
+               console.log("信道还未打开")
             }
             return;
         }
@@ -269,6 +269,7 @@ Page({
                 //this.tunnel.emit('speak', { word: this.data.inputContent });
 
                 var date = Date.now()
+                console.log(this.tunnel)
                 this.tunnel.emit('speak',{
                     "targetType":"group",
                     "targetId":this.data.groupInfo.groupId,

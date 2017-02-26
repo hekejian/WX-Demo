@@ -59,6 +59,7 @@ Page({
 
     onLoad:function(options){
         var that = this
+        console.log("index/onLoad")
         if(appInstance.globalData.userInfo == null){
             appInstance.getUserInfo(function(userInfo){
                 that.setData({
@@ -70,14 +71,13 @@ Page({
                     userInfo:appInstance.globalData.userInfo
                 })
         }
-        this.listenTunnel();
+        
     },
-
 
     listenTunnel() {
         var that = this
         var tunnel = this.tunnel = appInstance.globalData.tunnel
-        
+        console.log('tunnel',tunnel)
         tunnel.on('delete',delete1 =>{
             console.log(delete1)
         })
@@ -87,7 +87,7 @@ Page({
         })
 
         tunnel.on('online',online =>{
-            console.log(online)
+            console.log('page/index/online',online)
         })
         
         tunnel.on('offline',offline =>{
@@ -160,6 +160,7 @@ Page({
     },
 
     note(args){
+        console.log("老子还是空的吗",this.tunnel)
         wx.navigateTo({
           url: '../notes/notes',
           success: function(res){
