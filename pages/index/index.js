@@ -1,5 +1,5 @@
 
-
+var event = require('../../utils/event.js')
 // 引入 QCloud 小程序增强 SDK
 var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
 
@@ -33,6 +33,7 @@ Page({
      * 初始数据，我们把服务地址显示在页面上
      */
     data: {
+        list:[],
         friends:[{
             id:0,
                               avatarUrl:"http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0",
@@ -71,7 +72,26 @@ Page({
                     userInfo:appInstance.globalData.userInfo
                 })
         }
-        
+
+        event.on('getFriendsList',this,function(list){
+            console.log("+++++++++日了够",list)
+            this.setData({
+                list:list
+            })
+        })
+
+        event.on('getGroupId',this,function(group){
+            //设置群昵称和头像
+        })
+
+        event.on('getGroupNumber',this,function(groupList){
+            //获得群成员
+        })
+    },
+    onUnload:function(){
+        event.remove('getFriendsList',this);
+        event.remove('getGroupId',this);
+        event.remove('getGroupNumber',this);
     },
 
     listenTunnel() {

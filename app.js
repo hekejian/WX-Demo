@@ -1,6 +1,7 @@
 /**
  * @fileOverview 微信小程序的入口文件
  */
+var event = require('./utils/event.js')
 var qcloud = require('./vendor/qcloud-weapp-client-sdk/index');
 var config = require('./config');
 var showSuccess = text => wx.showToast({
@@ -23,9 +24,6 @@ var showModel = (title, content) => {
     });
 };
 
-/**
- * 生成聊天室的聊天消息
- */
 
 var user = {};
 App({
@@ -35,15 +33,12 @@ App({
     onLaunch() {
         console.log("onLaunch")
         if(this.globalData.userInfo == null){
-            console.log("wozaihoumian")
             this.login()
         }
 
-        if(this.globalData.userData == null)
+        if(this.globalData.userData == null){
             this.getUser()
-
-        
-
+        }
     },
 
     login:function(){
@@ -61,77 +56,7 @@ App({
         });
     },
 
-    requestFriends:function(){
-        var that = this
-        qcloud.request({
-            url:"",
-            login: true,
-            success: (response) => {
-                    this.me = response.data.data.userInfo;
-                    this.connect();
-                }
-        })
-    },
-
-    openTunel:function(){
-        var that = this;
-        var tunnel= new qcloud.Tunnel(config.service.tunnelUrl);
-
-        tunnel.open();
-        that.globalData.tunnel = tunnel
-        console.log("tunnel 已经打开了")  
-        
-        tunnel.on('online',online => {
-            console.log('online',online)
-            that.globalData.tunnelStatus = 'connected'
-        })
-
-        tunnel.on('offline',offline => {
-            console.log('offline')
-            console.log(offline)
-            tunnel.open();
-        })
-
-        tunnel.on('add',add => {
-            console.log('add')
-            console.log(add)
-        })
-        
-        tunnel.on('delete',delete1 => {
-            console.log('delete1')
-            console.log(delete1)
-        })
-
-        // 监听自定义消息（服务器进行推送）
-        tunnel.on('speak', speak => {
-            //const { word, who } = speak;
-            that.globalData.messages.push(speak)
-           
-            console.log(speak)
-            console.log('APP init收到说话消息：', speak);
-        });
-
-        // 打开信道
-    },
-
-
-    getGroupId: function(){
-        var that = this
-        var url = `https://${config.service.host}/group/all/`+this.globalData.myId
-        qcloud.request({
-             url:url,
-             success: (response) => {
-                var data = response.data.data.list[0]
-                console.log('getGroupId',data)
-                that.globalData.groupInfo = data
-                },
-            fail:(error)=> {
-                console.log(error)    
-            }
-        })
-    },
-
-    getUser:function(){
+     getUser:function(){
         var that = this
          qcloud.request({
             url: `https://${config.service.host}/user`,
@@ -143,11 +68,120 @@ App({
                 if(that.globalData.tunnel == null){
                   this.openTunel()
                 }
+                that.requestFriends()
                 that.getGroupId()
             }
         });
     },
 
+    requestFriends:function(){
+        var that = this
+        var url = `https://${config.service.host}/friend/list/`+this.globalData.myId
+        qcloud.request({
+            url:url,
+            login: true,
+            success: (response) => {
+                    that.globalData.friends = response.data.list;
+                    event.emit('getFriendsList',response.data.list)
+                }
+        })
+    },
+
+    getGroupId: function(){
+        var that = this
+        var url = `https://${config.service.host}/group/all/`+this.globalData.myId
+        qcloud.request({
+             url:url,
+             success: (response) => {
+                var data = response.data.data.list[0]
+                console.log('getGroupId',data)
+                that.globalData.groupsInfo.push(data)
+                event.emit('getGroupId',data)
+                that.getGroupNumber(data.groupId)
+                },
+
+            fail:(error)=> {
+                console.log(error)    
+            }
+        })
+    },
+
+    getGroupNumber:function(groupId){
+        var that = this
+        var url = `https://${config.service.host}/group/member/`+ groupId
+        qcloud.request({
+             url:url,
+             success: (response) => {
+                var groupList = response.data.list
+                that.globalData.groupMember.push(groupList)
+                console.log('getGroupNumber',groupList)
+                event.emit('getGroupNumber',groupList)
+                },
+
+            fail:(error)=> {
+                console.log(error)    
+            }
+        })
+    },
+    openTunel:function(){
+        var that = this;
+        var tunnel= new qcloud.Tunnel(config.service.tunnelUrl);
+
+        tunnel.open();
+        that.globalData.tunnel = tunnel
+        
+        tunnel.on('online',online => {
+            if(online.targetType == "friend" && online.targetId == that.globalData.myId){
+                event.emit('openTunel',tunnel)
+            }
+            else if(online.targetType == "group"){
+                event.emit('groupNumberOnline',online)
+            }
+            
+
+        })
+
+        tunnel.on('offline',offline => {
+            if(offline.targetType == "group"){
+                 event.emit('groupNumberOffline',offline.data)
+            }
+           
+            
+        })
+
+        tunnel.on('add',add => {
+            if(add.targetType == "friend" && add.targetId == that.globalData.myId){
+                 event.emit('addFriend',add.data)
+            }else if(add.targetType == "group"){
+                 event.emit('addGroup',add)
+            }
+        })
+        
+        tunnel.on('delete',delete1 => {
+             if(delete1.targetType == "friend" && delete1.targetId == that.globalData.myId){
+                 event.emit('deleteFriend',delete1.data)
+            }else if(add.targetType == "group"){
+                 event.emit('deleteGroupNumber',delete1)
+            }
+        })
+
+        // 监听自定义消息（服务器进行推送）
+        tunnel.on('speak', speak => {
+            if(speak.targetType == "friend" && speak.targetId == that.globalData.myId){
+                that.globalData.friendsMessages.push(speak.data)
+                event.emit('friendMessage',speak.data)
+            }
+            else if(speak.targetType == "group" && speak.targetId == that.globalData.myId){
+                that.globalData.groupMessage.push(speak)
+                event.emit('groupMessage',speak)
+            }
+            that.globalData.messages.push(speak)
+           
+            console.log('APP init收到说话消息：', speak);
+        });
+
+        // 打开信道
+    },
 
     getUserInfo:function(arg){
         var that = this;
@@ -172,18 +206,18 @@ App({
         });
         }
     },
+    
     globalData:{
+        userInfo:null,
         myId:null,
         friendsMessages:[],
-        userInfo:null,
-        friends:{},
-        tunnelStatus: 'closed',
+        groupMessage:[],
+        friends:[],
         tunnel:null,
         userData:null,
-        groupInfo:null,
-        groupStory:null,
-        groupMember:null,
-        groupMessage:[],
-        inGroup:false
+        groupsInfo:[], //groupId groupName groupSign
+        groupStory:null, //还未获得
+        groupMember:[],
+       //inGroup:false
     }
 });

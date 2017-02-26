@@ -1,5 +1,6 @@
 
 // 引入 QCloud 小程序增强 SDK
+var event = require('../../utils/event.js')
 var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
 
 // 引入配置
@@ -90,9 +91,21 @@ Page({
         if(appInstance.globalData.inGroup == false){
             this.addGroup()
         }
-       
+
+       event.on('getGroupId',this,function(group){
+            //设置群昵称和头像
+        })
+
+        event.on('getGroupNumber',this,function(groupList){
+            //获得群成员
+        })
     },
 
+    onUnload:function(){
+        event.remove('getGroupId',this);
+        event.remove('getGroupNumber',this);
+
+    },
     //拉取群数据
     requsetFriends(url) {
             var that = this
