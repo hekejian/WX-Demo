@@ -93,11 +93,16 @@ App({
         qcloud.request({
              url:url,
              success: (response) => {
-                var data = response.data.data.list[0]
+                console.log("ZZ",response)
+                var data = response.data.data.list 
                 console.log('getGroupId',data)
-                that.globalData.groupsInfo.push(data)
+                that.globalData.groupsInfo = data
                 event.emit('getGroupId',data)
-                that.getGroupNumber(data.groupId)
+                for(var i=0;i<data.length;i++)
+                {
+                    that.getGroupNumber(data[i].groupId)
+                }
+                    
                 },
 
             fail:(error)=> {
@@ -112,7 +117,10 @@ App({
         qcloud.request({
              url:url,
              success: (response) => {
-                var groupList = response.data.list
+                var groupList = {
+                    'openId':groupId,
+                    'list':response.data.list
+                }
                 that.globalData.groupMember.push(groupList)
                 console.log('getGroupNumber',groupList)
                 event.emit('getGroupNumber',groupList)
@@ -137,7 +145,6 @@ App({
             else if(online.targetType == "group"){
                 event.emit('groupNumberOnline',online)
             }
-            
 
         })
 
@@ -145,7 +152,6 @@ App({
             if(offline.targetType == "group"){
                  event.emit('groupNumberOffline',offline.data)
             }
-           
             
         })
 
@@ -171,7 +177,7 @@ App({
                 that.globalData.friendsMessages.push(speak.data)
                 event.emit('friendMessage',speak.data)
             }
-            else if(speak.targetType == "group" && speak.targetId == that.globalData.myId){
+            else if(speak.targetType == "group"){
                 that.globalData.groupMessage.push(speak)
                 event.emit('groupMessage',speak)
             }
@@ -219,5 +225,6 @@ App({
         groupStory:null, //还未获得
         groupMember:[],
        //inGroup:false
+       enterGroupId:null
     }
 });

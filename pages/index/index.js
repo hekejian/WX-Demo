@@ -35,27 +35,31 @@ Page({
     data: {
         list:[],
         friends:[{
-            id:0,
+            openId:0,
                               avatarUrl:"http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0",
             nickName:"memeda",
             lastMessage:"初始数据，我们把服务地址显示在页面上",
-            unReadMessage:["使用 Page 初始化页面，具体可参考微信公众平台上的文档"],
-            unreadNumber:3,
+            unReadMessage:["使用 Page 初始化页面，具体可参考微信公众平台上的文档",''],
+            //unreadNumber:3,
             lastTime:"14:00",
+            messages:[]
         },{
-            id:1,
+            openId:1,
             avatarUrl:"http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0",
             nickName:"heheda",
             lastMessage:"qcloud.request() 方法和 wx.request() 方法使用是一致的",
             unReadMessage:["使用 Page 初始化页面，具体可参考微信公众平台上的文档"],
             unreadNumber:0,
             lastTime:"15:00",
+            messages:[]
         }],//friends 包含了 好友和群聊会话，所以拉取了好友之后需要和群会话整合
-
-        messasges:[],
+        friendsInfo:[],
+        friendsMessasges:[],
+        groupMessage:[],
         userInfo:{},
         loginUrl: config.service.loginUrl,
         requestUrl: config.service.requestUrl,
+        groupList:[],
     },
 
     onLoad:function(options){
@@ -75,23 +79,107 @@ Page({
 
         event.on('getFriendsList',this,function(list){
             console.log("+++++++++日了够",list)
-            this.setData({
-                list:list
+            that.setData({
+                friendsInfo:list
             })
         })
 
         event.on('getGroupId',this,function(group){
+            var openId = group.groupId
+            var nickName = group.groupName
+            var avatarUrl = 'http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0'
             //设置群昵称和头像
+            var friendsInfo = that.data.friendsInfo
+            friendsInfo.unshift({
+                'openId':openId,
+                'nickName':nickName,
+                'avatarUrl':avatarUrl,
+            })
+            that.setData({
+                friendsInfo
+            })
+            //需要切换成friend
         })
 
-        event.on('getGroupNumber',this,function(groupList){
+        event.on('getGroupNumber',this,function(groupList1){
             //获得群成员
+            var groupList = that.data.groupList
+            groupList.push(groupList1)
+            that.setData({
+                groupList
+            })
         })
+
+        event.on('addFriend',this,function(friend){
+            //添加好友 确认还未处理先添加进来
+            var friendsInfo = that.data.friendsInfo
+            friendsInfo.unshift(friend)
+            that.setData({
+                friendsInfo
+            })
+        })
+
+        event.on('deleteFriend',this,function(friend){
+            //被删除了
+            var length = that.data.friendsInfo.length
+            var friendsInfo = that.data.friendsInfo
+            for(var i=0;i<length;i++){
+                if(friendsInfo[i].openId == friend.sourceId){
+                    friendsInfo.splice(i,1)
+                }
+            }
+            that.setData({
+                friendsInfo
+            })
+        })
+
+        event.on('friendMessage',this,function(friendMessage){
+            //好友消息
+            var friendsList = that.data.friends
+            var sourceId = friendMessage.sourceId
+            for(var i=0; i<friendsList.length;i++){
+                    if(sourceId == friendsList[i].openId){
+                        friendsList[i].unReadMessage.push(speak.data)                        
+                        friendsList[i].lastMessage = speak.data.content
+                        //时间处理
+                        var temp = that.data.friends[i]
+                        that.data.friends.splice(i,1)
+                        that.data.friends.unshift(temp)
+                        that.setData({
+                            friends:friendsList //可能需要添加
+                        })
+                    }
+            }
+        })
+
+        event.on('groupMessage',this,function(groupMessage){
+            //群消息
+            var friendsList = that.data.friends
+            var targetId = groupMessage.targetId
+            for(var i=0; i<friendsList.length;i++){
+                    if(targetId == friendsList[i].id){
+                        friendsList[i].unReadMessage.push(speak.data)                        
+                        friendsList[i].lastMessage = speak.data.content
+                        //时间处理
+                        var temp = that.data.friends[i]
+                        friendsList.splice(i,1)
+                        friendsList.unshift(temp)
+                        that.setData({
+                            friends:friendsList//可能需要添加
+                        })
+                    }
+            }
+        })
+
     },
     onUnload:function(){
         event.remove('getFriendsList',this);
         event.remove('getGroupId',this);
         event.remove('getGroupNumber',this);
+        event.remove('addFriend',this);
+        event.remove('deleteFriend',this);
+        event.remove('friendMessage',this);
+        event.remove('groupMessage',this);
     },
 
     listenTunnel() {
@@ -115,12 +203,12 @@ Page({
         })
 
         // 监听自定义消息（服务器进行推送）
-        tunnel.on('speak', speak => {
+       /* tunnel.on('speak', speak => {
             var targetId = speak.targetId
             var sourceId = speak.data.sourceId
             if(speak.targetType == "friend"){
                 var friendsList = that.data.friends
-                for(var i=0; index<friendsList.length;i++){
+                for(var i=0; i<friendsList.length;i++){
                     if(sourceId == friendsList[i].id){
                         that.data.friends[i].unReadMessage.push(speak.data)                        
                         that.data.friends[i].lastMessage = speak.data.content
@@ -136,7 +224,7 @@ Page({
             }
             else if(speak.targetType =="group"){
                 var friendsList = that.data.friends
-                for(var i=0; index<friendsList.length;i++){
+                for(var i=0; i<friendsList.length;i++){
                     if(targetId == friendsList[i].id){
                         that.data.friends[i].unReadMessage.push(speak.data)                        
                         that.data.friends[i].lastMessage = speak.data.content
@@ -150,12 +238,7 @@ Page({
                     }
                 }
             }
-            this.setData({
-                messasges
-            })
-        });
-
-        
+        });  */
 
         // 打开信道
     },
@@ -174,8 +257,12 @@ Page({
     },
 
     openGoupChat(args){
+
         wx.navigateTo({
           url: '../chat/chat',
+          success: function(res){
+              appInstance.globalData.enterGroupId = args.openId //传入ID
+          }
         })
     },
 

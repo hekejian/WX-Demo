@@ -1,4 +1,3 @@
-
 // 引入 QCloud 小程序增强 SDK
 var event = require('../../utils/event.js')
 var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
@@ -54,57 +53,142 @@ Page({
         lastMessageId: 'none',
         scrollTop:99999,
         list:[{
-            id:1,
+            openId:1,
             nickName:"wagada1",
             url:"../materials/Image.jpg"
         },{
-            id:2,
+            openId:2,
             nickName:"wagada2",
             url:"../materials/Image.jpg"
         },{
-            id:3,
+            openId:3,
             nickName:"wagada3",
             url:"../materials/Image.jpg"
         },{
-            id:4,
+            openId:4,
             nickName:"wagada3",
             url:"../materials/Image.jpg"
         },{
-            id:5,
+            openId:5,
             nickName:"wagada3",
             url:"../materials/Image.jpg"
         },{
-            id:6,
+            openId:6,
             nickName:"wagada3",
             url:"../materials/Image.jpg"
         }],
         show:false,
+        tunnel:null,
     },
    
     onLoad(options){
+        var that = this
         this.tunnel = appInstance.globalData.tunnel
         this.me = appInstance.globalData.userData
         this.setData({
             groupInfo:appInstance.globalData.groupInfo
         })
 
-        if(appInstance.globalData.inGroup == false){
-            this.addGroup()
+       /* if(appInstance.globalData.inGroup == false){
+            this.addGroup() //加群是什么鬼
+        }
+        */
+        if(appInstance.globalData.enterGroupId){
+            var groupId = appInstance.globalData.enterGroupId
+            var item
+            for (item in appInstance.globalData.groupsInfo){
+                if(item.groupId == groupId){
+                    that.setData({
+                        groupInfo:item
+                    })
+                }
+            }
         }
 
-       event.on('getGroupId',this,function(group){
+        event.on('getGroupId',this,function(group){
             //设置群昵称和头像
+            //设置不对，没做判断，获取groupId 的途径也不对
+            that.setData({
+                groupInfo:group[0]
+            })
         })
 
         event.on('getGroupNumber',this,function(groupList){
             //获得群成员
+            if(groupList.openId == groupInfo.groupId){
+                that.setData({
+                    list:groupList.list
+                })
+            }
         })
+
+        event.on('openTunel',this,function(tunnel){
+            that.setData({
+                tunnel:tunnel
+            })
+        })
+
+        event.on('groupNumberOnline',this,function(online){
+
+        })
+
+        event.on('groupNumberOffline',this,function(offline){
+
+        })
+
+        event.on('addGroup',this,function(add){
+            if(add.targetId == that.data.groupInfo.groupId){
+                var total = that.data.list.length+1
+                that.pushMessage(createSystemMessage(`${add.data.sourceName}已加入群聊，共 ${total} 人`))
+            }
+        })
+
+        event.on('deleteGroupNumber',this,function(delete1){
+            if(delete1.targetId == that.data.groupInfo.groupId){
+                if(delete1.data.sourceId != appInstance.globalData.myId){
+                    for(var i=0; i<that.data.list;i++){
+                        if(that.data.list.openId == delete1.data.sourceId){
+                            that.data.list.splice(i,1)
+                            that.setData({
+                                list
+                            })
+                        }
+                    }
+                }
+            }
+        })
+
+        event.on('groupMessage',this,function(speak){
+            if(speak.targetId == that.data.groupInfo.groupId){
+                var speakData = speak.data //sourceId sourceName date content
+                var isMe = false
+                if(speakData.sourceId == appInstance.globalData.myId){
+                      isMe = true
+                }
+                var who = {
+                    "nickName":speakData.sourceName,
+                    "avatarUrl":speakData.sourceAvatar,
+                }  
+                this.pushMessage(createUserMessage(speakData.content,who,isMe))
+            }
+        })
+
+        if(that.data.tunnel == null && appInstance.globalData.tunnel){
+            that.setData({
+                tunnel:appInstance.globalData.tunnel
+            })
+        }
     },
 
     onUnload:function(){
         event.remove('getGroupId',this);
         event.remove('getGroupNumber',this);
-
+        event.remove('openTunel',this);
+        event.remove('groupNumberOnline',this);
+        event.remove('groupNumberOffline',this);
+        event.remove('addGroup',this);
+        event.remove('deleteGroupNumber',this);
+        event.remove('groupMessage',this);
     },
     //拉取群数据
     requsetFriends(url) {
