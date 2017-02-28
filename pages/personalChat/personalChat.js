@@ -1,10 +1,11 @@
 
 // 引入 QCloud 小程序增强 SDK
+var event = require('../../utils/event.js')
 var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
 
 // 引入配置
 var config = require('../../config');
-
+var util = require('../../utils/util.js')
 /**
  * 生成一条聊天室的消息的唯一 ID
  */
@@ -25,7 +26,8 @@ function createUserMessage(content, user, isMe) {
     return { id: msgUuid(), type: 'speak', content, user, isMe };
 }
 
-var app = getApp();
+var hasDelete = false
+var appInstance = getApp();
 Page({
     data:{
          messages: [],
@@ -35,23 +37,76 @@ Page({
 
     onLoad(options){
         console.log(options)
+        var that = this
         var openId = options.openId
-        var friends = app.globalData.friends
+        var friends = appInstance.globalData.friends
         var friendInfo
         for (var i = 0; i < friends.length; i++) {
             if (friends[i].openId == openId) {
                 friendInfo = friends[i]
+                that.setData({
+                    friendInfo
+                })
             }
         }
-        this.setData({
-            friendInfo
+        
+        this.tunnel = appInstance.globalData.tunnel
+        this.me = appInstance.globalData.userData
+
+        event.on('openTunel',this,function(tunnel){
+           this.tunnel = tunnel
         })
+
+        event.on('addFriend',this,function(add){
+           //添加好友可能需要 当聊天对方向你添加时
+        })
+
+        event.on('deleteFriend',this,function(delete1){
+           //当对方删除你时
+           if (delete1.sourceId == friendInfo.openId) {
+                hasDelete = true
+           }
+           
+        })
+
+        event.on('friendMessage',this,function(speak){
+           //双方说话时
+           if (speak.sourceId == friendInfo.openId || speak.sourceId == appInstance.globalData.myId) {
+                var isMe = false
+                if(speak.sourceId == appInstance.globalData.myId){
+                      isMe = true
+                }
+                var who = {
+                    "nickName":speak.sourceName,
+                    "avatarUrl":speak.sourceAvatar,
+                }
+
+                that.pushMessage(createUserMessage(speak.content,who,isMe))
+           }
+        })
+
+
     },
+
+    onUnload(){
+        event.remove('openTunel',this);
+        event.remove('addFriend',this);
+        event.remove('deleteFriend',this);
+        event.remove('friendMessage',this);
+    }
+
     onReady() {
         wx.setNavigationBarTitle({ title: this.data.friendInfo.nickName});
-
         
     },
+
+    addFriend(){
+        //添加对方为好友
+    }
+
+    deleteFriend(){
+        //删除对方好友
+    }
 
     updateMessages(updater) {
         var messages = this.data.messages;
@@ -98,10 +153,11 @@ Page({
     sendMessage(e) {
         // 信道当前不可用
         if (!this.tunnel || !this.tunnel.isActive()) {
-            this.pushMessage(createSystemMessage('您还没有加入群聊，请稍后重试'));
-            if (this.tunnel.isClosed()) {
-                this.enter();
-            }
+            this.pushMessage(createSystemMessage('对不起你还未连接'));
+            return;
+        }
+         if (hasDelete) {
+            this.pushMessage(createSystemMessage('对不起对方已经将你删除，你不能向对方发消息'));
             return;
         }
 

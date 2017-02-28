@@ -57,7 +57,7 @@ Page({
     },
    
     onLoad(options){
-        console.log("我先打开")
+        console.log("chat/onLoad")
         var that = this
         var getInfo = false
         var groupOpenId = options.openId
@@ -67,14 +67,14 @@ Page({
                 if(groupsInfo[i].openId == groupOpenId){
                     //已经存在获取数据
                     getInfo = true
-                    console.log("啦奥兹找到了")
                     that.setData({
-                        groupInfo : groupsInfo[i]
+                        groupInfo : groupsInfo[i],
+                        messages : groupsInfo[i].newMessages
                     })
                     var groupsNumber = appInstance.globalData.groupMember
                     for (var j = 0; j < groupsNumber.length; j++) {
                         if (groupOpenId == groupsNumber[j].openId) {
-                            console.log("我也找到了",groupsNumber[j].list)
+                            console.log("getGroupNumber",groupsNumber[j].list)
                             that.setData({
                                 groupNumber : groupsNumber[j].list
                             })
@@ -86,6 +86,7 @@ Page({
 
         if (getInfo == false) {
             //加群
+            this.addGroup(groupOpenId)
             console.log("没有加群")
         }
         
@@ -138,6 +139,9 @@ Page({
                 var total = that.data.groupNumber.length+1
                 that.pushMessage(createSystemMessage(`${add.data.sourceName}已加入群聊，共 ${total} 人`))
             }
+            if(add.targetId == groupOpenId && add.data.openId == appInstance.globalData.myId){
+                event.emit('addNewGroup',groupOpenId)
+            }
         })
 
         event.on('deleteGroupNumber',this,function(delete1){
@@ -157,6 +161,7 @@ Page({
         })
 
         event.on('groupMessage',this,function(speak){
+            console.log("wo收到消息了哈哈哈")
             if(speak.targetId == groupOpenId){
                 var speakData = speak.data //sourceId sourceName date content
                 var isMe = false
@@ -166,14 +171,13 @@ Page({
                 var who = {
                     "nickName":speakData.sourceName,
                     "avatarUrl":speakData.sourceAvatar,
-                }  
-                this.pushMessage(createUserMessage(speakData.content,who,isMe))
+                }
+                console.log("使这里错了吗")  
+                that.pushMessage(createUserMessage(speakData.content,who,isMe))
             }
         })
 
-        if(this.tunnel == null && appInstance.globalData.tunnel){
-            this.tunnel = appInstance.globalData.tunnel
-        }
+        
     },
 
     onUnload:function(){
@@ -213,10 +217,10 @@ Page({
      * */
     onReady() {
         wx.setNavigationBarTitle({ title: this.data.groupInfo.groupName});
-        this.pushMessage(createSystemMessage('正在加入群聊...'));
+         //this.pushMessage(createSystemMessage('正在加入群聊...'));
         //this.tunnelListener()
-         //this.requsetFriends("")
-        this.popMessage() //删除上一条消息
+        //this.requsetFriends("")
+        // this.popMessage() //删除上一条消息
     },
 
     /**
@@ -226,19 +230,22 @@ Page({
         //重新启动需要做什么吗？
     },
 
-    addGroup(){
+    addGroup(groupOpenId){
          setTimeout(() => {
             if (this.tunnel) {
                 var date = Date.now()
                 this.tunnel.emit('add',{
                     "targetType":"group",
-                    "targetId":this.data.groupInfo.groupId,
+                    "targetId":groupOpenId,
                     "data":{
-                        "sourceId":appInstance.globalData.myId,
+                       
+                    }
+                    /*
+                     "sourceId":appInstance.globalData.myId,
                         "sourceName":appInstance.globalData.userInfo.nickName,
                         "sourceAvatar":appInstance.globalData.userInfo.avatarUrl,
-                        "date":date
-                    }
+                        "date":1451692802008 业务服务器会注入
+                    */
                 })
             }
         });
@@ -308,9 +315,7 @@ Page({
     updateMessages(updater) {
         var messages = this.data.messages;
         updater(messages);
-
         this.setData({ messages });
-
         // 需要先更新 messagess 数据后再设置滚动位置，否则不能生效
         var lastMessageId = messages.length ? messages[messages.length - 1].id : 'none';
         this.setData({ lastMessageId });

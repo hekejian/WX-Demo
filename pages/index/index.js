@@ -172,18 +172,18 @@ Page({
 
         event.on('friendMessage',this,function(friendMessage){
             //好友消息
-            var friendsList = that.data.friends
+            var friendsList = that.data.friendsInfo
             var sourceId = friendMessage.sourceId
             for(var i=0; i<friendsList.length;i++){
                     if(sourceId == friendsList[i].openId){
-                        friendsList[i].unReadMessage.push(speak.data)                        
-                        friendsList[i].lastMessage = speak.data.content
+                        friendsList[i].newMessages.push(speak)                        
+                        friendsList[i].nearestMessage = speak
                         //时间处理
-                        var temp = that.data.friends[i]
-                        that.data.friends.splice(i,1)
-                        that.data.friends.unshift(temp)
+                        var temp = friendsList[i]
+                        friendsList.splice(i,1)
+                        friendsList.unshift(temp)
                         that.setData({
-                            friends:friendsList //可能需要添加
+                            friendsInfo:friendsList //可能需要添加
                         })
                     }
             }
@@ -191,21 +191,23 @@ Page({
 
         event.on('groupMessage',this,function(groupMessage){
             //群消息
-            var friendsList = that.data.friends
+            var friendsList = that.data.friendsInfo
             var targetId = groupMessage.targetId
             for(var i=0; i<friendsList.length;i++){
-                    if(targetId == friendsList[i].id){
-                        friendsList[i].unReadMessage.push(speak.data)                        
-                        friendsList[i].lastMessage = speak.data.content
+                    if(targetId == friendsList[i].openId){
+                        friendsList[i].newMessages.push(groupMessage.data)
+                        //console.log('friendsList[i].newMessages',friendsList[i].newMessages)                        
+                        friendsList[i].nearestMessage = groupMessage.data
                         //时间处理
-                        var temp = that.data.friends[i]
+                        var temp = friendsList[i]
                         friendsList.splice(i,1)
                         friendsList.unshift(temp)
                         that.setData({
-                            friends:friendsList//可能需要添加
+                            friendsInfo:friendsList//可能需要添加
                         })
                     }
             }
+            
         })
 
         event.on('enterGroup',this,function(openId){

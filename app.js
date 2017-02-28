@@ -39,6 +39,11 @@ App({
         if(this.globalData.userData == null){
             this.getUser()
         }
+
+        event.on("addNewGroup",this,function(openId){
+            this.getGroupNumber(openId)
+            //还缺少一个获得群资料的接口
+        })
     },
 
     login:function(){
@@ -69,7 +74,11 @@ App({
                 if(that.globalData.tunnel == null){
                   this.openTunel()
                 }
-                that.getGroupId()
+                if (that.globalData.groupsInfo.length == 0) {
+                    that.getGroupId()
+                }
+
+                
             }
         });
     },
@@ -181,6 +190,7 @@ App({
 
         // 监听自定义消息（服务器进行推送）
         tunnel.on('speak', speak => {
+            console.log('APP init收到说话消息：', speak);
             if(speak.targetType == "friend" && speak.targetId == that.globalData.myId){
                 that.globalData.friendsMessages.push(speak.data)
                 event.emit('friendMessage',speak.data)
@@ -191,7 +201,7 @@ App({
             }
             that.globalData.messages.push(speak)
            
-            console.log('APP init收到说话消息：', speak);
+            
         });
 
         // 打开信道

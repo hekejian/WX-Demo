@@ -2,16 +2,16 @@
 <view class = "navigation1">
     <view class="navigation">
         <view class="GroupAvatars" bindtap="kindToggle">
-            <block wx:for-items="{{list}}" wx:key="{{item.id}}">
-                 <image class="kind-list-img" src="{{item.url}}"></image>
+            <block wx:for-items="{{groupNumber}}" wx:key="{{item.openId}}">
+                 <image class="kind-list-img" src="{{item.avatarUrl}}"></image>
             </block>
         </view>
     </view>
     <view class="showAvatars {{show ? 'show-Avatars':''}}">
         <view class="navigator-box {{show ? 'navigator-box-show':''}}">
-             <block wx:for-items="{{list}}" wx:key="{{item.id}}">
-                <view id="{{item.id}}" class="detailInfo" bindtap="chatPerson" data-nick-name="{{item.nickName}}" data-avatar-url="{{item.url}}" data-id = "{{item.id}}">
-                    <image class="personAvatar" src="{{item.url}}"  ></image>
+             <block wx:for-items="{{groupNumber}}" wx:key="{{item.openId}}">
+                <view id="{{item.openId}}" class="detailInfo" bindtap="chatPerson" data-nick-name="{{item.nickName}}" data-avatar-url="{{item.url}}" data-id = "{{item.openId}}">
+                    <image class="personAvatar" src="{{item.avatarUrl}}"  ></image>
                     <text class="personName">{{item.nickName}}</text> 
                 </view>
             </block>
