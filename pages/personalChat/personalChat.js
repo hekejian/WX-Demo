@@ -25,6 +25,7 @@ function createUserMessage(content, user, isMe) {
     return { id: msgUuid(), type: 'speak', content, user, isMe };
 }
 
+var app = getApp();
 Page({
     data:{
          messages: [],
@@ -34,8 +35,16 @@ Page({
 
     onLoad(options){
         console.log(options)
+        var openId = options.openId
+        var friends = app.globalData.friends
+        var friendInfo
+        for (var i = 0; i < friends.length; i++) {
+            if (friends[i].openId == openId) {
+                friendInfo = friends[i]
+            }
+        }
         this.setData({
-            friendInfo:options
+            friendInfo
         })
     },
     onReady() {

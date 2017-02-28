@@ -34,13 +34,13 @@ Page({
      */
     data: {
         list:[],
-        friends:[{
+        /*friends:[{
             openId:0,
                               avatarUrl:"http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0",
             nickName:"memeda",
-            lastMessage:"初始数据，我们把服务地址显示在页面上",
+            lastMessage:"初始数据，我们把服务地址显示在页面上", //nearestMessage
             unReadMessage:["使用 Page 初始化页面，具体可参考微信公众平台上的文档",''],
-            //unreadNumber:3,
+            //unreadNumber:3,                               //newMessages
             lastTime:"14:00",
             messages:[]
         },{
@@ -53,6 +53,8 @@ Page({
             lastTime:"15:00",
             messages:[]
         }],//friends 包含了 好友和群聊会话，所以拉取了好友之后需要和群会话整合
+        */
+        messages:[],
         friendsInfo:[],
         friendsMessasges:[],
         groupMessage:[],
@@ -64,7 +66,7 @@ Page({
 
     onLoad:function(options){
         var that = this
-        console.log("index/onLoad")
+        console.log("index/onLoad  我么次都会打开")
         if(appInstance.globalData.userInfo == null){
             appInstance.getUserInfo(function(userInfo){
                 that.setData({
@@ -78,26 +80,61 @@ Page({
         }
 
         event.on('getFriendsList',this,function(list){
-            console.log("+++++++++日了够",list)
+            var friendsInfo = that.data.friendsInfo
+            console.log("FriendsList",list[i])
+            var time, hour, minute
+            for (var i = 0; i < list.length; i++) {
+                time = list[i].nearestMessage.date
+                hour = parseInt(time%1000000/10000) 
+                minute = parseInt(time%10000/100)
+                list[i].lastTime = hour+":"+minute //添加lastTime 和 messages 字段
+                list[i].messages = list[i].newMessages
+                list[i].type = "friend"          
+                friendsInfo.push(list[i])
+                console.log('list[i].messages',list[i].messages)
+            }
+            
             that.setData({
-                friendsInfo:list
+                friendsInfo
             })
+           /* console.log("friendsInfo",friendsInfo)
+            for (var i = 0; i < that.data.friendsInfo.length; i++) {
+                console.log("friendsInfoOpenId",that.data.friendsInfo[i].openId)
+                
+            }
+            */
         })
 
         event.on('getGroupId',this,function(group){
-            var openId = group.groupId
+            /*var openId = group.groupId
             var nickName = group.groupName
             var avatarUrl = 'http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0'
             //设置群昵称和头像
+            */
+            console.log("。。。。。。。。。。。。。。。。",group)
             var friendsInfo = that.data.friendsInfo
-            friendsInfo.unshift({
+            var time, hour, minute
+            for (var i = 0; i < group.length; i++) {
+                time = group[i].nearestMessage.date
+                hour = parseInt(time%1000000/10000) 
+                minute = parseInt(time%10000/100)
+                group[i].lastTime = hour+":"+minute
+                group[i].messages = group[i].newMessages
+                group[i].type = "group"
+                group[i].nickName = group[i].groupName
+                friendsInfo.unshift(group[i])
+            }
+            
+           /* friendsInfo.unshift({
                 'openId':openId,
                 'nickName':nickName,
                 'avatarUrl':avatarUrl,
             })
+            */
             that.setData({
                 friendsInfo
             })
+            console.log("添加了群了呀大兄弟",that.data.friendsInfo)
             //需要切换成friend
         })
 
@@ -171,6 +208,81 @@ Page({
             }
         })
 
+        event.on('enterGroup',this,function(openId){
+            var friendsInfo = that.data.friendsInfo
+            console.log("就是在这里")
+            for (var i = 0; i < friendsInfo.length; i++) {
+                if (friendsInfo[i].openId == openId) {
+                    friendsInfo[i].newMessages = []
+                    console.log("friendsInfo[i].newMessages",friendsInfo[i].newMessages)
+                }
+            }
+            that.setData({
+                friendsInfo
+            })
+        })
+
+        event.on('enterPersonalChat',this,function(openId){
+            var friendsInfo = that.data.friendsInfo
+            console.log("就是在这里")
+            for (var i = 0; i < friendsInfo.length; i++) {
+                if (friendsInfo[i].openId == openId) {
+                    friendsInfo[i].newMessages = []
+                    console.log("friendsInfo[i].newMessages",friendsInfo[i].newMessages)
+                }
+            }
+            that.setData({
+                friendsInfo
+            })
+        })
+
+        if (this.data.friendsInfo.length == 0 && appInstance.globalData.groupsInfo.length != 0) {
+            var friendsInfo = this.data.friendsInfo
+            var group = appInstance.globalData.groupsInfo
+            var time, hour, minute
+            for (var i = 0; i < group.length; i++) {
+                time = group[i].nearestMessage.date
+                hour = parseInt(time%1000000/10000) 
+                minute = parseInt(time%10000/100)
+                group[i].lastTime = hour+":"+minute
+                group[i].messages = group[i].newMessages
+                group[i].type = "group"
+                group[i].nickName = group[i].groupName
+                friendsInfo.unshift(group[i])
+            }
+            that.setData({
+                friendsInfo
+            })
+        }
+
+        if (this.data.friendsInfo.length == 0 && appInstance.globalData.friends.length != 0) {
+            var friendsInfo = that.data.friendsInfo
+            var list = appInstance.globalData.friends
+            var time, hour, minute
+            for (var i = 0; i < list.length; i++) {
+                time = list[i].nearestMessage.date
+                hour = parseInt(time%1000000/10000) 
+                minute = parseInt(time%10000/100)
+                list[i].lastTime = hour+":"+minute //添加lastTime 和 messages 字段
+                list[i].messages = list[i].newMessages
+                list[i].type = "friend"          
+                friendsInfo.push(list[i])
+                console.log('list[i].messages',list[i].messages)
+            }
+            
+            that.setData({
+                friendsInfo
+            })
+        }
+
+        if (this.data.groupList.length == 0 && appInstance.globalData.groupMember.length != 0) {
+            var groupList = this.data.groupList
+            groupList.push(groupList1)
+            that.setData({
+                groupList
+            })
+        }
+
     },
     onUnload:function(){
         event.remove('getFriendsList',this);
@@ -180,9 +292,11 @@ Page({
         event.remove('deleteFriend',this);
         event.remove('friendMessage',this);
         event.remove('groupMessage',this);
+        event.remove('enterGroup',this);
+        event.remove('enterPersonalChat',this);
     },
 
-    listenTunnel() {
+    /*listenTunnel() {
         var that = this
         var tunnel = this.tunnel = appInstance.globalData.tunnel
         console.log('tunnel',tunnel)
@@ -203,7 +317,7 @@ Page({
         })
 
         // 监听自定义消息（服务器进行推送）
-       /* tunnel.on('speak', speak => {
+        tunnel.on('speak', speak => {
             var targetId = speak.targetId
             var sourceId = speak.data.sourceId
             if(speak.targetType == "friend"){
@@ -238,22 +352,45 @@ Page({
                     }
                 }
             }
-        });  */
+        });  
 
         // 打开信道
-    },
+    },*/
 
 
     /**
      * 点击「聊天室」按钮，跳转到聊天室综合 Demo 的页面
      */
     openChat(args) {
-        var nickName = args.currentTarget.dataset.nickName
+        var openId = args.currentTarget.dataset.openId
+        var type = args.currentTarget.dataset.type
+        console.log("openIdOpenChat",openId)
+        if (type == "group") {
+            var url = '../chat/chat?openId='+openId
+             wx.navigateTo({
+                url: url,
+                success: function(res){
+
+                }
+            })
+             event.emit('enterGroup',openId)
+        }
+        else if (type == "friend") {
+            var url = '../personalChat/personalChat?openId='+openId
+            wx.navigateTo({
+                url: url,
+                success: function(res){
+                    event.emit('enterPersonalChat',openId)
+                }
+            })
+        }
+        /*var nickName = args.currentTarget.dataset.nickName
         var id = args.currentTarget.dataset.id
         var avatarUrl = args.currentTarget.dataset.avatarUrl
         var isFriend = true
         var url = "../personalChat/personalChat?nickName="+nickName+"&id="+id+"&avatarUrl="+avatarUrl+"&isFriend="+isFriend
         wx.navigateTo({ url: url});
+        */
     },
 
     openGoupChat(args){
@@ -267,7 +404,6 @@ Page({
     },
 
     note(args){
-        console.log("老子还是空的吗",this.tunnel)
         wx.navigateTo({
           url: '../notes/notes',
           success: function(res){

@@ -65,10 +65,10 @@ App({
                 console.log('getUser',response)
                 that.globalData.userData = response.data.data.userInfo
                 that.globalData.myId = response.data.data.userInfo.openId
+                console.log('myId',that.globalData.myId)
                 if(that.globalData.tunnel == null){
                   this.openTunel()
                 }
-                that.requestFriends()
                 that.getGroupId()
             }
         });
@@ -81,32 +81,39 @@ App({
             url:url,
             login: true,
             success: (response) => {
-                    that.globalData.friends = response.data.list;
-                    event.emit('getFriendsList',response.data.list)
+                    console.log('requestFriendsresponse',response)
+                    that.globalData.friends = response.data.data.list;
+                    console.log('requestFriends',that.globalData.friends) //接口无
+                    event.emit('getFriendsList',response.data.data.list)
                 }
         })
     },
 
     getGroupId: function(){
         var that = this
-        var url = `https://${config.service.host}/group/all/`+this.globalData.myId
+        var url = `https://${config.service.host}/group/list/`+this.globalData.myId
         qcloud.request({
              url:url,
              success: (response) => {
-                console.log("ZZ",response)
+                console.log('response',response)
                 var data = response.data.data.list 
                 console.log('getGroupId',data)
                 that.globalData.groupsInfo = data
                 event.emit('getGroupId',data)
                 for(var i=0;i<data.length;i++)
                 {
-                    that.getGroupNumber(data[i].groupId)
+                    that.getGroupNumber(data[i].openId)
                 }
                     
                 },
 
             fail:(error)=> {
+                console.log('dead')
                 console.log(error)    
+            },
+            complete:()=> {
+                console.log('执行了')
+                that.requestFriends()
             }
         })
     },
@@ -117,9 +124,10 @@ App({
         qcloud.request({
              url:url,
              success: (response) => {
+                console.log('...............',groupId)
                 var groupList = {
                     'openId':groupId,
-                    'list':response.data.list
+                    'list':response.data.data.list
                 }
                 that.globalData.groupMember.push(groupList)
                 console.log('getGroupNumber',groupList)
@@ -218,13 +226,13 @@ App({
         myId:null,
         friendsMessages:[],
         groupMessage:[],
-        friends:[],
+        friends:[],  //openId  nickName  avatarUrl gender... nearestMessage{} newMessages[]
         tunnel:null,
         userData:null,
-        groupsInfo:[], //groupId groupName groupSign
+        groupsInfo:[], //groupId groupName groupSign avatarUrl nearestMessage newMessages
         groupStory:null, //还未获得
         groupMember:[],
        //inGroup:false
-       enterGroupId:null
+       // enterGroupId:null
     }
 });

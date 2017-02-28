@@ -47,85 +47,82 @@ Page({
      * 聊天室使用到的数据，主要是消息集合以及当前输入框的文本
      */
     data: {
-        groupInfo:0, // groupId  groupName  groupSign
+        groupInfo:null, // openId  groupName  groupSign avatarUrl nearestMessage newMessages
         messages: [],
         inputContent: '大家好啊',
         lastMessageId: 'none',
         scrollTop:99999,
-        list:[{
-            openId:1,
-            nickName:"wagada1",
-            url:"../materials/Image.jpg"
-        },{
-            openId:2,
-            nickName:"wagada2",
-            url:"../materials/Image.jpg"
-        },{
-            openId:3,
-            nickName:"wagada3",
-            url:"../materials/Image.jpg"
-        },{
-            openId:4,
-            nickName:"wagada3",
-            url:"../materials/Image.jpg"
-        },{
-            openId:5,
-            nickName:"wagada3",
-            url:"../materials/Image.jpg"
-        },{
-            openId:6,
-            nickName:"wagada3",
-            url:"../materials/Image.jpg"
-        }],
+        groupNumber:[], //list
         show:false,
-        tunnel:null,
     },
    
     onLoad(options){
+        console.log("我先打开")
         var that = this
-        this.tunnel = appInstance.globalData.tunnel
-        this.me = appInstance.globalData.userData
-        this.setData({
-            groupInfo:appInstance.globalData.groupInfo
-        })
-
-       /* if(appInstance.globalData.inGroup == false){
-            this.addGroup() //加群是什么鬼
-        }
-        */
-        if(appInstance.globalData.enterGroupId){
-            var groupId = appInstance.globalData.enterGroupId
-            var item
-            for (item in appInstance.globalData.groupsInfo){
-                if(item.groupId == groupId){
+        var getInfo = false
+        var groupOpenId = options.openId
+        if (appInstance.globalData.groupsInfo) {
+            var groupsInfo = appInstance.globalData.groupsInfo
+            for (var i = 0; i < groupsInfo.length; i++) {
+                if(groupsInfo[i].openId == groupOpenId){
+                    //已经存在获取数据
+                    getInfo = true
+                    console.log("啦奥兹找到了")
                     that.setData({
-                        groupInfo:item
+                        groupInfo : groupsInfo[i]
                     })
+                    var groupsNumber = appInstance.globalData.groupMember
+                    for (var j = 0; j < groupsNumber.length; j++) {
+                        if (groupOpenId == groupsNumber[j].openId) {
+                            console.log("我也找到了",groupsNumber[j].list)
+                            that.setData({
+                                groupNumber : groupsNumber[j].list
+                            })
+                        }
+                    }
                 }
             }
         }
 
+        if (getInfo == false) {
+            //加群
+            console.log("没有加群")
+        }
+        
+        this.tunnel = appInstance.globalData.tunnel
+        this.me = appInstance.globalData.userData
+        
+       /* if(appInstance.globalData.inGroup == false){
+            this.addGroup() //加群是什么鬼
+        }
+        */
+        
+
         event.on('getGroupId',this,function(group){
             //设置群昵称和头像
             //设置不对，没做判断，获取groupId 的途径也不对
-            that.setData({
-                groupInfo:group[0]
-            })
+            for (var i = 0; i < group.length; i++) {
+                if (group[i].openId == groupOpenId) {
+                    that.setData({
+                        groupInfo:group[i]
+                    })
+                }
+                
+            }
+            
         })
 
         event.on('getGroupNumber',this,function(groupList){
             //获得群成员
-            if(groupList.openId == groupInfo.groupId){
+            if(groupList.openId == groupOpenId){
                 that.setData({
-                    list:groupList.list
+                    groupNumber:groupList.list
                 })
             }
         })
 
         event.on('openTunel',this,function(tunnel){
-            that.setData({
-                tunnel:tunnel
-            })
+           this.tunnel = tunnel
         })
 
         event.on('groupNumberOnline',this,function(online){
@@ -137,20 +134,21 @@ Page({
         })
 
         event.on('addGroup',this,function(add){
-            if(add.targetId == that.data.groupInfo.groupId){
-                var total = that.data.list.length+1
+            if(add.targetId == groupOpenId){
+                var total = that.data.groupNumber.length+1
                 that.pushMessage(createSystemMessage(`${add.data.sourceName}已加入群聊，共 ${total} 人`))
             }
         })
 
         event.on('deleteGroupNumber',this,function(delete1){
-            if(delete1.targetId == that.data.groupInfo.groupId){
+            if(delete1.targetId == groupOpenId){
                 if(delete1.data.sourceId != appInstance.globalData.myId){
-                    for(var i=0; i<that.data.list;i++){
-                        if(that.data.list.openId == delete1.data.sourceId){
-                            that.data.list.splice(i,1)
+                    var groupNumber = that.data.groupNumber
+                    for(var i=0; i<groupNumber; i++){
+                        if(groupNumber[i].openId == delete1.data.sourceId){
+                            groupNumber.splice(i,1)
                             that.setData({
-                                list
+                                groupNumber 
                             })
                         }
                     }
@@ -159,7 +157,7 @@ Page({
         })
 
         event.on('groupMessage',this,function(speak){
-            if(speak.targetId == that.data.groupInfo.groupId){
+            if(speak.targetId == groupOpenId){
                 var speakData = speak.data //sourceId sourceName date content
                 var isMe = false
                 if(speakData.sourceId == appInstance.globalData.myId){
@@ -173,10 +171,8 @@ Page({
             }
         })
 
-        if(that.data.tunnel == null && appInstance.globalData.tunnel){
-            that.setData({
-                tunnel:appInstance.globalData.tunnel
-            })
+        if(this.tunnel == null && appInstance.globalData.tunnel){
+            this.tunnel = appInstance.globalData.tunnel
         }
     },
 
@@ -218,7 +214,7 @@ Page({
     onReady() {
         wx.setNavigationBarTitle({ title: this.data.groupInfo.groupName});
         this.pushMessage(createSystemMessage('正在加入群聊...'));
-        this.tunnelListener()
+        //this.tunnelListener()
          //this.requsetFriends("")
         this.popMessage() //删除上一条消息
     },
@@ -250,7 +246,7 @@ Page({
     /**
      * 连接到聊天室信道服务
      */
-    tunnelListener() {
+    /*tunnelListener() {
         var tunnel = this.tunnel;
         // 获取信道
 
@@ -369,12 +365,12 @@ Page({
                 console.log(this.tunnel)
                 this.tunnel.emit('speak',{
                     "targetType":"group",
-                    "targetId":this.data.groupInfo.groupId,
+                    "targetId":this.data.groupInfo.openId,
                     "data":{
                         "sourceId":appInstance.globalData.myId,
                         "sourceName":appInstance.globalData.userInfo.nickName,
                         "sourceAvatar":appInstance.globalData.userInfo.avatarUrl,
-                        "date":date,
+                        "date":1451692802008,
                         "content":this.data.inputContent
                     }
                 })
