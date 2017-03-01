@@ -73,11 +73,8 @@ Page({
         event.on('friendMessage',this,function(speak){
            //双方说话时
           
-            if (speak.data.sourceId == friendInfo.openId || speak.data.sourceId == appInstance.globalData.myId) {
+            if (speak.data.sourceId == friendInfo.openId) {
                 var isMe = false
-                if(speak.data.sourceId == appInstance.globalData.myId){
-                      isMe = true
-                }
                 var who = {
                     "nickName":speak.sourceName,
                     "avatarUrl":speak.sourceAvatar,
@@ -85,6 +82,17 @@ Page({
 
                 that.pushMessage(createUserMessage(speak.data.content,who,isMe))
            }
+        })
+
+        event.on('myMessage',this,function(speak){
+            if (speak.data.sourceId == appInstance.globalData.myId && speak.targetId == friendInfo.openId) {
+                var isMe = true
+                var who = {
+                    "nickName":speak.data.sourceName,
+                    "avatarUrl":speak.data.sourceAvatar,
+                }
+                that.pushMessage(createUserMessage(speak.data.content,who,isMe))
+            }   
         })
 
 
@@ -176,7 +184,7 @@ Page({
                         "sourceId":appInstance.globalData.myId,
                         "sourceName":appInstance.globalData.userInfo.nickName,
                         "sourceAvatar":appInstance.globalData.userInfo.avatarUrl,
-                        "date":1451692802008,
+                        "date":Date.now(),
                         "content":this.data.inputContent
                     }
                 })

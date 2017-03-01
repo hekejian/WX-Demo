@@ -2,7 +2,7 @@
 var event = require('../../utils/event.js')
 // 引入 QCloud 小程序增强 SDK
 var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
-
+var util = require('../../utils/util.js')
 // 引入配置
 var config = require('../../config');
 
@@ -85,9 +85,9 @@ Page({
             var time, hour, minute
             for (var i = 0; i < list.length; i++) {
                 time = list[i].nearestMessage.date
-                hour = parseInt(time%1000000/10000) 
-                minute = parseInt(time%10000/100)
-                list[i].lastTime = hour+":"+minute //添加lastTime 和 messages 字段
+               // hour = parseInt(time%1000000/10000) 
+               // minute = parseInt(time%10000/100)
+                list[i].lastTime = util.getTime(time)//添加lastTime 和 messages 字段
                 list[i].messages = list[i].newMessages
                 list[i].type = "friend"          
                 friendsInfo.push(list[i])
@@ -116,9 +116,9 @@ Page({
             var time, hour, minute
             for (var i = 0; i < group.length; i++) {
                 time = group[i].nearestMessage.date
-                hour = parseInt(time%1000000/10000) 
-                minute = parseInt(time%10000/100)
-                group[i].lastTime = hour+":"+minute
+               // hour = parseInt(time%1000000/10000) 
+              //  minute = parseInt(time%10000/100)
+                group[i].lastTime = util.getTime(time)
                 group[i].messages = group[i].newMessages
                 group[i].type = "group"
                 group[i].nickName = group[i].groupName
@@ -189,9 +189,9 @@ Page({
             }
         })
 
-        event.on('groupMessage',this,function(groupMessage){
+    /*    event.on('groupMessage',this,function(groupMessage){
             //群消息
-            var friendsList = that.data.friendsInfo
+           var friendsList = that.data.friendsInfo
             var targetId = groupMessage.targetId
             for(var i=0; i<friendsList.length;i++){
                     if(targetId == friendsList[i].openId){
@@ -208,8 +208,9 @@ Page({
                     }
             }
             
+            
         })
-
+    */
         event.on('enterGroup',this,function(openId){
             var friendsInfo = that.data.friendsInfo
             console.log("就是在这里")
@@ -367,6 +368,7 @@ Page({
         var openId = args.currentTarget.dataset.openId
         var type = args.currentTarget.dataset.type
         console.log("openIdOpenChat",openId)
+        console.log("util.formatTime",Date.now())
         if (type == "group") {
             var url = '../chat/chat?openId='+openId
              wx.navigateTo({

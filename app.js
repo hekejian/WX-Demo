@@ -191,15 +191,19 @@ App({
         // 监听自定义消息（服务器进行推送）
         tunnel.on('speak', speak => {
             console.log('APP init收到说话消息：', speak);
-            if(speak.targetType == "friend" && speak.targetId == that.globalData.myId || speak.data.sourceId == that.globalData.myId){
+            if(speak.targetType == "friend" && speak.targetId == that.globalData.myId){
                 that.globalData.friendsMessages.push(speak)
                 event.emit('friendMessage',speak)
+            }
+            else if (speak.targetType == "friend" && speak.data.sourceId == that.globalData.myId) {
+                event.emit('myMessage',speak)
             }
             else if(speak.targetType == "group"){
                 that.globalData.groupMessage.push(speak)
                 event.emit('groupMessage',speak)
             }
-            that.globalData.messages.push(speak)
+
+            //that.globalData.messages.push(speak)
            
             
         });

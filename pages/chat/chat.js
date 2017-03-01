@@ -175,10 +175,11 @@ Page({
                 console.log("使这里错了吗")  
                 that.pushMessage(createUserMessage(speakData.content,who,isMe))
             }
+            
         })
 
         
-    },
+    }, 
 
     onUnload:function(){
         event.remove('getGroupId',this);
@@ -375,7 +376,7 @@ Page({
                         "sourceId":appInstance.globalData.myId,
                         "sourceName":appInstance.globalData.userInfo.nickName,
                         "sourceAvatar":appInstance.globalData.userInfo.avatarUrl,
-                        "date":1451692802008,
+                        "date":Date.now(),
                         "content":this.data.inputContent
                     }
                 })
