@@ -189,7 +189,7 @@ Page({
             }
         })
 
-    /*    event.on('groupMessage',this,function(groupMessage){
+        event.on('groupMessage',this,function(groupMessage){
             //群消息
            var friendsList = that.data.friendsInfo
             var targetId = groupMessage.targetId
@@ -210,7 +210,7 @@ Page({
             
             
         })
-    */
+    
         event.on('enterGroup',this,function(openId){
             var friendsInfo = that.data.friendsInfo
             console.log("就是在这里")

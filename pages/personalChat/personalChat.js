@@ -103,6 +103,7 @@ Page({
         event.remove('addFriend',this);
         event.remove('deleteFriend',this);
         event.remove('friendMessage',this);
+        event.remove('myMessage',this);
     },
 
     onReady() {
