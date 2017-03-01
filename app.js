@@ -248,5 +248,6 @@ App({
         groupMember:[],
        //inGroup:false
        // enterGroupId:null
+       enterOpenId:null,
     }
 });

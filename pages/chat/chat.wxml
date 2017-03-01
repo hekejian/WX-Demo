@@ -10,7 +10,7 @@
     <view class="showAvatars {{show ? 'show-Avatars':''}}">
         <view class="navigator-box {{show ? 'navigator-box-show':''}}">
              <block wx:for-items="{{groupNumber}}" wx:key="{{item.openId}}">
-                <view id="{{item.openId}}" class="detailInfo" bindtap="chatPerson" data-nick-name="{{item.nickName}}" data-avatar-url="{{item.url}}" data-id = "{{item.openId}}">
+                <view id="{{item.openId}}" class="detailInfo" bindtap="chatPerson"  data-open-id = "{{item.openId}}">
                     <image class="personAvatar" src="{{item.avatarUrl}}"  ></image>
                     <text class="personName">{{item.nickName}}</text> 
                 </view>

@@ -40,16 +40,34 @@ Page({
         console.log(options)
         var that = this
         var openId = options.openId
+        appInstance.globalData.enterOpenId = openId
         var friends = appInstance.globalData.friends
         var friendInfo
-        for (var i = 0; i < friends.length; i++) {
-            if (friends[i].openId == openId) {
-                friendInfo = friends[i]
-                that.setData({
-                    friendInfo
-                })
+        if (options.type == "friend") {
+            for (var i = 0; i < friends.length; i++) {
+                if (friends[i].openId == openId) {
+                    friendInfo = friends[i]
+                    that.setData({
+                        friendInfo
+                    })
+                }
             }
         }
+
+        if (options.type == "stranger") {
+            var groupMember = appInstance.globalData.groupMember
+            for (var i = 0; i < groupMember.length; i++) {
+                for (var j = 0; j < groupMember[i].length; j++) {
+                    if (groupMember[i][j].openId == openId) {
+                        friendInfo = groupMember[i][j]
+                        that.setData({
+                            friendInfo
+                        })
+                    } 
+                }
+            }
+        }
+        
         
         this.tunnel = appInstance.globalData.tunnel
         this.me = appInstance.globalData.userData
@@ -76,8 +94,8 @@ Page({
             if (speak.data.sourceId == friendInfo.openId) {
                 var isMe = false
                 var who = {
-                    "nickName":speak.sourceName,
-                    "avatarUrl":speak.sourceAvatar,
+                    "nickName":speak.data.sourceName,
+                    "avatarUrl":speak.data.sourceAvatar,
                 }
 
                 that.pushMessage(createUserMessage(speak.data.content,who,isMe))
@@ -91,7 +109,7 @@ Page({
                     "nickName":speak.data.sourceName,
                     "avatarUrl":speak.data.sourceAvatar,
                 }
-                that.pushMessage(createUserMessage(speak.data.content,who,isMe))
+                that.pushMessage(createUserMessage(speak.data.content,who,   ))
             }   
         })
 

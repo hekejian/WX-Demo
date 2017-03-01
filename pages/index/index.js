@@ -172,16 +172,25 @@ Page({
 
         event.on('friendMessage',this,function(friendMessage){
             //好友消息
+            console.log("caonimalegebi")
             var friendsList = that.data.friendsInfo
-            var sourceId = friendMessage.sourceId
+            var sourceId = friendMessage.data.sourceId
             for(var i=0; i<friendsList.length;i++){
                     if(sourceId == friendsList[i].openId){
-                        friendsList[i].newMessages.push(speak)                        
-                        friendsList[i].nearestMessage = speak
+                        console.log("终于等到你")
+                        friendsList[i].messages.push(friendMessage.data) 
+                        friendsList[i].nearestMessage = friendMessage.data
+                        if (friendMessage.targetId != appInstance.globalData.enterOpenId 
+                            && friendMessage.data.sourceId != appInstance.globalData.enterOpenId) {
+                            friendsList[i].newMessages.push(friendMessage.data)    
+                        }
+                                            
+                        
                         //时间处理
                         var temp = friendsList[i]
                         friendsList.splice(i,1)
                         friendsList.unshift(temp)
+                        console.log("friendsListfriendsListfriendsList",friendsList)
                         that.setData({
                             friendsInfo:friendsList //可能需要添加
                         })
@@ -195,13 +204,23 @@ Page({
             var targetId = groupMessage.targetId
             for(var i=0; i<friendsList.length;i++){
                     if(targetId == friendsList[i].openId){
-                        friendsList[i].newMessages.push(groupMessage.data)
+                        
                         //console.log('friendsList[i].newMessages',friendsList[i].newMessages)                        
                         friendsList[i].nearestMessage = groupMessage.data
+
+                        if (groupMessage.targetId != appInstance.globalData.enterOpenId 
+                            && groupMessage.data.sourceId != appInstance.globalData.enterOpenId) {
+                            console.log("laozihaishizhixing le")
+                            console.log("groupMessage.targetId",groupMessage.targetId )
+                            console.log("groupMessage.data.sourceId",groupMessage.data.sourceId )
+                            console.log("appInstance.globalDataenterOpenId",appInstance.globalDataenterOpenId )
+                           friendsList[i].newMessages.push(groupMessage.data)   
+                        }
                         //时间处理
                         var temp = friendsList[i]
                         friendsList.splice(i,1)
                         friendsList.unshift(temp)
+
                         that.setData({
                             friendsInfo:friendsList//可能需要添加
                         })

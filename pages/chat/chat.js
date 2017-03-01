@@ -61,6 +61,7 @@ Page({
         var that = this
         var getInfo = false
         var groupOpenId = options.openId
+        appInstance.globalData.enterOpenId = groupOpenId
         if (appInstance.globalData.groupsInfo) {
             var groupsInfo = appInstance.globalData.groupsInfo
             for (var i = 0; i < groupsInfo.length; i++) {
@@ -395,11 +396,16 @@ Page({
     
     chatPerson:function(e){
         console.log(e)
-        var nickName = e.currentTarget.dataset.nickName
-        var id = e.currentTarget.dataset.id
-        var avatarUrl = e.currentTarget.dataset.avatarUrl
+        var openId = e.currentTarget.dataset.openId
+        var friends =  appInstance.globalData.friends
+        var type = "stranger"
+        for (var i = 0; i <friends.length; i++) {
+            if (friends[i].openId == openId) {
+                type = "friend"
+            }  
+        }
         var isFriend = false
-        var url = "../personalChat/personalChat?nickName="+nickName+"&id="+id+"&avatarUrl="+avatarUrl+"&isFriend="+isFriend
+        var url = '../personalChat/personalChat?openId='+openId +"&type="+type
         wx.navigateTo({ url: url});
     },
 
