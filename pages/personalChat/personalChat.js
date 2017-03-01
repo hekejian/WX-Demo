@@ -32,7 +32,8 @@ Page({
     data:{
          messages: [],
          friendInfo:{},
-         lastMessageId:'none'
+         lastMessageId:'none',
+         inputContent: '大家好啊',
     },
 
     onLoad(options){
@@ -71,9 +72,10 @@ Page({
 
         event.on('friendMessage',this,function(speak){
            //双方说话时
-           if (speak.sourceId == friendInfo.openId || speak.sourceId == appInstance.globalData.myId) {
+          
+            if (speak.data.sourceId == friendInfo.openId || speak.data.sourceId == appInstance.globalData.myId) {
                 var isMe = false
-                if(speak.sourceId == appInstance.globalData.myId){
+                if(speak.data.sourceId == appInstance.globalData.myId){
                       isMe = true
                 }
                 var who = {
@@ -81,7 +83,7 @@ Page({
                     "avatarUrl":speak.sourceAvatar,
                 }
 
-                that.pushMessage(createUserMessage(speak.content,who,isMe))
+                that.pushMessage(createUserMessage(speak.data.content,who,isMe))
            }
         })
 
@@ -93,7 +95,7 @@ Page({
         event.remove('addFriend',this);
         event.remove('deleteFriend',this);
         event.remove('friendMessage',this);
-    }
+    },
 
     onReady() {
         wx.setNavigationBarTitle({ title: this.data.friendInfo.nickName});
@@ -102,11 +104,11 @@ Page({
 
     addFriend(){
         //添加对方为好友
-    }
+    },
 
     deleteFriend(){
         //删除对方好友
-    }
+    },
 
     updateMessages(updater) {
         var messages = this.data.messages;
@@ -163,7 +165,21 @@ Page({
 
         setTimeout(() => {
             if (this.data.inputContent && this.tunnel) {
-                this.tunnel.emit('speak', { word: this.data.inputContent });
+                //this.tunnel.emit('speak', { word: this.data.inputContent });
+
+                var date = Date.now()
+                console.log(this.tunnel)
+                this.tunnel.emit('speak',{
+                    "targetType":"friend",
+                    "targetId":this.data.friendInfo.openId,
+                    "data":{
+                        "sourceId":appInstance.globalData.myId,
+                        "sourceName":appInstance.globalData.userInfo.nickName,
+                        "sourceAvatar":appInstance.globalData.userInfo.avatarUrl,
+                        "date":1451692802008,
+                        "content":this.data.inputContent
+                    }
+                })
                 this.setData({ inputContent: '' });
             }
         });
