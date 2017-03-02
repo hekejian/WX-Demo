@@ -1,6 +1,17 @@
+// 引入 QCloud 小程序增强 SDK
+var event = require('../../utils/event.js')
+var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
+
+// 引入配置
+var config = require('../../config');
+
+var util = require('../../utils/util.js')
+
+var appInstance = getApp()
 Page({
     data:{
-        groupInfo:{
+        groupInfo:[],
+        /*groupInfo:{
             title:"78路公交车",
         avatar:"http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0",
             
@@ -28,15 +39,32 @@ Page({
             text:"学校被确定为国家高等教育综合改革试验校。2012年4月，教育部同意建校，并赋予学校探索具有中国特色的现代大学制度、探索创新人才培养模式的重大使命。根据办学目标，学校致力于建设成为聚集和培养拔尖创新人才的学府，以及创造国际一流学术成果、推动科技应用、支撑深圳可持续发展的平台。"
             
         }],
+        */
        color:["#D6EAF8","#D0ECE7","#D5F5E3","#FCF3CF","#FAE5D3","#EBDEF0","#F2F3F4"]
     },
 
     onLoad(){
+        console.log("草泥马，老子每次打开都执行")
+        event.on('addGroup',this,function(add){
+            // var  重新拉取群数据
+
+        })
+
+        if (appInstance.globalData.groupsInfo.length > 0) {
+            //拉取第一个，后面重新设置，只能有一个群
+            console.log("rinima 老子没执行")
+            this.requstStory(appInstance.globalData.groupsInfo[0].openId)
+        }
 
     },
 
     onReady() {
-        wx.setNavigationBarTitle({ title: this.data.title});
+        //wx.setNavigationBarTitle({ title: this.data.groupInfo.title});
+        console.log("好开心啊啊，我执行了耶")
+   },
+
+   onUnload(){
+        event.remove('addGroup',this);
    },
 
   previewImage: function (e) {
@@ -48,6 +76,22 @@ Page({
     wx.previewImage({
       current: current,
       urls: imagesSrc,
+    })
+  },
+
+  requstStory(openId){
+    var url = `https://${config.service.host}/group/`+ openId
+    var that = this
+    qcloud.request({
+        url:url,
+        success: (response) => {
+            console.log("group response",response)
+            that.setData({
+                groupInfo:response.data.list
+            })
+            console.log("response.data.list",response.data.list)
+        },
+
     })
   },
 

@@ -162,7 +162,6 @@ Page({
         })
 
         event.on('groupMessage',this,function(speak){
-            console.log("wo收到消息了哈哈哈")
             if(speak.targetId == groupOpenId){
                 var speakData = speak.data //sourceId sourceName date content
                 var isMe = false
@@ -219,6 +218,36 @@ Page({
      * */
     onReady() {
         wx.setNavigationBarTitle({ title: this.data.groupInfo.groupName});
+        //渲染未读消息
+        var groupMessage = this.data.groupInfo.newMessages
+        var isMe = false
+        //var avatarUrl = null
+        //var groupNumber = this.data.groupNumber
+        for (var i = 0; i < groupMessage.length; i++) {
+            isMe = false
+            if (groupMessage[i].sourceId == appInstance.globalData.myId) {
+                isMe = true
+                //avatarUrl = appInstance.globalData.userData.avatarUrl
+
+            }
+            /*else{
+                for (var j = 0; j < groupNumber.length; j++) {
+                    if (groupNumber[j].openId == groupMessage[i].sourceId) {
+                        avatarUrl = groupNumber[j].avatarUrl
+                    }
+                    
+                }
+            }
+            */
+            //居然没有 groupMessage[i].sourceAvatar 字段
+
+            var who = {
+                    "nickName":groupMessage[i].sourceName,
+                    "avatarUrl":groupMessage[i].avatarUrl,
+                   // "avatarUrl":avatarUrl
+                }
+            this.pushMessage(createUserMessage(groupMessage[i].content,who,isMe))
+        }
          //this.pushMessage(createSystemMessage('正在加入群聊...'));
         //this.tunnelListener()
         //this.requsetFriends("")

@@ -31,7 +31,6 @@ App({
      * 小程序初始化时执行，我们初始化客户端的登录地址，以支持所有的会话操作
      */
     onLaunch() {
-        console.log("onLaunch")
         if(this.globalData.userInfo == null){
             this.login()
         }
@@ -44,6 +43,19 @@ App({
             this.getGroupNumber(openId)
             //还缺少一个获得群资料的接口
         })
+    },
+    onShow(){
+        if (this.globalData.tunnel) {
+            if (this.globalData.tunnel.isClosed()) {
+                this.globalData.tunnel.open()
+            }
+        }
+        
+    },
+
+    onHide(){
+
+        this.globalData.tunnel.close()
     },
 
     login:function(){
@@ -154,7 +166,8 @@ App({
 
         tunnel.open();
         that.globalData.tunnel = tunnel
-        
+        console.log("that.globalData.tunnel",tunnel)
+         console.log("ttunnel.isActive",tunnel.isActive)
         tunnel.on('online',online => {
             if(online.targetType == "friend" && online.targetId == that.globalData.myId){
                 event.emit('openTunel',tunnel)
@@ -197,6 +210,7 @@ App({
             }
             else if (speak.targetType == "friend" && speak.data.sourceId == that.globalData.myId) {
                 event.emit('myMessage',speak)
+                console.log("我应该不执行的")
             }
             else if(speak.targetType == "group"){
                 that.globalData.groupMessage.push(speak)

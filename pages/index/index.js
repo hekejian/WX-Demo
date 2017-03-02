@@ -81,7 +81,6 @@ Page({
 
         event.on('getFriendsList',this,function(list){
             var friendsInfo = that.data.friendsInfo
-            console.log("FriendsList",list[i])
             var time, hour, minute
             for (var i = 0; i < list.length; i++) {
                 time = list[i].nearestMessage.date
@@ -111,7 +110,6 @@ Page({
             var avatarUrl = 'http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0'
             //设置群昵称和头像
             */
-            console.log("。。。。。。。。。。。。。。。。",group)
             var friendsInfo = that.data.friendsInfo
             var time, hour, minute
             for (var i = 0; i < group.length; i++) {
@@ -172,7 +170,6 @@ Page({
 
         event.on('friendMessage',this,function(friendMessage){
             //好友消息
-            console.log("caonimalegebi")
             var friendsList = that.data.friendsInfo
             var sourceId = friendMessage.data.sourceId
             for(var i=0; i<friendsList.length;i++){
@@ -184,8 +181,6 @@ Page({
                             && friendMessage.data.sourceId != appInstance.globalData.enterOpenId) {
                             friendsList[i].newMessages.push(friendMessage.data)    
                         }
-                                            
-                        
                         //时间处理
                         var temp = friendsList[i]
                         friendsList.splice(i,1)
@@ -214,7 +209,7 @@ Page({
                             console.log("groupMessage.targetId",groupMessage.targetId )
                             console.log("groupMessage.data.sourceId",groupMessage.data.sourceId )
                             console.log("appInstance.globalDataenterOpenId",appInstance.globalDataenterOpenId )
-                           friendsList[i].newMessages.push(groupMessage.data)   
+                            friendsList[i].newMessages.push(groupMessage.data)   
                         }
                         //时间处理
                         var temp = friendsList[i]
@@ -232,7 +227,6 @@ Page({
     
         event.on('enterGroup',this,function(openId){
             var friendsInfo = that.data.friendsInfo
-            console.log("就是在这里")
             for (var i = 0; i < friendsInfo.length; i++) {
                 if (friendsInfo[i].openId == openId) {
                     friendsInfo[i].newMessages = []
@@ -246,7 +240,6 @@ Page({
 
         event.on('enterPersonalChat',this,function(openId){
             var friendsInfo = that.data.friendsInfo
-            console.log("就是在这里")
             for (var i = 0; i < friendsInfo.length; i++) {
                 if (friendsInfo[i].openId == openId) {
                     friendsInfo[i].newMessages = []
@@ -289,7 +282,6 @@ Page({
                 list[i].messages = list[i].newMessages
                 list[i].type = "friend"          
                 friendsInfo.push(list[i])
-                console.log('list[i].messages',list[i].messages)
             }
             
             that.setData({
@@ -299,6 +291,7 @@ Page({
 
         if (this.data.groupList.length == 0 && appInstance.globalData.groupMember.length != 0) {
             var groupList = this.data.groupList
+            var groupList1 = appInstance.globalData.groupMember
             groupList.push(groupList1)
             that.setData({
                 groupList
@@ -316,6 +309,7 @@ Page({
         event.remove('groupMessage',this);
         event.remove('enterGroup',this);
         event.remove('enterPersonalChat',this);
+        this.tunnel.close()
     },
 
     /*listenTunnel() {
@@ -399,7 +393,7 @@ Page({
              event.emit('enterGroup',openId)
         }
         else if (type == "friend") {
-            var url = '../personalChat/personalChat?openId='+openId
+            var url = '../personalChat/personalChat?openId='+openId +"&type=friend"
             wx.navigateTo({
                 url: url,
                 success: function(res){
