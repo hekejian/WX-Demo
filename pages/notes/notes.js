@@ -8,6 +8,10 @@ var duration = Array.apply(null, {length: 60}).map(function (n, i) {
   return i + 1
 })
 var util = require('../../utils/util.js')
+var event = require('../../utils/event.js')
+var qcloud = require('../../vendor/qcloud-weapp-client-sdk/index');
+var config = require('../../config');
+
 var playTimeInterval
 var recordTimeInterval
 
@@ -22,11 +26,25 @@ var buildAuthHeader = function buildAuthHeader(session) {
     return header;
 };
 
+var showAddGroup = function showAddGroup(){
+  wx.showModal({
+    title:'提示',
+    content:'你还未加群，你所发表的故事需要依附在一个实体上，请扫码加入具体的群',
+    showCancel:false,
+    confirmText:"确定",
+    confirmColor:'#6C5BB7',
+    success:function(){
+
+    }
+  })
+}
+var appInstance = getApp()
 
 Page({
      data: {
         text:"",
         imageList: [],
+        groupInfo:null,
         countIndex: 8,
         count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
         sourceTypeIndex: 2,
@@ -43,15 +61,28 @@ Page({
         playTime: 0,
         formatedRecordTime: '00:00:00',
         formatedPlayTime: '00:00:00',
+        
   },
 
-  onLoad: function(e){
-      console.log(e)
-      if(e.imagePath){
-        this.setData({
-          'imageList[0]':e.imagePath
-        })
-      }
+  onLoad: function(){
+    var that = this
+    if (appInstance.globalData.groupsInfo.length == 0) {
+      showAddGroup()
+    }
+    else{
+      var groupInfo = appInstance.globalData.groupsInfo[0]
+      that.setData({
+        groupInfo
+      })
+    }
+    //获取图片数组
+    var imageList = appInstance.globalData.imageList
+    console.log("appInstance.globalData.imageList",imageList)
+    if (imageList.length > 0) {
+      that.setData({
+        imageList
+      })
+    }
   },
 
   bindTextAreaBlur: function(e){
@@ -203,35 +234,64 @@ onHide: function() {
   upNotes: function(){
       var that = this
       var authHeader = buildAuthHeader(Session.get());
-
-       wx.uploadFile({
-        header:authHeader,
-        url: 'https://www.bigforce.cn/hkj4/share',
-        filePath: that.data.imageList[0],
-        name: 'file',
-        formData:{
-          'openId': 'test',
-        },
-        
-        success(){
-        wx.navigateTo({
-          url: '../story/story',
-          success: function(res){
-            console.log(".......................")
-            console.log(res)
-            // success
-          },
-          fail: function(res) {
-            console.log(res)
-          },
-        })
-      },
-      
-      fail(res){
-        console.log(res)
+      var groupInfo = that.data.groupInfo
+      var date = Date.now()
+      if (groupInfo == null) {
+        console.log("./././././././.groupInfo",groupInfo)
+        showAddGroup()
       }
-    })
-    
+      else{
+        wx.request({
+          header:authHeader,
+          url: `https://${config.service.host}/share/new`,
+          method:'POST',
+          data:{
+            'openId': appInstance.globalData.myId,
+            'groupId':groupInfo.openId,
+            'content':that.data.text,
+            'date':date
+          },
+        
+         /*success(){
+          wx.navigateTo({
+            url: '../story/story',
+            success: function(res){
+              console.log(res)
+              // success
+            },
+            fail: function(res) {
+              console.log(res)
+            },
+          })
+        },
+        */      
+        fail(res){
+          console.log(res)
+        }
+      })
+    }
+       
+  },
+
+  uploadImage(shareId){
+    var authHeader = buildAuthHeader(Session.get());
+    var imageList = this.data.imageList
+    if (imageList.length > 0) {
+      for (var i = 0; i < imageList.length; i++) {
+          wx.uploadFile({
+            header:authHeader,
+            url: `https://${config.service.host}/share/upload`,
+            name:"image",
+            filePath:imageList[i],
+            formData:{
+              'openId': appInstance.globalData.myId,
+              'shareId':shareId,
+              'type':'images'
+            },
+          })
+      }
+
+    }
   }
 
 })

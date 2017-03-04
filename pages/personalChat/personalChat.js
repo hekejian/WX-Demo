@@ -31,9 +31,10 @@ var appInstance = getApp();
 Page({
     data:{
          messages: [],
-         friendInfo:{},
+         friendInfo:null,
          lastMessageId:'none',
          inputContent: '大家好啊',
+         type:null
     },
 
     onLoad(options){
@@ -52,6 +53,9 @@ Page({
                     })
                 }
             }
+            that.setData({
+                type:"friend"
+            })
         }
 
         if (options.type == "stranger") {
@@ -66,6 +70,9 @@ Page({
                     } 
                 }
             }
+            that.setData({
+                type:"stranger"
+            })
         }
         if (openId == appInstance.globalData.myId) {
             var friendInfo = appInstance.globalData.userData
@@ -75,7 +82,7 @@ Page({
             console.log("friendInfofriendInfofriendInfo",friendInfo)
         }
         
-        
+        //this.showVerifyInfo()
         this.tunnel = appInstance.globalData.tunnel
         this.me = appInstance.globalData.userData
 
@@ -149,12 +156,61 @@ Page({
         
     },
 
-    addFriend(){
+    addfriend(){
+        this.tunnel.emit('add',{
+                    "targetType":"friend",
+                    "targetId":this.data.friendInfo.openId,
+                    "data":{}
+                })
+        event.emit('add',this.data.friendInfo.openId)
         //添加对方为好友
     },
 
-    deleteFriend(){
+    deletefriend(){
+        this.tunnel.emit('delete',{
+                    "targetType":"friend",
+                    "targetId":this.data.friendInfo.openId,
+                    "data":{}
+                })
+        event.emit('delete',this.data.friendInfo.openId)
         //删除对方好友
+    },
+    showVerifyInfo(){
+        var that = this
+        wx.showModal({
+            title:"对方请求添加好友",
+            content: "  添加好友以后还可以继续愉快的聊天哦",
+            showCancel: true,
+            cancelText:"拒绝",
+            cancelColor: '#6E6E6E',
+            confirmText:"添加",
+            confirmColor:"#6C5BB7",
+            success: function(res){
+                if (res.confirm) {
+                    //确认添加
+                    that.verifyFriend()
+                    that.setData({
+                        type:'friend'
+                    })
+                    //event.emit("addFriendToList",) 具体要传什么数据呢
+                }
+                else{
+                    //拒绝添加
+                }
+            }
+        });
+    },
+
+    verifyFriend(){
+        this.tunnel.emit('add2',{
+                    "targetType":"friend",
+                    "targetId":this.data.friendInfo.openId,
+                    "data":{
+                        "sourceId":'',
+                        "sourceName":''
+                    }
+                })
+
     },
 
     updateMessages(updater) {
@@ -223,7 +279,7 @@ Page({
                         "sourceId":appInstance.globalData.myId,
                         "sourceName":appInstance.globalData.userInfo.nickName,
                         "sourceAvatar":appInstance.globalData.userInfo.avatarUrl,
-                        "date":Date.now(),
+                        "date":date,
                         "content":this.data.inputContent
                     }
                 })

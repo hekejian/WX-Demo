@@ -275,3 +275,36 @@
   align-items:center;
   font-size:20px;
 }
+.addOrdelete{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.addfriend{
+    width: 50%;
+    display: flex;
+    justify-content: flex-end;
+    background: #F5ECCE;
+    align-items: center;
+    padding-right: 10rpx;
+    opacity: 0.8;
+}
+.deletefriend{
+    width: 50%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: #6E6E6E;
+    opacity:0.3;
+    padding-left: 10rpx;
+}
+.addImage{
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+}
+.deleteImage{
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+}

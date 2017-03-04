@@ -257,11 +257,12 @@ App({
         friends:[],  //openId  nickName  avatarUrl gender... nearestMessage{} newMessages[]
         tunnel:null,
         userData:null,
-        groupsInfo:[], //groupId groupName groupSign avatarUrl nearestMessage newMessages
+        groupsInfo:[], //openId groupName groupSign avatarUrl nearestMessage newMessages
         groupStory:null, //还未获得
         groupMember:[],
        //inGroup:false
        // enterGroupId:null
        enterOpenId:null,
+       imageList:[],
     }
 });

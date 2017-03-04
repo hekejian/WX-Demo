@@ -1,12 +1,14 @@
 {
     "pages": [
+      
         "pages/index/index",
         "pages/chat/chat",
         "pages/camera/camera",
         "pages/notes/notes",
-        "pages/story/story",
+        "pages/personalChat/personalChat",
         
-        "pages/personalChat/personalChat"
+        "pages/story/story"
+        
         
     ],
     "window": {

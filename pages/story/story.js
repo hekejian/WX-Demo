@@ -10,7 +10,8 @@ var util = require('../../utils/util.js')
 var appInstance = getApp()
 Page({
     data:{
-        groupInfo:[],
+        groupInfo:null,
+        groupStorys:[],
         /*groupInfo:{
             title:"78路公交车",
         avatar:"http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0",
@@ -40,27 +41,44 @@ Page({
             
         }],
         */
-       color:["#D6EAF8","#D0ECE7","#D5F5E3","#FCF3CF","#FAE5D3","#EBDEF0","#F2F3F4"]
+       color:["#D6EAF8","#D0ECE7","#D5F5E3","#FCF3CF","#FAE5D3","#EBDEF0","#F2F3F4"],
     },
 
     onLoad(){
-        console.log("草泥马，老子每次打开都执行")
+        console.log("womeicidouhuizhixingma")
         event.on('addGroup',this,function(add){
             // var  重新拉取群数据
-
         })
 
         if (appInstance.globalData.groupsInfo.length > 0) {
             //拉取第一个，后面重新设置，只能有一个群
-            console.log("rinima 老子没执行")
-            this.requstStory(appInstance.globalData.groupsInfo[0].openId)
+            var groupInfo = appInstance.globalData.groupsInfo[0]
+            this.requstStory(groupInfo.openId)
+
+            this.setData({
+                groupInfo
+            })
+            console.log("groupInfogroupInfogroupInfo",groupInfo)
+        }
+        else{
+            wx.showModal({
+                title:'提示',
+                content:'你还未进群，查看不到发表在群里的故事',
+                showCancel:false,
+                confirmText:'确认',
+                confirmColor:'#6C5BB7',
+            })
+            //显示您还未添加进群，不能查看story
         }
 
     },
+    onShow(){
+        console.log("wori a a a a a aa a ")
+    },
 
     onReady() {
-        //wx.setNavigationBarTitle({ title: this.data.groupInfo.title});
-        console.log("好开心啊啊，我执行了耶")
+        wx.setNavigationBarTitle({ title: this.data.groupInfo.groupName});
+        //console.log("好开心啊啊，我执行了耶",this.data.groupInfo)
    },
 
    onUnload(){
@@ -80,16 +98,20 @@ Page({
   },
 
   requstStory(openId){
-    var url = `https://${config.service.host}/group/`+ openId
+    var url = `https://${config.service.host}/share/group/`+ openId
     var that = this
     qcloud.request({
         url:url,
         success: (response) => {
             console.log("group response",response)
+            var list = response.data.data.list
+            for (var i = 0; i < list.length; i++) {
+                list[i].time = util.formatTime(list[i].date)
+            }
             that.setData({
-                groupInfo:response.data.list
+                groupStorys:list
             })
-            console.log("response.data.list",response.data.list)
+            console.log("response.data.list",list)
         },
 
     })
