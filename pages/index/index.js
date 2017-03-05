@@ -395,9 +395,9 @@ Page({
     accept(args){
         var openId = args.currentTarget.dataset.openId
         var verifyList = this.data.verifyList
-        var sourceId = appInstance.globalData.userInfo.openId
-        var sourceName = appInstance.globalData.userInfo.nickName
-        var avatar = appInstance.globalData.userInfo.avatarUrl
+        var sourceId = appInstance.globalData.userData.openId
+        var sourceName = appInstance.globalData.userData.nickName
+        var avatar = appInstance.globalData.userData.avatarUrl
         var friendsInfo = this.data.friendsInfo
         var addPersonInfo = null
         var has = false

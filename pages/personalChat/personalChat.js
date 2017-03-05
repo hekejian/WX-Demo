@@ -161,7 +161,7 @@ Page({
         event.remove('deleteFriend',this);
         event.remove('friendMessage',this);
         event.remove('myMessage',this);
-        event.remove('add2',this);
+        event.remove('add2Friend',this);
     },
 
     onReady() {
@@ -236,6 +236,7 @@ Page({
 
     verifyFriend(){
         var sourceId = appInstance.globalData.userData.openId
+        console.log("sfsfdas  sourceId",sourceId)
         var sourceName = appInstance.globalData.userData.nickName
         var avatar = appInstance.globalData.userData.avatarUrl
         this.tunnel.emit('add2',{
