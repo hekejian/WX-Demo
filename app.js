@@ -205,6 +205,11 @@ App({
             }
         })
 
+        tunnel.on('add2',add2 => {
+            console.log("add2",add2)
+            event.emit("add2Friend",add2.data)
+        })
+
         // 监听自定义消息（服务器进行推送）
         tunnel.on('speak', speak => {
             console.log('APP init收到说话消息：', speak);

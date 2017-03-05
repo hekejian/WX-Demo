@@ -143,9 +143,16 @@ Page({
                 that.pushMessage(createUserMessage(speak.data.content,who,isMe))
             }   
         })
-
-
-
+        event.on('add2Friend',this,function(add2Friend){
+            var friendInfo = this.data.friendInfo
+            if (add2Friend.sourceId == friendInfo.openId) {
+                friendInfo.type = "friend"
+                this.setData({
+                    friendInfo
+                })
+                that.pushMessage(createSystemMessage("你们已经是好友了"))
+            }
+        })
     },
 
     onUnload(){
@@ -154,6 +161,7 @@ Page({
         event.remove('deleteFriend',this);
         event.remove('friendMessage',this);
         event.remove('myMessage',this);
+        event.remove('add2',this);
     },
 
     onReady() {
@@ -227,9 +235,9 @@ Page({
     },
 
     verifyFriend(){
-        var sourceId = appInstance.globalData.userInfo.openId
-        var sourceName = appInstance.globalData.userInfo.nickName
-        var avatar = appInstance.globalData.userInfo.avatarUrl
+        var sourceId = appInstance.globalData.userData.openId
+        var sourceName = appInstance.globalData.userData.nickName
+        var avatar = appInstance.globalData.userData.avatarUrl
         this.tunnel.emit('add2',{
                     "targetType":"friend",
                     "targetId":this.data.friendInfo.openId,
