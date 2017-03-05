@@ -237,7 +237,6 @@ onHide: function() {
       var groupInfo = that.data.groupInfo
       var date = Date.now()
       if (groupInfo == null) {
-        console.log("./././././././.groupInfo",groupInfo)
         showAddGroup()
       }
       else{
@@ -283,7 +282,6 @@ onHide: function() {
   uploadImage(shareId){
     //var imageList = this.data.imageList
     var that = this
-    console.log('aiaiaia aiiiaiaiai')
     if (this.data.imageList.length > 0) {
       var image = this.data.imageList.shift()
           wx.showToast({

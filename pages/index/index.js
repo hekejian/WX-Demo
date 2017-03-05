@@ -42,6 +42,7 @@ Page({
         loginUrl: config.service.loginUrl,
         requestUrl: config.service.requestUrl,
         groupList:[],
+        verifyList:[],
     },
 
     onLoad:function(options){
@@ -59,6 +60,14 @@ Page({
                     userInfo:appInstance.globalData.userInfo
                 })
         }
+
+        if (appInstance.globalData.tunnel != null) {
+            this.tunnel = appInstance.globalData.tunnel
+        }
+
+        event.on('openTunel',this,function(tunnel){
+            this.tunnel = tunnel
+        })
 
         event.on('getFriendsList',this,function(list){
             var friendsInfo = that.data.friendsInfo
@@ -133,10 +142,10 @@ Page({
         event.on('addFriend',this,function(friend){
             //添加好友 确认还未处理先添加进来
             //需要维护一个好友列表，不然所有的人都是一样的呢
-            var friendsInfo = that.data.friendsInfo
-            friendsInfo.unshift(friend)
+            var verifyList = that.data.verifyList
+            verifyList.unshift(friend)
             that.setData({
-                friendsInfo
+                verifyList
             })
         })
 
@@ -173,14 +182,31 @@ Page({
         event.on('chatStranger',this,function(stranger){
             //主动和对方聊天
             var friendsInfo = that.data.friendsInfo
-            friendsInfo.unshift(stranger)
-            that.setData({
-                friendsInfo
-            })
+            var has = false
+            for (var i = 0; i < friendsInfo.length; i++) {
+                if (friendsInfo[i].openId == stranger.openId) {
+                    has = true
+                } 
+            }
+            if (has == false) {
+                var stranger1 = stranger
+                stranger1.nearestMessage = {}
+                stranger1.newMessages = []
+                stranger1.messages = []
+                stranger1.type = "stranger"
+                friendsInfo.unshift(stranger1)
+                that.setData({
+                    friendsInfo
+                })
+            }
+           
         })
+
+       // event.on 显示添加好友
 
         event.on('friendMessage',this,function(friendMessage){
             //好友消息
+            console.log('caonima')
             var friendsList = that.data.friendsInfo
             var sourceId = friendMessage.data.sourceId
             for(var i=0; i<friendsList.length;i++){
@@ -188,11 +214,39 @@ Page({
                         console.log("终于等到你")
                         friendsList[i].messages.push(friendMessage.data) 
                         friendsList[i].nearestMessage = friendMessage.data
+                        console.log("riendsList[i].nearestMessage",friendMessage.data)
                         if (friendMessage.targetId != appInstance.globalData.enterOpenId 
                             && friendMessage.data.sourceId != appInstance.globalData.enterOpenId) {
-                            friendsList[i].newMessages.push(friendMessage.data)    
+                            friendsList[i].newMessages.push(friendMessage.data)
+                            console.log("pushmessage",friendsList[i].newMessages)    
                         }
                         //时间处理
+                        var temp = friendsList[i]
+                        friendsList.splice(i,1)
+                        friendsList.unshift(temp)
+                        console.log("friendsListfriendsListfriendsList",friendsList)
+                        that.setData({
+                            friendsInfo:friendsList //可能需要添加
+                        })
+                    }
+            }
+        })
+
+        event.on('myMessage',this,function(myMessage){
+            var friendsList = that.data.friendsInfo
+            var targetId = myMessage.targetId
+            for(var i=0; i<friendsList.length;i++){
+                    if(targetId == friendsList[i].openId){
+                        console.log("终于等到你!!!!!!!")
+                        friendsList[i].messages.push(myMessage.data) 
+                        friendsList[i].nearestMessage = myMessage.data
+                        console.log("riendsList[i].nearestMessage",myMessage.data)
+                        if (myMessage.targetId != appInstance.globalData.enterOpenId ) {
+                            friendsList[i].newMessages.push(myMessage.data)
+                            console.log("pushmessage",friendsList[i].newMessages)    
+                        }
+                        //时间处理
+
                         var temp = friendsList[i]
                         friendsList.splice(i,1)
                         friendsList.unshift(temp)
@@ -216,10 +270,6 @@ Page({
 
                         if (groupMessage.targetId != appInstance.globalData.enterOpenId 
                             && groupMessage.data.sourceId != appInstance.globalData.enterOpenId) {
-                            console.log("laozihaishizhixing le")
-                            console.log("groupMessage.targetId",groupMessage.targetId )
-                            console.log("groupMessage.data.sourceId",groupMessage.data.sourceId )
-                            console.log("appInstance.globalDataenterOpenId",appInstance.globalDataenterOpenId )
                             friendsList[i].newMessages.push(groupMessage.data)   
                         }
                         //时间处理
@@ -311,6 +361,8 @@ Page({
 
     },
     onUnload:function(){
+        openTunel
+        event.remove('openTunel',this);
         event.remove('getFriendsList',this);
         event.remove('getGroupId',this);
         event.remove('getGroupNumber',this);
@@ -325,68 +377,83 @@ Page({
         this.tunnel.close()
     },
 
-    /*listenTunnel() {
-        var that = this
-        var tunnel = this.tunnel = appInstance.globalData.tunnel
-        console.log('tunnel',tunnel)
-        tunnel.on('delete',delete1 =>{
-            console.log(delete1)
-        })
-
-        tunnel.on('add',add =>{
-            console.log(add)
-        })
-
-        tunnel.on('online',online =>{
-            console.log('page/index/online',online)
-        })
-        
-        tunnel.on('offline',offline =>{
-            console.log(offline)
-        })
-
-        // 监听自定义消息（服务器进行推送）
-        tunnel.on('speak', speak => {
-            var targetId = speak.targetId
-            var sourceId = speak.data.sourceId
-            if(speak.targetType == "friend"){
-                var friendsList = that.data.friends
-                for(var i=0; i<friendsList.length;i++){
-                    if(sourceId == friendsList[i].id){
-                        that.data.friends[i].unReadMessage.push(speak.data)                        
-                        that.data.friends[i].lastMessage = speak.data.content
-                        //时间处理
-                        var temp = that.data.friends[i]
-                        that.data.friends.splice(i,1)
-                        that.data.friends.unshift(temp)
-                        that.setData({
-                            friends //可能需要添加
-                        })
-                    }
+    refuse(args){
+        var openId = args.currentTarget.dataset.openId
+        var verifyList = this.data.verifyList
+        if (verifyList.length > 0) {
+            for (var i = 0; i < verifyList.length; i++) {
+                if(verifyList[i].openId == openId){
+                    verifyList.splice(i,1)
                 }
             }
-            else if(speak.targetType =="group"){
-                var friendsList = that.data.friends
-                for(var i=0; i<friendsList.length;i++){
-                    if(targetId == friendsList[i].id){
-                        that.data.friends[i].unReadMessage.push(speak.data)                        
-                        that.data.friends[i].lastMessage = speak.data.content
-                        //时间处理
-                        var temp = that.data.friends[i]
-                        that.data.friends.splice(i,1)
-                        that.data.friends.unshift(temp)
-                        that.setData({
-                            friends //可能需要添加
-                        })
-                    }
+            this.setData({
+                verifyList
+            })
+        }
+    },
+
+    accept(args){
+        var openId = args.currentTarget.dataset.openId
+        var verifyList = this.data.verifyList
+        var sourceId = appInstance.globalData.userInfo.openId
+        var sourceName = appInstance.globalData.userInfo.nickName
+        var avatar = appInstance.globalData.userInfo.avatarUrl
+        var friendsInfo = this.data.friendsInfo
+        var addPersonInfo = null
+        var has = false
+        console.log(this.tunnel)
+        this.tunnel.emit('add2',{
+           "targetType":"friend",
+            "targetId":openId,
+            "data":{
+                "sourceId":sourceId,
+                "sourceName":sourceName,
+                "avatar":avatar,
+                "result":true
+                }
+            })
+        if (verifyList.length > 0) {
+            for (var i = 0; i < verifyList.length; i++) {
+                if(verifyList[i].openId == openId){
+                    addPersonInfo = verifyList[i]
+                    verifyList.splice(i,1)
                 }
             }
-        });  
+            this.setData({
+                verifyList
+            })
+        }
+        for (var i = 0; i < friendsInfo.length; i++) {
+            if (friendsInfo[i].openId == openId) {
+                has = true
+                friendsInfo[i].type = "friend"
+                var temp = friendsInfo[i]
+                friendsInfo.splice(i,1)
+                friendsInfo.unshift(temp)
+                appInstance.globalData.friends.unshift(temp)
+                this.setData({
+                    friendsInfo
+                })
+            }
 
-        // 打开信道
-    },*/
+        }
+        if (!has) {
+            addPersonInfo.nearestMessage = {}
+            addPersonInfo.newMessages = []
+            addPersonInfo.messages = []
+            addPersonInfo.type = "friend"
+            friendsInfo.unshift(addPersonInfo)
+            appInstance.globalData.friends.unshift(addPersonInfo)
+            this.setData({
+                friendsInfo
+            })
+        }
 
 
+
+    },
+
+   
     /**
      * 点击「聊天室」按钮，跳转到聊天室综合 Demo 的页面
      */
@@ -405,8 +472,8 @@ Page({
             })
              event.emit('enterGroup',openId)
         }
-        else if (type == "friend") {
-            var url = '../personalChat/personalChat?openId='+openId +"&type=friend"
+        else if (type == "friend" || type == "stranger") {
+            var url = '../personalChat/personalChat?openId='+openId +'&type='+type
             wx.navigateTo({
                 url: url,
                 success: function(res){
@@ -414,6 +481,7 @@ Page({
                 }
             })
         }
+
         /*var nickName = args.currentTarget.dataset.nickName
         var id = args.currentTarget.dataset.id
         var avatarUrl = args.currentTarget.dataset.avatarUrl

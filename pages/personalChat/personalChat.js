@@ -14,6 +14,8 @@ var showSuccess = text => wx.showToast({
     icon: 'success'
 });
 
+
+
 function msgUuid() {
     if (!msgUuid.next) {
         msgUuid.next = 0;
@@ -101,6 +103,11 @@ Page({
 
         event.on('addFriend',this,function(add){
            //添加好友可能需要 当聊天对方向你添加时
+           var friendInfo = this.data.friendInfo
+           console.log('add',add)
+           if (add.openId == friendInfo.openId) {
+                this.showVerifyInfo()
+            }  
         })
 
         event.on('deleteFriend',this,function(delete1){
@@ -113,7 +120,8 @@ Page({
 
         event.on('friendMessage',this,function(speak){
            //双方说话时
-          
+            console.log('speak.data.sourceId',speak.data.sourceId)
+            console.log('friendInfo.openId',friendInfo.openId)
             if (speak.data.sourceId == friendInfo.openId) {
                 var isMe = false
                 var who = {
@@ -135,6 +143,7 @@ Page({
                 that.pushMessage(createUserMessage(speak.data.content,who,isMe))
             }   
         })
+
 
 
     },
@@ -218,15 +227,20 @@ Page({
     },
 
     verifyFriend(){
+        var sourceId = appInstance.globalData.userInfo.openId
+        var sourceName = appInstance.globalData.userInfo.nickName
+        var avatar = appInstance.globalData.userInfo.avatarUrl
         this.tunnel.emit('add2',{
                     "targetType":"friend",
                     "targetId":this.data.friendInfo.openId,
                     "data":{
-                        "sourceId":'',
-                        "sourceName":''
+                        "sourceId":sourceId,
+                        "sourceName":sourceName,
+                        "avatar":avatar,
+                        "result":true
                     }
                 })
-
+        this.pushMessage(createSystemMessage('对方已经是你好友'))
     },
 
     updateMessages(updater) {

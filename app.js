@@ -88,7 +88,7 @@ App({
                 that.globalData.myId = response.data.data.userInfo.openId
                 console.log('myId',that.globalData.myId)
                 if(that.globalData.tunnel == null){
-                  this.openTunel()
+                  that.openTunel()
                 }
                 if (that.globalData.groupsInfo.length == 0) {
                     that.getGroupId()
@@ -170,11 +170,10 @@ App({
 
         tunnel.open();
         that.globalData.tunnel = tunnel
-        console.log("that.globalData.tunnel",tunnel)
-         console.log("ttunnel.isActive",tunnel.isActive)
+        event.emit('openTunel',tunnel)
         tunnel.on('online',online => {
             if(online.targetType == "friend" && online.targetId == that.globalData.myId){
-                event.emit('openTunel',tunnel)
+               // event.emit('openTunel',tunnel)
             }
             else if(online.targetType == "group"){
                 event.emit('groupNumberOnline',online)
@@ -191,6 +190,7 @@ App({
 
         tunnel.on('add',add => {
             if(add.targetType == "friend" && add.targetId == that.globalData.myId){
+                 console.log('日啊这里执行饿了')
                  event.emit('addFriend',add.data)
             }else if(add.targetType == "group"){
                  event.emit('addGroup',add)
