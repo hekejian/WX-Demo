@@ -56,6 +56,7 @@ Page({
             for (var i = 0; i < friends.length; i++) {
                 if (friends[i].openId == openId) {
                     friendInfo = friends[i]
+                    friendInfo.type = "friend"
                     that.setData({
                         friendInfo
                     })
@@ -64,6 +65,7 @@ Page({
             that.setData({
                 type:"friend"
             })
+            //终究要修改
         }
 
         if (options.type == "stranger") {
@@ -73,6 +75,7 @@ Page({
                 for (var j = 0; j < groupMember[i].list.length; j++) {
                     if (groupMember[i].list[j].openId == openId) {
                         friendInfo = groupMember[i].list[j]
+                        friendInfo.type = "stranger"
                         event.emit('chatStranger',friendInfo)
                         that.setData({
                             friendInfo
@@ -84,6 +87,7 @@ Page({
             that.setData({
                 type:"stranger"
             })
+            
         }
         if (openId == appInstance.globalData.myId) {
             var friendInfo = appInstance.globalData.userData
@@ -147,8 +151,12 @@ Page({
             var friendInfo = this.data.friendInfo
             if (add2Friend.sourceId == friendInfo.openId) {
                 friendInfo.type = "friend"
+                console.log("friendInfo",friendInfo)
                 this.setData({
                     friendInfo
+                })
+                that.setData({
+                    type:'friend'
                 })
                 that.pushMessage(createSystemMessage("你们已经是好友了"))
             }
