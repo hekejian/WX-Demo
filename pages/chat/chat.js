@@ -426,12 +426,16 @@ Page({
     chatPerson:function(e){
         console.log(e)
         var openId = e.currentTarget.dataset.openId
+        console.log("openIdopenIdopenIdopenId",openId)
         var friends =  appInstance.globalData.friends
         var type = "stranger"
         for (var i = 0; i <friends.length; i++) {
-            if (friends[i].openId == openId) {
+            if (friends[i]) {
+                if (friends[i].openId == openId) {
                 type = "friend"
-            }  
+                }
+            }
+              
         }
         var isFriend = false
         var url = '../personalChat/personalChat?openId='+openId +"&type="+type

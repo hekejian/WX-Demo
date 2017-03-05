@@ -242,7 +242,10 @@ onHide: function() {
       }
       else{
         wx.request({
-          header:authHeader,
+          header:{
+              'content-type':'application/x-www-form-urlencoded;;charset=UTF-8;',
+
+            },
           url: `https://${config.service.host}/share/new`,
           method:'POST',
           data:{
@@ -252,8 +255,11 @@ onHide: function() {
             'date':date
           },
         
-         /*success(){
-          wx.navigateTo({
+         success(res){
+            console.log("res",res)
+            var shareId = res.data.data.shareId
+            that.uploadImage(shareId)
+         /* wx.navigateTo({
             url: '../story/story',
             success: function(res){
               console.log(res)
@@ -263,8 +269,9 @@ onHide: function() {
               console.log(res)
             },
           })
+          */
         },
-        */      
+              
         fail(res){
           console.log(res)
         }
@@ -274,24 +281,53 @@ onHide: function() {
   },
 
   uploadImage(shareId){
-    var authHeader = buildAuthHeader(Session.get());
-    var imageList = this.data.imageList
-    if (imageList.length > 0) {
-      for (var i = 0; i < imageList.length; i++) {
+    //var imageList = this.data.imageList
+    var that = this
+    console.log('aiaiaia aiiiaiaiai')
+    if (this.data.imageList.length > 0) {
+      var image = this.data.imageList.shift()
+          wx.showToast({
+            title:'正在上传',
+            icon:'loading',
+            duration:5000
+          })
           wx.uploadFile({
-            header:authHeader,
+            //header:authHeader,
             url: `https://${config.service.host}/share/upload`,
-            name:"image",
-            filePath:imageList[i],
+            name:"file",
+            filePath:image,
             formData:{
               'openId': appInstance.globalData.myId,
               'shareId':shareId,
               'type':'images'
             },
+            success(res){
+              console.log("resresres",res)
+              that.uploadImage(shareId)
+            },
+            fail(res){
+              console.log("一失败了呀",res)
+            }
           })
+    }
+    else{
+      wx.hideToast()
+      wx.showToast({
+        title:'上传成功',
+        icon:'success',
+        duration:2000
+      })
+      var story = {
+        text:that.data.text,
+        imageList:that.data.imageList
+        //图片和音频后续加上
       }
-
+      event.emit('addStory',story)
+      wx.switchTab({
+        url:'../story/story'
+      })
     }
   }
+  //uploadImage()
 
 })

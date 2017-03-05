@@ -9,6 +9,11 @@ var util = require('../../utils/util.js')
 /**
  * 生成一条聊天室的消息的唯一 ID
  */
+var showSuccess = text => wx.showToast({
+    title: text,
+    icon: 'success'
+});
+
 function msgUuid() {
     if (!msgUuid.next) {
         msgUuid.next = 0;
@@ -43,6 +48,7 @@ Page({
         var openId = options.openId
         appInstance.globalData.enterOpenId = openId
         var friends = appInstance.globalData.friends
+        console.log("friendsfriendsfriendsfriendsfriends",friends)
         var friendInfo
         if (options.type == "friend") {
             for (var i = 0; i < friends.length; i++) {
@@ -60,14 +66,17 @@ Page({
 
         if (options.type == "stranger") {
             var groupMember = appInstance.globalData.groupMember
+            console.log('appInstance.globalData.groupMember',appInstance.globalData.groupMember)
             for (var i = 0; i < groupMember.length; i++) {
-                for (var j = 0; j < groupMember[i].length; j++) {
-                    if (groupMember[i][j].openId == openId) {
-                        friendInfo = groupMember[i][j]
+                for (var j = 0; j < groupMember[i].list.length; j++) {
+                    if (groupMember[i].list[j].openId == openId) {
+                        friendInfo = groupMember[i].list[j]
+                        event.emit('chatStranger',friendInfo)
                         that.setData({
                             friendInfo
                         })
-                    } 
+                    }
+
                 }
             }
             that.setData({
@@ -140,19 +149,22 @@ Page({
 
     onReady() {
         wx.setNavigationBarTitle({ title: this.data.friendInfo.nickName});
-        var friendMessage = this.data.friendInfo.newMessages
-        var isMe = false
-        for (var i = 0; i < friendMessage.length; i++) {
-            isMe = false
-            if (friendMessage[i].sourceId == appInstance.globalData.myId) {
-                isMe = true
-            }
-            var who = {
+        if (this.data.type == 'friend') {
+            var friendMessage = this.data.friendInfo.newMessages
+            var isMe = false
+            for (var i = 0; i < friendMessage.length; i++) {
+                isMe = false
+                if (friendMessage[i].sourceId == appInstance.globalData.myId) {
+                    isMe = true
+                }
+                var who = {
                     "nickName":friendMessage[i].sourceName,
                     "avatarUrl":friendMessage[i].avatarUrl,
                 }
-            this.pushMessage(createUserMessage(friendMessage[i].content,who,isMe))
+                this.pushMessage(createUserMessage(friendMessage[i].content,who,isMe))
+            }
         }
+        
         
     },
 
@@ -162,6 +174,7 @@ Page({
                     "targetId":this.data.friendInfo.openId,
                     "data":{}
                 })
+        showSuccess('消息已发送')
         event.emit('add',this.data.friendInfo.openId)
         //添加对方为好友
     },
@@ -172,7 +185,10 @@ Page({
                     "targetId":this.data.friendInfo.openId,
                     "data":{}
                 })
-        event.emit('delete',this.data.friendInfo.openId)
+        event.emit('deleteStranger',this.data.friendInfo.openId)
+        wx.switchTab({
+            url:'../index/index'
+        })
         //删除对方好友
     },
     showVerifyInfo(){

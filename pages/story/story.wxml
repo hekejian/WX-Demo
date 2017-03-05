@@ -5,8 +5,8 @@
         <image class="groupAvatar" src="{{groupInfo.avatarUrl}}"></image>
     </view>
     <scroll-view class="story-container" scroll-y scroll-top="9999999">
-        <block class="storyGroup" wx:for="{{groupStorys}}" wx:for-item="story" wx:key="shareId">
-            <view class="story" style="background:{{color[index%7]}}">
+        <block class="storyGroup" wx:for="{{groupStorys}}" wx:for-item="story" wx:for-index="groupIndex" wx:key="shareId">
+            <view class="story" style="background:{{color[groupIndex%7]}}">
                 <view class="storyAuthor">
                     <image class="avatar1" src="{{story.source.avatarUrl}}"></image>
                     <view class="AuthorText">
@@ -15,9 +15,9 @@
                     </view>
                 </view>
                 <view class="storyContent">
-                    <view wx:if="{{story.images.length>0}}" class = "imageView">
-                        <block class="ImageGroup" wx:for="{{story.images}}" wx:for-item="image">
-                            <image class= "image{{story.images.length}}"  src="{{image}}" bindtap="previewImage" data-images-src="{{story.images}}" data-src="{{image}}"></image>
+                    <view class = "imageView">
+                        <block class="ImageGroup" wx:for="{{imageList[groupIndex]}}" wx:for-item="image">
+                            <image class= "image{{imageList[groupIndex].length}}"  src="{{image}}" bindtap="previewImage" data-images-src="{{imageList[groupIndex]}}" data-src="{{image}}"></image>
                         </block>
                     </view>
 

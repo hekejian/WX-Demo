@@ -38,13 +38,11 @@ Page({
             },
             fail:function(){
                 var url = "../index/index"
-                console.log("ria a a a a a a a a a a a aa a a a a a ")
-                wx.navigateTo({
+                wx.switchTab({
                   url: url,
                   success: function(res){
                   },
                   fail:function(res){
-                    console.log("我怎么没运行了呢",res)
                   }
                 })
             }

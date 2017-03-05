@@ -34,26 +34,6 @@ Page({
      */
     data: {
         list:[],
-        /*friends:[{
-            openId:0,
-                              avatarUrl:"http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0",
-            nickName:"memeda",
-            lastMessage:"初始数据，我们把服务地址显示在页面上", //nearestMessage
-            unReadMessage:["使用 Page 初始化页面，具体可参考微信公众平台上的文档",''],
-            //unreadNumber:3,                               //newMessages
-            lastTime:"14:00",
-            messages:[]
-        },{
-            openId:1,
-            avatarUrl:"http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0",
-            nickName:"heheda",
-            lastMessage:"qcloud.request() 方法和 wx.request() 方法使用是一致的",
-            unReadMessage:["使用 Page 初始化页面，具体可参考微信公众平台上的文档"],
-            unreadNumber:0,
-            lastTime:"15:00",
-            messages:[]
-        }],//friends 包含了 好友和群聊会话，所以拉取了好友之后需要和群会话整合
-        */
         messages:[],
         friendsInfo:[],
         friendsMessasges:[],
@@ -68,6 +48,7 @@ Page({
         var that = this
         console.log("index/onLoad  我么次都会打开")
         if(appInstance.globalData.userInfo == null){
+            //appInstance.globalData.userInfo == null 前判断关系
             appInstance.getUserInfo(function(userInfo){
                 that.setData({
                     userInfo:userInfo
@@ -82,20 +63,24 @@ Page({
         event.on('getFriendsList',this,function(list){
             var friendsInfo = that.data.friendsInfo
             var time, hour, minute
-            for (var i = 0; i < list.length; i++) {
-                time = list[i].nearestMessage.date
-               // hour = parseInt(time%1000000/10000) 
-               // minute = parseInt(time%10000/100)
-                list[i].lastTime = util.getTime(time)//添加lastTime 和 messages 字段
-                list[i].messages = list[i].newMessages
-                list[i].type = "friend"          
-                friendsInfo.push(list[i])
-                console.log('list[i].messages',list[i].messages)
-            }
-            
-            that.setData({
-                friendsInfo
-            })
+                 for (var i = 0; i < list.length; i++) {
+                    if (list[i]) {
+                        if (list[i].nearestMessage) {
+                            time = list[i].nearestMessage.date
+                        }else{
+                            time = Date.now()
+                        }
+                        list[i].lastTime = util.getTime(time)//添加lastTime 和 messages 字段
+                        list[i].messages = list[i].newMessages
+                        list[i].type = "friend"          
+                        friendsInfo.push(list[i])
+                        console.log('list[i].messages',list[i].messages)
+                    }
+                }
+                that.setData({
+                    friendsInfo
+                })
+           
            /* console.log("friendsInfo",friendsInfo)
             for (var i = 0; i < that.data.friendsInfo.length; i++) {
                 console.log("friendsInfoOpenId",that.data.friendsInfo[i].openId)
@@ -147,6 +132,7 @@ Page({
 
         event.on('addFriend',this,function(friend){
             //添加好友 确认还未处理先添加进来
+            //需要维护一个好友列表，不然所有的人都是一样的呢
             var friendsInfo = that.data.friendsInfo
             friendsInfo.unshift(friend)
             that.setData({
@@ -163,6 +149,31 @@ Page({
                     friendsInfo.splice(i,1)
                 }
             }
+            that.setData({
+                friendsInfo
+            })
+        })
+        event.on('deleteStranger',this,function(stranger){
+            //删除对方
+            var friendsInfo = that.data.friendsInfo
+            for (var i = 0; i < friendsInfo.length; i++) {
+                if(friendsInfo[i].openId == stranger){
+                   friendsInfo.splice(i,1)
+                }
+            }
+            that.setData({
+                friendsInfo
+            })
+        })
+
+        event.on('chatMessageUpdate',this,function(){
+            //当前页面更新聊天数据
+        })
+
+        event.on('chatStranger',this,function(stranger){
+            //主动和对方聊天
+            var friendsInfo = that.data.friendsInfo
+            friendsInfo.unshift(stranger)
             that.setData({
                 friendsInfo
             })
@@ -309,6 +320,8 @@ Page({
         event.remove('groupMessage',this);
         event.remove('enterGroup',this);
         event.remove('enterPersonalChat',this);
+        event.remove('deleteStranger',this);
+        event.remove('chatStranger',this);
         this.tunnel.close()
     },
 

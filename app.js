@@ -33,9 +33,11 @@ App({
     onLaunch() {
         if(this.globalData.userInfo == null){
             this.login()
+            console.log("this.login()")
         }
 
         if(this.globalData.userData == null){
+            console.log('this.getUser()')
             this.getUser()
         }
 
@@ -61,6 +63,8 @@ App({
     login:function(){
         qcloud.setLoginUrl(config.service.loginUrl);
         var that = this;
+        //var login = true
+        //this.globalData.login = login
         qcloud.login({
             success(result) {
                 showSuccess('登录成功');
@@ -250,6 +254,7 @@ App({
     },
     
     globalData:{
+        login:false,
         userInfo:null,
         myId:null,
         friendsMessages:[],
@@ -258,7 +263,7 @@ App({
         tunnel:null,
         userData:null,
         groupsInfo:[], //openId groupName groupSign avatarUrl nearestMessage newMessages
-        groupStory:null, //还未获得
+        groupStorys:null, //还未获得
         groupMember:[],
        //inGroup:false
        // enterGroupId:null
