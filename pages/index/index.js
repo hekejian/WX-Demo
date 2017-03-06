@@ -98,13 +98,18 @@ Page({
             */
         })
 
+        event.on('addGroup',this,function(group){
+            var friendsInfo = that.data.friendsInfo
+            //将群信息放入列表
+        })
+
         event.on('getGroupId',this,function(group){
             /*var openId = group.groupId
             var nickName = group.groupName
             var avatarUrl = 'http://wx.qlogo.cn/mmopen/vi_32/TDj3GsR0VeYgXeC7JOJ0cHX0MmyTMu4kv843ZSJjo0XCUpT66aPlyydA5K7iaFbzRKmz3xLnxo2sEfdQ25KQp0g/0'
             //设置群昵称和头像
             */
-            var friendsInfo = that.data.friendsInfo
+            var friendsInfo = that.data.friendsInfo  
             var time, hour, minute
             for (var i = 0; i < group.length; i++) {
                 time = group[i].nearestMessage.date
@@ -361,7 +366,6 @@ Page({
 
     },
     onUnload:function(){
-        openTunel
         event.remove('openTunel',this);
         event.remove('getFriendsList',this);
         event.remove('getGroupId',this);

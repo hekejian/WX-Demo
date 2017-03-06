@@ -19,7 +19,13 @@ Page({
     onLoad(){
         var that = this
         event.on('addGroup',this,function(add){
-            // var  重新拉取群数据
+            // var  重新拉取群数据 有待测试
+            var groupInfo = add
+            var openId = add.openId
+            that.refreshData(openId)
+            that.setData({
+                groupInfo
+            })
         })
 
         if (appInstance.globalData.groupsInfo.length > 0) {
@@ -30,12 +36,11 @@ Page({
             this.setData({
                 groupInfo
             })
-            console.log("groupInfogroupInfogroupInfo",groupInfo)
         }
         else{
             wx.showModal({
                 title:'提示',
-                content:'你还未进群，查看不到发表在群里的故事',
+                content:'你还未扫码进入，查看不到发表在群里的故事',
                 showCancel:false,
                 confirmText:'确认',
                 confirmColor:'#6C5BB7',
@@ -123,6 +128,10 @@ Page({
         },
 
     })
+  },
+
+  refreshData(openId){
+    this.requstStory(openId)
   },
 
    note(args){

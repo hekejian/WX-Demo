@@ -41,10 +41,11 @@ App({
             this.getUser()
         }
 
-        event.on("addNewGroup",this,function(openId){
+       /* event.on("addNewGroup",this,function(openId){
             this.getGroupNumber(openId)
             //还缺少一个获得群资料的接口
         })
+        */
     },
     onShow(){
         if (this.globalData.tunnel) {
@@ -93,6 +94,9 @@ App({
                 if (that.globalData.groupsInfo.length == 0) {
                     that.getGroupId()
                 }
+                if (that.globalData.friends.length == 0) {
+                    that.requestFriends()
+                }
 
                 
             }
@@ -138,7 +142,7 @@ App({
             },
             complete:()=> {
                 console.log('执行了')
-                that.requestFriends()
+                //that.requestFriends()
             }
         })
     },
@@ -154,7 +158,7 @@ App({
                     'openId':groupId,
                     'list':response.data.data.list
                 }
-                that.globalData.groupMember.push(groupList)
+                that.globalData.groupMember.unshift(groupList)
                 console.log('getGroupNumber',groupList)
                 event.emit('getGroupNumber',groupList)
                 },
@@ -170,6 +174,7 @@ App({
 
         tunnel.open();
         that.globalData.tunnel = tunnel
+        console.log("tunnel.open();",tunnel)
         event.emit('openTunel',tunnel)
         tunnel.on('online',online => {
             if(online.targetType == "friend" && online.targetId == that.globalData.myId){
@@ -190,10 +195,12 @@ App({
 
         tunnel.on('add',add => {
             if(add.targetType == "friend" && add.targetId == that.globalData.myId){
-                 console.log('日啊这里执行饿了')
                  event.emit('addFriend',add.data)
             }else if(add.targetType == "group"){
                  event.emit('addGroup',add)
+                 //that.globalData.groupsInfo.unshift(add) 获取群信息
+                 //that.getGroupNumber(openId) 获取群成员
+
             }
         })
         
@@ -206,8 +213,16 @@ App({
         })
 
         tunnel.on('add2',add2 => {
-            console.log("add2",add2)
-            event.emit("add2Friend",add2.data)
+            console.log("add2add2add2add2add2",add2)
+            if(add2.targetType == "friend"){
+                event.emit("add2Friend",add2.data)
+            }else if(add2.targetType == "group"){
+                add2.nearestMessage = {}
+                add2.newMessages = []
+                that.globalData.groupsInfo.unshift(add2)
+                event.emit('add2Group',add2)
+            }
+            
         })
 
         // 监听自定义消息（服务器进行推送）

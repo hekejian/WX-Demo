@@ -1,8 +1,9 @@
 {
     "pages": [
-      
-        "pages/index/index",
+
         "pages/chat/chat",
+        "pages/index/index",
+        
         "pages/camera/camera",
         "pages/notes/notes",
         "pages/personalChat/personalChat",
@@ -18,7 +19,7 @@
         "navigationBarTextStyle": "white"
     },
     "tabBar": {
-    "color": "#7A7E83",
+    "color": "#7A7E83", 
     "selectedColor": "#6C5BB7",
     "borderStyle": "white",
     "backgroundColor": "#ffffff",
