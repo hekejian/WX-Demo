@@ -72,6 +72,17 @@ Page({
             var groupMember = appInstance.globalData.groupMember
             console.log('appInstance.globalData.groupMember',appInstance.globalData.groupMember)
             for (var i = 0; i < groupMember.length; i++) {
+                if (groupMember[i] == openId) {
+                    friendInfo = groupMember[i]
+                    friendInfo.type = "stranger"
+                    event.emit('chatStranger',friendInfo)
+                    that.setData({
+                            friendInfo
+                    })
+                }
+               
+            }
+            /*for (var i = 0; i < groupMember.length; i++) {
                 for (var j = 0; j < groupMember[i].list.length; j++) {
                     if (groupMember[i].list[j].openId == openId) {
                         friendInfo = groupMember[i].list[j]
@@ -84,6 +95,7 @@ Page({
 
                 }
             }
+            */
             that.setData({
                 type:"stranger"
             })

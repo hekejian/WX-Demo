@@ -28,9 +28,9 @@ Page({
             })
         })
 
-        if (appInstance.globalData.groupsInfo.length > 0) {
+        if (appInstance.globalData.groupsInfo) {
             //拉取第一个，后面重新设置，只能有一个群
-            var groupInfo = appInstance.globalData.groupsInfo[0]
+            var groupInfo = appInstance.globalData.groupsInfo
             this.requstStory(groupInfo.openId)
 
             this.setData({

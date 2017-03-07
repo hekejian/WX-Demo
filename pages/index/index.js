@@ -99,8 +99,9 @@ Page({
         })
 
         event.on('addGroup',this,function(group){
-            var friendsInfo = that.data.friendsInfo
+           // var friendsInfo = that.data.friendsInfo
             //将群信息放入列表
+            //var 
         })
 
         event.on('getGroupId',this,function(group){
@@ -317,7 +318,7 @@ Page({
             })
         })
 
-        if (this.data.friendsInfo.length == 0 && appInstance.globalData.groupsInfo.length != 0) {
+        if (this.data.friendsInfo.length == 0 && appInstance.globalData.groupsInfo) {
             var friendsInfo = this.data.friendsInfo
             var group = appInstance.globalData.groupsInfo
             var time, hour, minute

@@ -67,7 +67,7 @@ Page({
        // var groupOpenId = options.openId
        var groupOpenId = '58afeeed834b87fc515f9f35'
         appInstance.globalData.enterOpenId = groupOpenId
-        if (appInstance.globalData.groupsInfo) {
+        /*if (appInstance.globalData.groupsInfo) {
             var groupsInfo = appInstance.globalData.groupsInfo
             for (var i = 0; i < groupsInfo.length; i++) {
                 if(groupsInfo[i].openId == groupOpenId){
@@ -88,6 +88,21 @@ Page({
                         }
                     }
                 }
+            }
+        }
+        */
+        if (appInstance.globalData.groupsInfo) {
+            if (appInstance.globalData.groupsInfo.openId == groupOpenId) {
+                getInfo = true
+                addgroup = false
+                var groupInfo = appInstance.globalData.groupsInfo
+                var groupNumber = appInstance.globalData.groupMember
+                
+                that.setData({
+                        groupInfo,
+                        groupMember
+                       // messages : groupInfo.newMessages
+                    })
             }
         }
 
@@ -154,8 +169,12 @@ Page({
                 var total = that.data.groupNumber.length + 1
                 var groupNumber = that.data.groupNumber
                 groupNumber.push(add.data)
-                that.pushMessage(createSystemMessage(`${add.data.sourceName}已加入群聊，共 ${total} 人`))
+                that.setData({
+                    groupNumber
+                })
+                that.pushMessage(createSystemMessage(`${add.data.nickName}已加入群聊，共 ${total} 人`))
             }
+
             /*if(add.targetId == groupOpenId && add.data.openId == appInstance.globalData.myId){
                 //event.emit('addNewGroup',groupOpenId) 这是什么意思
             }*/
@@ -419,7 +438,12 @@ Page({
 
     chatPerson1: function(e){
         console.log(e)
-    }
+    },
 
-    
+    back:function(){
+        var url = "../index/index"
+        wx.switchTab({
+            url:url
+        })
+    }    
 });

@@ -1,6 +1,9 @@
 <view class="page-wrap">
 <view class = "navigation1">
     <view class="navigation">
+        <view class = "back" bindtap="back">
+            <image class="backIcon" src="../materials/back.png"></image>
+        </view>
         <view class="GroupAvatars" bindtap="kindToggle">
             <block wx:for-items="{{groupNumber}}" wx:key="{{item.openId}}">
                  <image class="kind-list-img" src="{{item.avatarUrl}}"></image>

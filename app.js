@@ -91,9 +91,10 @@ App({
                 if(that.globalData.tunnel == null){
                   that.openTunel()
                 }
-                if (that.globalData.groupsInfo.length == 0) {
+              /* if (that.globalData.groupsInfo.length == 0) {
                     that.getGroupId()
                 }
+                */
                 if (that.globalData.friends.length == 0) {
                     that.requestFriends()
                 }
@@ -118,7 +119,7 @@ App({
         })
     },
 
-    getGroupId: function(){
+   /* getGroupId: function(){
         var that = this
         var url = `https://${config.service.host}/group/list/`+this.globalData.myId
         qcloud.request({
@@ -168,6 +169,7 @@ App({
             }
         })
     },
+    */
     openTunel:function(){
         var that = this;
         var tunnel= new qcloud.Tunnel(config.service.tunnelUrl);
@@ -197,12 +199,21 @@ App({
             if(add.targetType == "friend" && add.targetId == that.globalData.myId){
                  event.emit('addFriend',add.data)
             }else if(add.targetType == "group"){
-                 event.emit('addGroup',add)
+                 
+                 var on = false
                  if (add.data.openId != that.globalData.myId) {
-                    that.globalData.groupMember.push(add.data)
+                    for (var i = 0; i < that.globalData.groupMember.length; i++) {
+                        if (add.data.openId == that.globalData.groupMember[i].openId) {
+                            on = true
+                        }
+                    }
+                    if (on == false) {
+                        that.globalData.groupMember.push(add.data)
+                        event.emit('addGroup',add)
+                    }
+                    
 
                  }
-
             }
         })
         
@@ -220,7 +231,7 @@ App({
             }else if(add2.targetType == "group"){
                 add2.nearestMessage = {}
                 add2.newMessages = []
-                that.globalData.groupsInfo.unshift(add2)
+                that.globalData.groupsInfo = add2
                 event.emit('add2Group',add2)
                 that.globalData.groupMember = add2.member
             }
@@ -284,7 +295,7 @@ App({
         friends:[],  //openId  nickName  avatarUrl gender... nearestMessage{} newMessages[]
         tunnel:null,
         userData:null,
-        groupsInfo:[], //openId groupName groupSign avatarUrl nearestMessage newMessages
+        groupsInfo:null, //openId groupName groupSign avatarUrl nearestMessage newMessages
         groupStorys:null, //还未获得
         groupMember:[],
        //inGroup:false
