@@ -198,8 +198,10 @@ App({
                  event.emit('addFriend',add.data)
             }else if(add.targetType == "group"){
                  event.emit('addGroup',add)
-                 //that.globalData.groupsInfo.unshift(add) 获取群信息
-                 //that.getGroupNumber(openId) 获取群成员
+                 if (add.data.openId != that.globalData.myId) {
+                    that.globalData.groupMember.push(add.data)
+
+                 }
 
             }
         })
@@ -213,7 +215,6 @@ App({
         })
 
         tunnel.on('add2',add2 => {
-            console.log("add2add2add2add2add2",add2)
             if(add2.targetType == "friend"){
                 event.emit("add2Friend",add2.data)
             }else if(add2.targetType == "group"){
@@ -221,6 +222,7 @@ App({
                 add2.newMessages = []
                 that.globalData.groupsInfo.unshift(add2)
                 event.emit('add2Group',add2)
+                that.globalData.groupMember = add2.member
             }
             
         })

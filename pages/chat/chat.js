@@ -150,8 +150,10 @@ Page({
         })
 
         event.on('addGroup',this,function(add){
-            if(add.targetId == groupOpenId){
-                var total = that.data.groupNumber.length+1
+            if(add.targetId == groupOpenId && add.data.openId != appInstance.globalData.myId){
+                var total = that.data.groupNumber.length + 1
+                var groupNumber = that.data.groupNumber
+                groupNumber.push(add.data)
                 that.pushMessage(createSystemMessage(`${add.data.sourceName}已加入群聊，共 ${total} 人`))
             }
             /*if(add.targetId == groupOpenId && add.data.openId == appInstance.globalData.myId){
@@ -161,9 +163,12 @@ Page({
 
         event.on('add2Group',this,function(add2){
             wx.hideToast()
+            var total = add2.member.length
             that.setData({
-                groupInfo:add2
+                groupInfo:add2,
+                groupNumber:add2.member
             })
+            that.pushMessage(createSystemMessage(`我已加入群聊，共 ${total} 人`))
             wx.setNavigationBarTitle({ title: this.data.groupInfo.groupName});
         })
 
