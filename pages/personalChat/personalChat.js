@@ -50,6 +50,7 @@ Page({
         var openId = options.openId
         appInstance.globalData.enterOpenId = openId
         var friends = appInstance.globalData.friends
+        appInstance.globalData.enterOpenId = openId
         console.log("friendsfriendsfriendsfriendsfriends",friends)
         var friendInfo
         if (options.type == "friend") {
@@ -57,6 +58,7 @@ Page({
                 if (friends[i].openId == openId) {
                     friendInfo = friends[i]
                     friendInfo.type = "friend"
+                    console.log(friendInfo)
                     that.setData({
                         friendInfo
                     })
@@ -156,7 +158,7 @@ Page({
                     "nickName":speak.data.sourceName,
                     "avatarUrl":speak.data.sourceAvatar,
                 }
-                that.pushMessage(createUserMessage(speak.data.content,who,isMe))
+               // that.pushMessage(createUserMessage(speak.data.content,who,isMe))  这是一种接收到后渲染的方式
             }   
         })
         event.on('add2Friend',this,function(add2Friend){
@@ -196,7 +198,7 @@ Page({
                 }
                 var who = {
                     "nickName":friendMessage[i].sourceName,
-                    "avatarUrl":friendMessage[i].avatarUrl,
+                    "avatarUrl":friendMessage[i].sourceAvatar,
                 }
                 this.pushMessage(createUserMessage(friendMessage[i].content,who,isMe))
             }
@@ -311,6 +313,10 @@ Page({
         this.setData({ inputContent: e.detail.value });
     },
 
+    onUnload(e){
+        appInstance.globalData.enterOpenId = null
+    },
+
     /**
      * 点击「发送」按钮，通过信道推送消息到服务器
      **/
@@ -328,7 +334,12 @@ Page({
         setTimeout(() => {
             if (this.data.inputContent && this.tunnel) {
                 //this.tunnel.emit('speak', { word: this.data.inputContent });
-
+                var isMe = true
+                var who = {
+                    "nickName":appInstance.globalData.userData.nickName,
+                    "avatarUrl":appInstance.globalData.userData.avatarUrl,
+                }
+                this.pushMessage(createUserMessage(this.data.inputContent, who, isMe))
                 var date = Date.now()
                 console.log(this.tunnel)
                 this.tunnel.emit('speak',{

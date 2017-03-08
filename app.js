@@ -4,6 +4,7 @@
 var event = require('./utils/event.js')
 var qcloud = require('./vendor/qcloud-weapp-client-sdk/index');
 var config = require('./config');
+var util = require('./utils/util.js')
 var showSuccess = text => wx.showToast({
     title: text,
     icon: 'success'
@@ -235,6 +236,9 @@ App({
             }else if(add2.targetType == "group"){
                 add2.nearestMessage = {}
                 add2.newMessages = []
+                add2.nickName = add2.groupName
+                add2.type = "group"
+                add2.lastTime = util.getTime(Date.now())
                 that.globalData.groupsInfo = add2
                 event.emit('add2Group',add2)
                 that.globalData.groupMember = add2.member
@@ -247,14 +251,25 @@ App({
             console.log('APP init收到说话消息：', speak);
             if(speak.targetType == "friend" && speak.targetId == that.globalData.myId){
                 that.globalData.friendsMessages.push(speak)
+                var friends = that.globalData.friends
                 event.emit('friendMessage',speak)
+                for (var i = 0; i < friends.length; i++) {
+                    if (friends[i].openId == speak.data.sourceId && speak.data.sourceId != that.globalData.enterOpenId) {
+                        friends[i].newMessages.push(speak.data)
+                    }
+                }
             }
             else if (speak.targetType == "friend" && speak.data.sourceId == that.globalData.myId) {
                 event.emit('myMessage',speak)
-                console.log("我应该不执行的")
             }
             else if(speak.targetType == "group"){
-                that.globalData.groupMessage.push(speak)
+                that.globalData.groupsInfo.nearestMessage = speak.data
+                that.globalData.groupsInfo.lastTime = util.getTime(speak.data.date)
+                if (speak.targetId != that.globalData.enterOpenId) {
+                    that.globalData.groupsInfo.newMessages.push(speak.data)
+                }
+                
+                //that.globalData.groupMessage.push(speak)
                 event.emit('groupMessage',speak)
             }
 

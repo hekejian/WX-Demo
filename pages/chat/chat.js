@@ -100,7 +100,8 @@ Page({
                 
                 that.setData({
                         groupInfo,
-                        groupMember
+                        groupNumber
+                       // groupMember
                        // messages : groupInfo.newMessages
                     })
             }
@@ -117,7 +118,9 @@ Page({
                 duration:10000,
             })
         }
-        
+        if (appInstance.globalData.tunnel) {
+            this.tunnel = appInstance.globalData.tunnel
+        }
         //this.tunnel = appInstance.globalData.tunnel
         this.me = appInstance.globalData.userData
         
@@ -187,6 +190,8 @@ Page({
         event.on('add2Group',this,function(add2){
             wx.hideToast()
             var total = add2.member.length
+            add2.newMessages = []
+            add2.nearestMessage = null
             that.setData({
                 groupInfo:add2,
                 groupNumber:add2.member
@@ -217,13 +222,14 @@ Page({
                 var isMe = false
                 if(speakData.sourceId == appInstance.globalData.myId){
                       isMe = true
-                }
-                var who = {
+                }else{
+                    var who = {
                     "nickName":speakData.sourceName,
                     "avatarUrl":speakData.sourceAvatar,
+                    }
+                    that.pushMessage(createUserMessage(speakData.content,who,isMe))
                 }
-                console.log("使这里错了吗")  
-                that.pushMessage(createUserMessage(speakData.content,who,isMe))
+                
             }
             
         })
@@ -277,6 +283,8 @@ Page({
             //var groupNumber = this.data.groupNumber
             for (var i = 0; i < groupMessage.length; i++) {
                 isMe = false
+                console.log("groupMessage[i]",groupMessage[i])
+                console.log(groupMessage[i].avatarUrl)
                 if (groupMessage[i].sourceId == appInstance.globalData.myId) {
                     isMe = true
                     //avatarUrl = appInstance.globalData.userData.avatarUrl
@@ -295,7 +303,7 @@ Page({
 
                 var who = {
                         "nickName":groupMessage[i].sourceName,
-                        "avatarUrl":groupMessage[i].avatarUrl,
+                        "avatarUrl":groupMessage[i].sourceAvatar,
                     // "avatarUrl":avatarUrl
                  }
                 this.pushMessage(createUserMessage(groupMessage[i].content,who,isMe))
@@ -386,6 +394,7 @@ Page({
      **/
     sendMessage(e) {
         // 信道当前不可用
+        console.log("!this.tunnel ",this.tunnel )
         if (!this.tunnel || !this.tunnel.isActive()) {
             this.pushMessage(createSystemMessage('您还没有加入群聊，请稍后重试'));
             if (this.tunnel.isClosed()) {
@@ -397,7 +406,12 @@ Page({
         setTimeout(() => {
             if (this.data.inputContent && this.tunnel) {
                 //this.tunnel.emit('speak', { word: this.data.inputContent });
-
+                var isMe = true
+                var who = {
+                    "nickName":appInstance.globalData.userData.nickName,
+                    "avatarUrl":appInstance.globalData.userData.avatarUrl,
+                    }
+                this.pushMessage(createUserMessage(this.data.inputContent,who,isMe))
                 var date = Date.now()
                 console.log(this.tunnel)
                 this.tunnel.emit('speak',{
@@ -423,6 +437,10 @@ Page({
            show:show
        })
   },
+
+    onUnload:function(){
+        appInstance.globalData.enterOpenId = null
+    },
     
     chatPerson:function(e){
         console.log(e)
@@ -448,6 +466,7 @@ Page({
     },
 
     back:function(){
+        appInstance.globalData.enterOpenId = null
         var url = "../index/index"
         wx.switchTab({
             url:url

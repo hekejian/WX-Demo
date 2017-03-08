@@ -43,6 +43,7 @@ Page({
         requestUrl: config.service.requestUrl,
         groupList:[],
         verifyList:[],
+        groupInfo:null,
     },
 
     onLoad:function(options){
@@ -209,10 +210,29 @@ Page({
         })
 
        // event.on 显示添加好友
+       //未作删除群
+        event.on('add2Group',this,function(add2){
+            var groupsInfo = that.data.groupInfo
+            if (add2 != groupsInfo) {
+                var friendsInfo = that.data.friendsInfo
+                add2.newMessages = []
+                add2.nearestMessage = null
+                add2.type = "group"
+                add2.lastTime = util.getTime(Date.now())
+                add2.nickName = add2.groupName
+                groupsInfo = add2
+                friendsInfo.unshift(groupsInfo)
+
+                that.setData({
+                    groupsInfo,
+                    friendsInfo
+                })
+            }
+            
+        })
 
         event.on('friendMessage',this,function(friendMessage){
             //好友消息
-            console.log('caonima')
             var friendsList = that.data.friendsInfo
             var sourceId = friendMessage.data.sourceId
             for(var i=0; i<friendsList.length;i++){
@@ -220,6 +240,7 @@ Page({
                         console.log("终于等到你")
                         friendsList[i].messages.push(friendMessage.data) 
                         friendsList[i].nearestMessage = friendMessage.data
+                        friendsList[i].lastTime = util.getTime(friendMessage.data.date)
                         console.log("riendsList[i].nearestMessage",friendMessage.data)
                         if (friendMessage.targetId != appInstance.globalData.enterOpenId 
                             && friendMessage.data.sourceId != appInstance.globalData.enterOpenId) {
@@ -273,7 +294,7 @@ Page({
                         
                         //console.log('friendsList[i].newMessages',friendsList[i].newMessages)                        
                         friendsList[i].nearestMessage = groupMessage.data
-
+                        friendsList[i].lastTime = util.getTime(groupMessage.data.date)
                         if (groupMessage.targetId != appInstance.globalData.enterOpenId 
                             && groupMessage.data.sourceId != appInstance.globalData.enterOpenId) {
                             friendsList[i].newMessages.push(groupMessage.data)   
@@ -282,7 +303,7 @@ Page({
                         var temp = friendsList[i]
                         friendsList.splice(i,1)
                         friendsList.unshift(temp)
-
+                        console.log("friendsList   friendsList",friendsList)
                         that.setData({
                             friendsInfo:friendsList//可能需要添加
                         })
@@ -321,12 +342,12 @@ Page({
         if (this.data.friendsInfo.length == 0 && appInstance.globalData.groupsInfo) {
             var friendsInfo = this.data.friendsInfo
             var group = appInstance.globalData.groupsInfo
-            var time, hour, minute
-            for (var i = 0; i < group.length; i++) {
-                time = group[i].nearestMessage.date
-                hour = parseInt(time%1000000/10000) 
-                minute = parseInt(time%10000/100)
-                group[i].lastTime = hour+":"+minute
+           // var time, hour, minute
+           /* for (var i = 0; i < group.length; i++) {
+                //time = group[i].nearestMessage.date
+                //hour = parseInt(time%1000000/10000) 
+                //minute = parseInt(time%10000/100)
+                group[i].lastTime = 
                 group[i].messages = group[i].newMessages
                 group[i].type = "group"
                 group[i].nickName = group[i].groupName
@@ -335,17 +356,19 @@ Page({
             that.setData({
                 friendsInfo
             })
+            */
         }
 
         if (this.data.friendsInfo.length == 0 && appInstance.globalData.friends.length != 0) {
             var friendsInfo = that.data.friendsInfo
             var list = appInstance.globalData.friends
-            var time, hour, minute
+            var time
+           // var time, hour, minute
             for (var i = 0; i < list.length; i++) {
                 time = list[i].nearestMessage.date
-                hour = parseInt(time%1000000/10000) 
-                minute = parseInt(time%10000/100)
-                list[i].lastTime = hour+":"+minute //添加lastTime 和 messages 字段
+             //   hour = parseInt(time%1000000/10000) 
+             //  minute = parseInt(time%10000/100)
+                list[i].lastTime = util.getTime(time) //添加lastTime 和 messages 字段
                 list[i].messages = list[i].newMessages
                 list[i].type = "friend"          
                 friendsInfo.push(list[i])
@@ -364,6 +387,16 @@ Page({
                 groupList
             })
         }
+        if (appInstance.globalData.groupsInfo != that.data.groupInfo) {
+            var groupsInfo = that.data.groupInfo
+            var friendsInfo = that.data.friendsInfo
+            groupsInfo = appInstance.globalData.groupsInfo
+            friendsInfo.unshift(groupsInfo)
+            that.setData({
+                groupsInfo,
+                friendsInfo
+            })
+        }
 
     },
     onUnload:function(){
@@ -375,6 +408,7 @@ Page({
         event.remove('deleteFriend',this);
         event.remove('friendMessage',this);
         event.remove('groupMessage',this);
+        event.remove('add2Group',this);
         event.remove('enterGroup',this);
         event.remove('enterPersonalChat',this);
         event.remove('deleteStranger',this);
