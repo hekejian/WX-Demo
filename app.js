@@ -177,7 +177,7 @@ App({
         tunnel.open();
         that.globalData.tunnel = tunnel
         console.log("tunnel.open();",tunnel)
-        event.emit('openTunel',tunnel)
+        //event.emit('openTunel',tunnel)
         tunnel.on('online',online => {
             if(online.targetType == "friend" && online.targetId == that.globalData.myId){
                // event.emit('openTunel',tunnel)
@@ -215,6 +215,10 @@ App({
 
                  }
             }
+        })
+        tunnel.on('ready',function(){
+            event.emit('ready',tunnel)
+            console.log("sdfdasdfasdfas",tunnel)
         })
         
         tunnel.on('delete',delete1 => {

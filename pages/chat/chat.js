@@ -94,7 +94,7 @@ Page({
         if (appInstance.globalData.groupsInfo) {
             if (appInstance.globalData.groupsInfo.openId == groupOpenId) {
                 getInfo = true
-                addgroup = false
+                addgroup = true 
                 var groupInfo = appInstance.globalData.groupsInfo
                 var groupNumber = appInstance.globalData.groupMember
                 
@@ -108,7 +108,8 @@ Page({
 
         if (getInfo == false) {
             //加群
-            this.addGroup(groupOpenId)
+            console.log("this.addGroup(groupOpenId)")
+           //this.addGroup(groupOpenId)
             console.log("没有加群")
             wx.showToast({
                 title:'正在加入群聊',
@@ -117,7 +118,7 @@ Page({
             })
         }
         
-        this.tunnel = appInstance.globalData.tunnel
+        //this.tunnel = appInstance.globalData.tunnel
         this.me = appInstance.globalData.userData
         
        /* if(appInstance.globalData.inGroup == false){
@@ -149,9 +150,12 @@ Page({
             }
         })
 
-        event.on('openTunel',this,function(tunnel){
+        event.on('ready',this,function(tunnel){
            this.tunnel = tunnel
+           console.log("ready",tunnel)
+           console.log("ready")
            if (addgroup == false) {
+            console.log("groupOpenId")
             this.addGroup(groupOpenId)
            }
         })
@@ -312,9 +316,12 @@ Page({
     },
 
     addGroup(groupOpenId){
+        console.log("afdasdfasdfasdd")
+        console.log(this.tunnel)
          setTimeout(() => {
             if (this.tunnel) {
                 addgroup = true
+                console.log("Date.now()")
                 var date = Date.now()
                 this.tunnel.emit('add',{
                     "targetType":"group",
