@@ -2,23 +2,23 @@
 <view class = "navigation1">
     <view class="navigation">
         <view class = "back" bindtap="back">
-            <image class="backIcon" src="../materials/back.png"></image>
+            <image class="backIcon" src="../materials/back1.png"></image>
         </view>
-        <view class="GroupAvatars" bindtap="kindToggle">
+        <scroll-view class="GroupAvatars" bindtap="kindToggle" scroll-x = "true">
             <block wx:for-items="{{groupNumber}}" wx:key="{{item.openId}}">
                  <image class="kind-list-img" src="{{item.avatarUrl}}"></image>
             </block>
-        </view>
+        </scroll-view>
     </view>
     <view class="showAvatars {{show ? 'show-Avatars':''}}">
-        <view class="navigator-box {{show ? 'navigator-box-show':''}}">
+        <scroll-view scroll-y="true" scroll-top="999999" class="navigator-box {{show ? 'navigator-box-show':''}}">
              <block wx:for-items="{{groupNumber}}" wx:key="{{item.openId}}">
                 <view id="{{item.openId}}" class="detailInfo" bindtap="chatPerson"  data-open-id = "{{item.openId}}">
                     <image class="personAvatar" src="{{item.avatarUrl}}"  ></image>
                     <text class="personName">{{item.nickName}}</text> 
                 </view>
             </block>
-        </view>
+        </scroll-view>
            
     </view>
 </view>

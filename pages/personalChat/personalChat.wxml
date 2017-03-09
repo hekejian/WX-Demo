@@ -1,11 +1,14 @@
 <view class="page-wrap">
 <view class = "navigation1">
     <view class="navigation">
+        <view class = "back" bindtap="back">
+            <image class="backIcon" src="../materials/back1.png"></image>
+        </view>
         <view class="GroupAvatars" bindtap="kindToggle">
                  <image class="kind-list-img" src="{{friendInfo.avatarUrl}}"></image>
         </view>
     </view>
-    <view wx:if="{{type == 'stranger'}}" class = "addOrdelete">
+    <view wx:if="{{friendInfo.type == 'stranger'}}" class = "addOrdelete">
         <view class = "deletefriend" bindtap="deletefriend">
             <image class="addImage" src="../materials/delete.png"></image>
             <text>对方好讨厌</text>

@@ -94,7 +94,6 @@ Page({
            /* console.log("friendsInfo",friendsInfo)
             for (var i = 0; i < that.data.friendsInfo.length; i++) {
                 console.log("friendsInfoOpenId",that.data.friendsInfo[i].openId)
-                
             }
             */
         })
@@ -262,11 +261,13 @@ Page({
         event.on('myMessage',this,function(myMessage){
             var friendsList = that.data.friendsInfo
             var targetId = myMessage.targetId
+            console.log("我自己的数据")
             for(var i=0; i<friendsList.length;i++){
                     if(targetId == friendsList[i].openId){
                         console.log("终于等到你!!!!!!!")
                         friendsList[i].messages.push(myMessage.data) 
                         friendsList[i].nearestMessage = myMessage.data
+                        friendsList[i].lastTime = util.getTime(myMessage.data.date)
                         console.log("riendsList[i].nearestMessage",myMessage.data)
                         if (myMessage.targetId != appInstance.globalData.enterOpenId ) {
                             friendsList[i].newMessages.push(myMessage.data)
@@ -365,10 +366,16 @@ Page({
             var time
            // var time, hour, minute
             for (var i = 0; i < list.length; i++) {
-                time = list[i].nearestMessage.date
+                if (list[i].nearestMessage) {
+                    time = list[i].nearestMessage.date
+                    list[i].lastTime = util.getTime(time)
+                }else{
+                     list[i].lastTime = util.getTime(Date.now())
+                }
+               
              //   hour = parseInt(time%1000000/10000) 
              //  minute = parseInt(time%10000/100)
-                list[i].lastTime = util.getTime(time) //添加lastTime 和 messages 字段
+                //添加lastTime 和 messages 字段
                 list[i].messages = list[i].newMessages
                 list[i].type = "friend"          
                 friendsInfo.push(list[i])
@@ -413,7 +420,7 @@ Page({
         event.remove('enterPersonalChat',this);
         event.remove('deleteStranger',this);
         event.remove('chatStranger',this);
-        this.tunnel.close()
+        //this.tunnel.close()
     },
 
     refuse(args){

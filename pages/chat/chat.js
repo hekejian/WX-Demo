@@ -277,7 +277,7 @@ Page({
         if (this.data.groupInfo != null) {
             wx.setNavigationBarTitle({ title: this.data.groupInfo.groupName});
             //渲染未读消息
-            var groupMessage = this.data.groupInfo.newMessages
+            var groupMessage = this.data.groupInfo.messages
             var isMe = false
             //var avatarUrl = null
             //var groupNumber = this.data.groupNumber

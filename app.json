@@ -1,9 +1,7 @@
 {
     "pages": [
-
         "pages/chat/chat",
         "pages/index/index",
-        
         "pages/camera/camera",
         "pages/notes/notes",
         "pages/personalChat/personalChat",
@@ -25,18 +23,18 @@
     "backgroundColor": "#ffffff",
     "list": [{
       "pagePath": "pages/index/index",
-      "iconPath": "pages/materials/friend.jpg",
-      "selectedIconPath": "pages/materials/friend.jpg",
+      "iconPath": "pages/materials/friend2.png",
+      "selectedIconPath": "pages/materials/friend1.png",
       "text": "friends"
     },{
       "pagePath": "pages/camera/camera",
-      "iconPath": "pages/materials/Camera.jpg",
-      "selectedIconPath": "pages/materials/story.png",
-      "text": "notes"
+      "iconPath": "pages/materials/Camera2.png",
+      "selectedIconPath": "pages/materials/Camera1.png",
+      "text": "Camera"
     },{
       "pagePath": "pages/story/story",
       "iconPath": "pages/materials/story.png",
-      "selectedIconPath": "pages/materials/story.png",
+      "selectedIconPath": "pages/materials/story1.png",
       "text": "story"
     }]
   },

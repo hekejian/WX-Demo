@@ -66,11 +66,11 @@ Page({
 
   onLoad: function(){
     var that = this
-    if (appInstance.globalData.groupsInfo.length == 0) {
+    if (!appInstance.globalData.groupsInfo) {
       showAddGroup()
     }
     else{
-      var groupInfo = appInstance.globalData.groupsInfo[0]
+      var groupInfo = appInstance.globalData.groupsInfo
       that.setData({
         groupInfo
       })

@@ -79,7 +79,9 @@ Page({
     },
 
     onReady() {
-        wx.setNavigationBarTitle({ title: this.data.groupInfo.groupName});
+        if (this.data.groupInfo) {
+            wx.setNavigationBarTitle({ title: this.data.groupInfo.groupName});
+        }
         //console.log("好开心啊啊，我执行了耶",this.data.groupInfo)
    },
 

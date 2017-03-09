@@ -243,7 +243,9 @@
     width: 80%;
     display: flex;
     flex-direction: row;
-    justify-content: center
+    justify-content: center;
+   transform: translateX(0)
+    
 }
 .kind-list-img{
     width:70rpx;
@@ -254,12 +256,12 @@
     margin-bottom: 10rpx;
 }
 .personAvatar{
-    width:70rpx;
-    height:70rpx;
+    width:80rpx;
+    height:80rpx;
     border-radius: 50%;
-    padding-right: 10rpx;
 }
 .detailInfo{
+    padding-top: 5rpx;
   border-bottom-style: solid;
   border-width: thin;
   border-color: #F2F2F2;
@@ -274,7 +276,8 @@
 .personName{
   display: flex;
   align-items:center;
-  font-size:20px;
+  font-size:30rpx;
+  margin-left: 10rpx;
 }
 .showAvatars{
     height: 0;
@@ -294,6 +297,7 @@
 .navigator-box-show {
   opacity: 1;
   transform: translateY(0);
+  height: 600rpx;
 }
 .swiper1{
     background: #fff;

@@ -58,8 +58,7 @@ App({
     },
 
     onHide(){
-
-        this.globalData.tunnel.close()
+        
     },
 
     login:function(){
@@ -113,7 +112,11 @@ App({
             login: true,
             success: (response) => {
                     console.log('requestFriendsresponse',response)
-                    that.globalData.friends = response.data.data.list;
+                    var list = response.data.data.list
+                    for (var i = 0; i < list.length; i++) {
+                        list[i].messages = list[i].newMessages
+                    }
+                    that.globalData.friends = list;
                     console.log('requestFriends',that.globalData.friends) //接口无
                     event.emit('getFriendsList',response.data.data.list)
                 }
@@ -236,6 +239,7 @@ App({
             }else if(add2.targetType == "group"){
                 add2.nearestMessage = {}
                 add2.newMessages = []
+                add2.messages = []
                 add2.nickName = add2.groupName
                 add2.type = "group"
                 add2.lastTime = util.getTime(Date.now())
@@ -254,17 +258,34 @@ App({
                 var friends = that.globalData.friends
                 event.emit('friendMessage',speak)
                 for (var i = 0; i < friends.length; i++) {
-                    if (friends[i].openId == speak.data.sourceId && speak.data.sourceId != that.globalData.enterOpenId) {
-                        friends[i].newMessages.push(speak.data)
+                    if (friends[i].openId == speak.data.sourceId) {
+                        friends[i].messages.push(speak.data)
+                        friends[i].nearestMessage = speak.data
+                        friends[i].lastTime = util.getTime(speak.data.date)
+                        if (speak.data.sourceId != that.globalData.enterOpenId) {
+                            friends[i].newMessages.push(speak.data)
+                        }
                     }
                 }
             }
             else if (speak.targetType == "friend" && speak.data.sourceId == that.globalData.myId) {
+                var friends = that.globalData.friends
                 event.emit('myMessage',speak)
+                for (var i = 0; i < friends.length; i++) {
+                    if (friends[i].openId == speak.targetId) {
+                        friends[i].messages.push(speak.data)
+                        friends[i].nearestMessage = speak.data
+                        friends[i].lastTime = util.getTime(speak.data.date)
+                        if (speak.targetId != that.globalData.enterOpenId) {
+                            friends[i].newMessages.push(speak.data)
+                        }
+                    }
+                }
             }
             else if(speak.targetType == "group"){
                 that.globalData.groupsInfo.nearestMessage = speak.data
                 that.globalData.groupsInfo.lastTime = util.getTime(speak.data.date)
+                that.globalData.groupsInfo.messages.push(speak.data)
                 if (speak.targetId != that.globalData.enterOpenId) {
                     that.globalData.groupsInfo.newMessages.push(speak.data)
                 }

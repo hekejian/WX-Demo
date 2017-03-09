@@ -189,8 +189,9 @@ Page({
     onReady() {
         wx.setNavigationBarTitle({ title: this.data.friendInfo.nickName});
         if (this.data.type == 'friend') {
-            var friendMessage = this.data.friendInfo.newMessages
+            var friendMessage = this.data.friendInfo.messages
             var isMe = false
+            console.log("friendMessage",friendMessage)
             for (var i = 0; i < friendMessage.length; i++) {
                 isMe = false
                 if (friendMessage[i].sourceId == appInstance.globalData.myId) {
@@ -358,4 +359,11 @@ Page({
         });
     },
     
+    back:function(){
+        appInstance.globalData.enterOpenId = null
+        var url = "../index/index"
+        wx.switchTab({
+            url:url
+        })
+    } 
 })
