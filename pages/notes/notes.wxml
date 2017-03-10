@@ -40,7 +40,8 @@
             <video src="{{src}}" class="video"></video>
           </block>
       </view>
-
+      <view class = "blank"><p></p></view>
+      
     <view class="record-section">
       <block wx:if="{{recording === false && playing === false && hasRecord === false}}">
         <view class="page-body-time">

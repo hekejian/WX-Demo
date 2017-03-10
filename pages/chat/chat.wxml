@@ -1,13 +1,13 @@
 <view class="page-wrap">
 <view class = "navigation1">
     <view class="navigation">
-        <view class = "back" bindtap="back">
-            <image class="backIcon" src="../materials/back1.png"></image>
+        <view class = "back" >
+            <image class="backIcon" src="../materials/back1.png" bindtap="back"></image>
         </view>
-        <scroll-view class="GroupAvatars" bindtap="kindToggle" scroll-x = "true">
-            <block wx:for-items="{{groupNumber}}" wx:key="{{item.openId}}">
+        <scroll-view class="GroupAvatars" bindtap="kindToggle" scroll-x = "true" scroll-top="999999">
+              <block wx:for-items="{{groupNumber}}" wx:key="{{item.openId}}">
                  <image class="kind-list-img" src="{{item.avatarUrl}}"></image>
-            </block>
+              </block>
         </scroll-view>
     </view>
     <view class="showAvatars {{show ? 'show-Avatars':''}}">
@@ -41,8 +41,8 @@
     <view class="input-panel">
         <image class="pic-icon" src="../materials/clip-icon.png" style="width:60rpx;height:44rpx"></image>
         <input auto-focus type="text" value="{{inputContent}}" bindchange="changeInputContent" class="send-input"></input>
-        <button class ="send-btn" bindtap="sendMessage">
-            <image src="../materials/send2.png" style="width:65rpx;height:65rpx"></image>
-        </button>
+        <view class ="send-btn" bindtap="sendMessage">
+            <image src="../materials/send2.png" style="width:60rpx;height:60rpx"></image>
+        </view>
     </view>
 </view>

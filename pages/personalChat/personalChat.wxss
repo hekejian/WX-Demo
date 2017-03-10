@@ -60,8 +60,8 @@
     border: #fff 1rpx solid;
     border-radius: 20rpx;
     background: #fff;
-    font-size: 30rpx;
-    line-height: 30rpx;
+    font-size: 26rpx;
+    line-height: 26rpx;
     padding: 20rpx;
     position: relative;
 }

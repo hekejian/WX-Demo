@@ -1,7 +1,8 @@
 {
     "pages": [
-        "pages/chat/chat",
         "pages/index/index",
+        "pages/chat/chat",
+        
         "pages/camera/camera",
         "pages/notes/notes",
         "pages/personalChat/personalChat",
