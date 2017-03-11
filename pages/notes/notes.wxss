@@ -126,3 +126,8 @@ image {
   width: 100%;
   height: 290rpx;
 }
+.pause-btn{
+  display: flex;
+  flex-direction: row;
+  
+}
