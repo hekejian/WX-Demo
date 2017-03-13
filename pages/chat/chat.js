@@ -420,7 +420,7 @@ Page({
                     "data":{
                         "sourceId":appInstance.globalData.myId,
                         "sourceName":appInstance.globalData.userInfo.nickName,
-                        "sourceAvatar":appInstance.globalData.userInfo.avatarUrl,
+                        "avatarUrl":appInstance.globalData.userInfo.avatarUrl,
                         "date":Date.now(),
                         "content":this.data.inputContent
                     }
