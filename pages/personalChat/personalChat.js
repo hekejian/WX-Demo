@@ -54,11 +54,11 @@ Page({
         console.log("friendsfriendsfriendsfriendsfriends",friends)
         var friendInfo
         if (options.type == "friend") {
+            console.log("friend")
             for (var i = 0; i < friends.length; i++) {
                 if (friends[i].openId == openId) {
                     friendInfo = friends[i]
                     friendInfo.type = "friend"
-                    console.log(friendInfo)
                     that.setData({
                         friendInfo
                     })
@@ -74,7 +74,7 @@ Page({
             var groupMember = appInstance.globalData.groupMember
             console.log('appInstance.globalData.groupMember',appInstance.globalData.groupMember)
             for (var i = 0; i < groupMember.length; i++) {
-                if (groupMember[i] == openId) {
+                if (groupMember[i].openId == openId) {
                     friendInfo = groupMember[i]
                     friendInfo.type = "stranger"
                     event.emit('chatStranger',friendInfo)
@@ -144,7 +144,7 @@ Page({
                 var isMe = false
                 var who = {
                     "nickName":speak.data.sourceName,
-                    "avatarUrl":speak.data.sourceAvatar,
+                    "avatarUrl":speak.data.avatarUrl,
                 }
 
                 that.pushMessage(createUserMessage(speak.data.content,who,isMe))
@@ -156,7 +156,7 @@ Page({
                 var isMe = true
                 var who = {
                     "nickName":speak.data.sourceName,
-                    "avatarUrl":speak.data.sourceAvatar,
+                    "avatarUrl":speak.data.avatarUrl,
                 }
                // that.pushMessage(createUserMessage(speak.data.content,who,isMe))  这是一种接收到后渲染的方式
             }   
@@ -261,14 +261,14 @@ Page({
         var sourceId = appInstance.globalData.userData.openId
         console.log("sfsfdas  sourceId",sourceId)
         var sourceName = appInstance.globalData.userData.nickName
-        var avatar = appInstance.globalData.userData.avatarUrl
+        var avatarUrl = appInstance.globalData.userData.avatarUrl
         this.tunnel.emit('add2',{
                     "targetType":"friend",
                     "targetId":this.data.friendInfo.openId,
                     "data":{
                         "sourceId":sourceId,
                         "sourceName":sourceName,
-                        "avatar":avatar,
+                        "avatarUrl":avatarUrl,
                         "result":true
                     }
                 })

@@ -443,7 +443,7 @@ Page({
         var verifyList = this.data.verifyList
         var sourceId = appInstance.globalData.userData.openId
         var sourceName = appInstance.globalData.userData.nickName
-        var avatar = appInstance.globalData.userData.avatarUrl
+        var avatarUrl = appInstance.globalData.userData.avatarUrl
         var friendsInfo = this.data.friendsInfo
         var addPersonInfo = null
         var has = false
@@ -454,7 +454,7 @@ Page({
             "data":{
                 "sourceId":sourceId,
                 "sourceName":sourceName,
-                "avatar":avatar,
+                "avatarUrl":avatarUrl,
                 "result":true
                 }
             })
