@@ -303,7 +303,7 @@ Page({
 
                 var who = {
                         "nickName":groupMessage[i].sourceName,
-                        "avatarUrl":groupMessage[i].sourceAvatar,
+                        "avatarUrl":groupMessage[i].avatarUrl,
                     // "avatarUrl":avatarUrl
                  }
                 this.pushMessage(createUserMessage(groupMessage[i].content,who,isMe))

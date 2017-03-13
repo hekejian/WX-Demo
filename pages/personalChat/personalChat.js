@@ -199,7 +199,7 @@ Page({
                 }
                 var who = {
                     "nickName":friendMessage[i].sourceName,
-                    "avatarUrl":friendMessage[i].sourceAvatar,
+                    "avatarUrl":friendMessage[i].avatarUrl,
                 }
                 this.pushMessage(createUserMessage(friendMessage[i].content,who,isMe))
             }
