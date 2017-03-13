@@ -1,10 +1,11 @@
 {
     "pages": [
-        "pages/index/index",
         "pages/chat/chat",
+      
+        "pages/index/index",
+        "pages/notes/notes",
         
         "pages/camera/camera",
-        "pages/notes/notes",
         "pages/personalChat/personalChat",
         
         "pages/story/story"

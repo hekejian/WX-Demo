@@ -141,7 +141,7 @@ onHide: function() {
     recordTimeInterval = setInterval(function () {
       var recordTime = that.data.recordTime += 1
       that.setData({
-        formatedRecordTime: util.formatTime(that.data.recordTime),
+        formatedRecordTime: util.formatTimeRecord(that.data.recordTime),
         recordTime: recordTime
       })
     }, 1000)
@@ -150,7 +150,7 @@ onHide: function() {
         that.setData({
           hasRecord: true,
           tempFilePath: res.tempFilePath,
-          formatedPlayTime: util.formatTime(that.data.playTime)
+          formatedPlayTime: util.formatTimeRecord(that.data.playTime)
         })
       },
       complete: function () {
@@ -172,31 +172,31 @@ onHide: function() {
           recording: false,
           hasRecord: false,
           recordTime: 0,
-          formatedRecordTime: util.formatTime(0)
+          formatedRecordTime: util.formatTimeRecord(0)
         })
       }
     })
   },
   playVoice: function () {
-    var that = this
+    var that = this //需要设置暂停按钮
     playTimeInterval = setInterval(function () {
       var playTime = that.data.playTime + 1
       console.log('update playTime', playTime)
       that.setData({
         playing: true,
-        formatedPlayTime: util.formatTime(playTime),
+        formatedPlayTime: util.formatTimeRecord(playTime),
         playTime: playTime
       })
     }, 1000)
     wx.playVoice({
-      filePath: this.data.tempFilePath,
+      filePath: that.data.tempFilePath,
       success: function () {
         clearInterval(playTimeInterval)
         var playTime = 0
         console.log('play voice finished')
         that.setData({
           playing: false,
-          formatedPlayTime: util.formatTime(playTime),
+          formatedPlayTime: util.formatTimeRecord(playTime),
           playTime: playTime
         })
       }
@@ -213,7 +213,7 @@ onHide: function() {
     clearInterval(playTimeInterval)
     this.setData({
       playing: false,
-      formatedPlayTime: util.formatTime(0),
+      formatedPlayTime: util.formatTimeRecord(0),
       playTime: 0
     })
     wx.stopVoice()
@@ -225,7 +225,18 @@ onHide: function() {
       playing: false,
       hasRecord: false,
       tempFilePath: '',
-      formatedRecordTime: util.formatTime(0),
+      formatedRecordTime: util.formatTimeRecord(0),
+      recordTime: 0,
+      playTime: 0
+    })
+  },
+  ensure:function(){
+    wx.stopVoice()
+    this.setData({
+      playing: false,
+      hasRecord: false,
+      tempFilePath: '',
+      formatedRecordTime: util.formatTimeRecord(0),
       recordTime: 0,
       playTime: 0
     })

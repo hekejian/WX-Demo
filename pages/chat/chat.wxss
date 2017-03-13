@@ -60,8 +60,8 @@
     border: #fff 1rpx solid;
     border-radius: 20rpx;
     background: #fff;
-    font-size: 26rpx;
-    line-height: 26rpx;
+    font-size: 24rpx;
+    line-height: 24rpx;
     padding: 20rpx;
     position: relative;
 }
@@ -301,7 +301,15 @@
 .navigator-box-show {
   opacity: 1;
   transform: translateY(0);
-  max-height: 600rpx;
+  height: 600rpx;
+}
+.navigator-box-show-short{
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 600rpx;
+}
+.avatar-block{
+    height: 300rpx;
 }
 .swiper1{
     background: #fff;

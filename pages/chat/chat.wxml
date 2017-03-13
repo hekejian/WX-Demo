@@ -11,7 +11,7 @@
         </scroll-view>
     </view>
     <view class="showAvatars {{show ? 'show-Avatars':''}}">
-        <scroll-view scroll-y="true" scroll-top="999999" class="navigator-box {{show ? 'navigator-box-show':''}}">
+        <scroll-view scroll-y="true" scroll-top="999999" class="navigator-box {{groupNumber.length>6 ? 'navigator-box-show':'navigator-box-show-short'}}">
              <block wx:for-items="{{groupNumber}}" wx:key="{{item.openId}}">
                 <view id="{{item.openId}}" class="detailInfo" bindtap="chatPerson"  data-open-id = "{{item.openId}}">
                     <image class="personAvatar" src="{{item.avatarUrl}}"  ></image>
