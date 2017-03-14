@@ -382,9 +382,10 @@ Page({
             */
         }
 
-        if (this.data.friendsInfo.length == 0 && appInstance.globalData.friends.length != 0) {
+        if (this.data.friendsInfo.length == 0) {
             var friendsInfo = that.data.friendsInfo
             var list = appInstance.globalData.friends
+            var stranger = appInstance.globalData.stranger
             var time
            // var time, hour, minute
             for (var i = 0; i < list.length; i++) {
@@ -401,8 +402,14 @@ Page({
                 list[i].messages = list[i].newMessages
                 list[i].type = "friend"          
                 friendsInfo.push(list[i])
+
+            }
+            for (var i = 0; i < stranger.length; i++) {
+                friendsInfo.unshift(stranger[i])
             }
             
+            console.log('stranger',stranger)
+            console.log('friendsInfo',friendsInfo)
             that.setData({
                 friendsInfo
             })
