@@ -62,6 +62,7 @@ Page({
                     that.setData({
                         friendInfo
                     })
+                    console.log('friendInfo.type',this.data.friendInfo.type)
                 }
             }
             that.setData({
@@ -81,6 +82,7 @@ Page({
                     that.setData({
                             friendInfo
                     })
+                    console.log('friendInfo.type',this.data.friendInfo.type)
                 }
                
             }
@@ -263,7 +265,7 @@ Page({
         var sourceName = appInstance.globalData.userData.nickName
         var avatarUrl = appInstance.globalData.userData.avatarUrl
         this.tunnel.emit('add2',{
-                    "targetType":"friend",
+                    "targetType":'friend',
                     "targetId":this.data.friendInfo.openId,
                     "data":{
                         "sourceId":sourceId,
@@ -331,7 +333,7 @@ Page({
             this.pushMessage(createSystemMessage('对不起对方已经将你删除，你不能向对方发消息'));
             return;
         }
-
+        console.log("sendMessage")
         setTimeout(() => {
             if (this.data.inputContent && this.tunnel) {
                 //this.tunnel.emit('speak', { word: this.data.inputContent });
@@ -342,9 +344,9 @@ Page({
                 }
                 this.pushMessage(createUserMessage(this.data.inputContent, who, isMe))
                 var date = Date.now()
-                console.log(this.tunnel)
+                console.log('this.tunnel',this.tunnel)
                 this.tunnel.emit('speak',{
-                    "targetType":"friend",
+                    "targetType":this.data.friendInfo.type,
                     "targetId":this.data.friendInfo.openId,
                     "data":{
                         "sourceId":appInstance.globalData.myId,

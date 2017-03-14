@@ -39,7 +39,10 @@ App({
 
         if(this.globalData.userData == null){
             console.log('this.getUser()')
-            this.getUser()
+            //this.getUser()
+        }
+        else{
+            console.log('this.getUser() has something',this.globalData.userData)
         }
 
        /* event.on("addNewGroup",this,function(openId){
@@ -68,9 +71,12 @@ App({
         //this.globalData.login = login
         qcloud.login({
             success(result) {
-                showSuccess('登录成功');
+                //showSuccess('登录成功');
                 console.log('login', result);
                 that.globalData.userInfo = result;
+                if (that.globalData.userData == null) {
+                    that.getUser()
+                }
             },
             fail(error) {
                 showModel('登录失败', error);
@@ -294,6 +300,30 @@ App({
                 //that.globalData.groupMessage.push(speak)
                 event.emit('groupMessage',speak)
             }
+            else if (speak.targetType == "stranger") {
+                var has = false
+                var stranger = that.globalData.stranger
+                for (var i = 0; i < stranger.length; i++) {
+                    if(stranger[i].openId == speak.data.sourceId){
+                        has = true
+                        event.emit('friendMessage',speak) 
+                    }
+                }
+                if (has == false) {
+                    var strangerPerson = {
+                        avatarUrl:speak.data.avatarUrl,
+                        nickName:speak.data.sourceName,
+                        openId:speak.data.openId,
+                        type:"stranger",
+                        messages:[speak.data],
+                        nearestMessage:speak.data,
+                        newMessages:[speak.data],
+                        lastTime:util.getTime(speak.data.date)
+                    }
+                    that.globalData.stranger.unshift(strangerPerson)
+                    event.emit('addStranger',strangerPerson)
+                }
+            }
 
             //that.globalData.messages.push(speak)
            
@@ -310,12 +340,15 @@ App({
         }else{
             qcloud.login({
                 success(result) {
-                    showSuccess('登录成功');
+                   // showSuccess('登录成功');
                     console.log('登录成功', result);
                     
                     that.globalData.userInfo = result;
                     if(that.globalData.userData == null)
-                        that.getUser()
+                        {
+                            that.getUser()
+                            console.log('that.getUser() 继续执行下去了', that.getUser())
+                        }
 
                     typeof arg=="function" && arg(that.globalData.userInfo)
             },
@@ -334,6 +367,7 @@ App({
         friendsMessages:[],
         groupMessage:[],
         friends:[],  //openId  nickName  avatarUrl gender... nearestMessage{} newMessages[]
+        stranger:[],
         tunnel:null,
         userData:null,
         groupsInfo:null, //openId groupName groupSign avatarUrl nearestMessage newMessages

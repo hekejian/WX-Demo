@@ -339,6 +339,9 @@ Page({
                 friendsInfo
             })
         })
+        event.on('addStranger',this,function(stranger){
+            friendsInfo.unshift(stranger)
+        })
 
         if (this.data.friendsInfo.length == 0 && appInstance.globalData.groupsInfo) {
             var friendsInfo = this.data.friendsInfo
@@ -420,6 +423,7 @@ Page({
         event.remove('enterPersonalChat',this);
         event.remove('deleteStranger',this);
         event.remove('chatStranger',this);
+        event.remove('addStranger',this);
         //this.tunnel.close()
     },
 
@@ -504,6 +508,7 @@ Page({
      * 点击「聊天室」按钮，跳转到聊天室综合 Demo 的页面
      */
     openChat(args) {
+        console.log("friendsInfo",this.data.friendsInfo)
         var openId = args.currentTarget.dataset.openId
         var type = args.currentTarget.dataset.type
         console.log("openIdOpenChat",openId)

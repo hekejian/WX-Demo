@@ -120,6 +120,11 @@ Page({
         }
         if (appInstance.globalData.tunnel) {
             this.tunnel = appInstance.globalData.tunnel
+            console.log('this.tunnel',this.tunnel)
+        }else{
+            //appInstance.login() //测试使用
+            //appInstance.getUser()
+            console.log('yiyi')
         }
         //this.tunnel = appInstance.globalData.tunnel
         this.me = appInstance.globalData.userData
@@ -225,7 +230,7 @@ Page({
                 }else{
                     var who = {
                     "nickName":speakData.sourceName,
-                    "avatarUrl":speakData.sourceAvatar,
+                    "avatarUrl":speakData.avatarUrl,
                     }
                     that.pushMessage(createUserMessage(speakData.content,who,isMe))
                 }
