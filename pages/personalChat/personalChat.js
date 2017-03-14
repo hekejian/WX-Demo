@@ -364,7 +364,7 @@ Page({
                 var date = Date.now()
                 console.log('this.tunnel',this.tunnel)
                 this.tunnel.emit('speak',{
-                    "targetType":this.data.friendInfo.type,
+                    "targetType":'friend',
                     "targetId":this.data.friendInfo.openId,
                     "data":{
                         "sourceId":appInstance.globalData.myId,
