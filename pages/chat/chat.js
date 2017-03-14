@@ -173,7 +173,17 @@ Page({
         })
 
         event.on('groupNumberOffline',this,function(offline){
-
+            console.log('offline',offline)
+            var groupNumber = that.data.groupNumber
+            for (var i = 0; i < groupNumber.length; i++) {
+                if(groupNumber[i].openId == offline.sourceId){
+                    groupNumber.splice(i,1)
+                    console.log('我删掉了',groupNumber)
+                }
+            }
+            that.setData({
+                groupNumber
+            })
         })
 
         event.on('addGroup',this,function(add){

@@ -202,6 +202,12 @@ App({
         tunnel.on('offline',offline => {
             if(offline.targetType == "group"){
                  event.emit('groupNumberOffline',offline.data)
+                 var groupMember = that.globalData.groupMember
+                 for (var i = 0; i < groupMember.length; i++) {
+                     if (groupMember[i].openId == offline.data.sourceId) {
+                        groupMember.splice(i,1)
+                     } 
+                 }
             }
             
         })
@@ -264,14 +270,40 @@ App({
                 that.globalData.friendsMessages.push(speak)
                 var friends = that.globalData.friends
                 event.emit('friendMessage',speak)
+                var has = false
                 for (var i = 0; i < friends.length; i++) {
                     if (friends[i].openId == speak.data.sourceId) {
+                        has = true
                         friends[i].messages.push(speak.data)
                         friends[i].nearestMessage = speak.data
                         friends[i].lastTime = util.getTime(speak.data.date)
                         if (speak.data.sourceId != that.globalData.enterOpenId) {
                             friends[i].newMessages.push(speak.data)
                         }
+                    }
+                }
+                if (has == false) {
+                    var onhas = false
+                    var stranger = that.globalData.stranger
+                    for (var i = 0; i < stranger.length; i++) {
+                        if(stranger[i].openId == speak.data.sourceId){
+                            onhas = true
+                            event.emit('friendMessage',speak) 
+                        }
+                    }
+                    if (onhas == false) {
+                        var strangerPerson = {
+                            avatarUrl:speak.data.avatarUrl,
+                            nickName:speak.data.sourceName,
+                            openId:speak.data.openId,
+                            type:"stranger",
+                            messages:[speak.data],
+                            nearestMessage:speak.data,
+                            newMessages:[speak.data],
+                            lastTime:util.getTime(speak.data.date)
+                        }
+                        that.globalData.stranger.unshift(strangerPerson)
+                        event.emit('addStranger',strangerPerson)
                     }
                 }
             }
@@ -301,28 +333,7 @@ App({
                 event.emit('groupMessage',speak)
             }
             else if (speak.targetType == "stranger") {
-                var has = false
-                var stranger = that.globalData.stranger
-                for (var i = 0; i < stranger.length; i++) {
-                    if(stranger[i].openId == speak.data.sourceId){
-                        has = true
-                        event.emit('friendMessage',speak) 
-                    }
-                }
-                if (has == false) {
-                    var strangerPerson = {
-                        avatarUrl:speak.data.avatarUrl,
-                        nickName:speak.data.sourceName,
-                        openId:speak.data.openId,
-                        type:"stranger",
-                        messages:[speak.data],
-                        nearestMessage:speak.data,
-                        newMessages:[speak.data],
-                        lastTime:util.getTime(speak.data.date)
-                    }
-                    that.globalData.stranger.unshift(strangerPerson)
-                    event.emit('addStranger',strangerPerson)
-                }
+                
             }
 
             //that.globalData.messages.push(speak)

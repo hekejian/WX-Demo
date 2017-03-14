@@ -149,10 +149,21 @@ Page({
             //添加好友 确认还未处理先添加进来
             //需要维护一个好友列表，不然所有的人都是一样的呢
             var verifyList = that.data.verifyList
-            verifyList.unshift(friend)
-            that.setData({
-                verifyList
-            })
+            var has = false
+            console.log('friend',friend)
+            for (var i = 0; i < verifyList.length; i++) {
+                if (verifyList[i].openId == friend.openId) {
+                    has = true
+                    break
+                } 
+            }
+            if (has == false) {
+                verifyList.unshift(friend)
+                that.setData({
+                    verifyList
+                })
+            }
+            
         })
 
         event.on('deleteFriend',this,function(friend){

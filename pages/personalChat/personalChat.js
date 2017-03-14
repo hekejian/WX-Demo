@@ -126,7 +126,7 @@ Page({
            var friendInfo = this.data.friendInfo
            console.log('add',add)
            if (add.openId == friendInfo.openId) {
-                this.showVerifyInfo()
+                this.showVerifyInfo(add.openId)
             }  
         })
 
@@ -233,9 +233,10 @@ Page({
         })
         //删除对方好友
     },
-    showVerifyInfo(){
+    showVerifyInfo(openId){
         var that = this
-        wx.showModal({
+        if (appInstance.globalData.enterOpenId == openId) {
+            wx.showModal({
             title:"对方请求添加好友",
             content: "  添加好友以后还可以继续愉快的聊天哦",
             showCancel: true,
@@ -257,6 +258,8 @@ Page({
                 }
             }
         });
+        }
+        
     },
 
     verifyFriend(){
@@ -274,6 +277,21 @@ Page({
                         "result":true
                     }
                 })
+        var stranger = appInstance.globalData.stranger
+        var friends = appInstance.globalData.friends
+        for (var i = 0; i < stranger.length; i++) {
+            if (stranger[i].openId == this.data.friendInfo.openId) {
+                var friend = stranger[i]
+                friend.type = 'friend'
+                stranger.splice(i,1)
+                friends.unshift(friend)
+                console.log('cao ni ma',friend);
+                this.setData({
+                    friendInfo:friend
+                })
+            } 
+        }
+
         this.pushMessage(createSystemMessage('对方已经是你好友'))
     },
 
