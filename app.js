@@ -274,6 +274,7 @@ App({
                 for (var i = 0; i < friends.length; i++) {
                     if (friends[i].openId == speak.data.sourceId) {
                         has = true
+                        
                         friends[i].messages.push(speak.data)
                         friends[i].nearestMessage = speak.data
                         friends[i].lastTime = util.getTime(speak.data.date)
@@ -285,17 +286,18 @@ App({
                 if (has == false) {
                     var onhas = false
                     var stranger = that.globalData.stranger
+                    //console.log()
                     for (var i = 0; i < stranger.length; i++) {
                         if(stranger[i].openId == speak.data.sourceId){
                             onhas = true
-                            event.emit('friendMessage',speak) 
+                            console.log("friendMessage stranger",speak)
                         }
                     }
                     if (onhas == false) {
                         var strangerPerson = {
                             avatarUrl:speak.data.avatarUrl,
                             nickName:speak.data.sourceName,
-                            openId:speak.data.openId,
+                            openId:speak.data.sourceId,
                             type:"stranger",
                             messages:[speak.data],
                             nearestMessage:speak.data,
@@ -303,7 +305,9 @@ App({
                             lastTime:util.getTime(speak.data.date)
                         }
                         that.globalData.stranger.unshift(strangerPerson)
+                        console.log('addStranger')
                         event.emit('addStranger',strangerPerson)
+
                     }
                 }
             }
@@ -332,9 +336,7 @@ App({
                 //that.globalData.groupMessage.push(speak)
                 event.emit('groupMessage',speak)
             }
-            else if (speak.targetType == "stranger") {
-                
-            }
+           
 
             //that.globalData.messages.push(speak)
            

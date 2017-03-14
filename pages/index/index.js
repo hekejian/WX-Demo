@@ -258,6 +258,7 @@ Page({
                             console.log("pushmessage",friendsList[i].newMessages)    
                         }
                         //时间处理
+                        console.log('friendMessage zhixingle ')
                         var temp = friendsList[i]
                         friendsList.splice(i,1)
                         friendsList.unshift(temp)
@@ -351,7 +352,14 @@ Page({
             })
         })
         event.on('addStranger',this,function(stranger){
+            console.log("addStranger",stranger)
+            var friendsInfo = that.data.friendsInfo
             friendsInfo.unshift(stranger)
+            console.log('addStranger zhixingle ')
+            this.setData({
+                friendsInfo
+            })
+            console.log(friendsInfo)
         })
 
         if (this.data.friendsInfo.length == 0 && appInstance.globalData.groupsInfo) {

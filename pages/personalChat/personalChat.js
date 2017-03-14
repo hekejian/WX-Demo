@@ -48,11 +48,12 @@ Page({
         console.log(options)
         var that = this
         var openId = options.openId
+        console.log("options.openId",options.openId)
         appInstance.globalData.enterOpenId = openId
         var friends = appInstance.globalData.friends
         appInstance.globalData.enterOpenId = openId
         console.log("friendsfriendsfriendsfriendsfriends",friends)
-        var friendInfo
+        var friendInfo = null
         if (options.type == "friend") {
             console.log("friend")
             for (var i = 0; i < friends.length; i++) {
@@ -73,19 +74,38 @@ Page({
 
         if (options.type == "stranger") {
             var groupMember = appInstance.globalData.groupMember
+            var stranger = appInstance.globalData.stranger
             console.log('appInstance.globalData.groupMember',appInstance.globalData.groupMember)
-            for (var i = 0; i < groupMember.length; i++) {
-                if (groupMember[i].openId == openId) {
-                    friendInfo = groupMember[i]
-                    friendInfo.type = "stranger"
+            var has = false
+            console.log('stranger',stranger)
+            console.log('groupMember',groupMember)
+            console.log('openId',openId)
+            for (var i = 0; i < stranger.length; i++) {
+                if (stranger[i].openId == openId) {
+                    has = true
+                    friendInfo = stranger[i]
                     event.emit('chatStranger',friendInfo)
                     that.setData({
-                            friendInfo
+                        friendInfo
                     })
-                    console.log('friendInfo.type',this.data.friendInfo.type)
-                }
-               
+                    console.log(that.data.friendInfo)
+                } 
             }
+            if (has == false) {
+                for (var i = 0; i < groupMember.length; i++) {
+                    if (groupMember[i].openId == openId) {
+                        friendInfo = groupMember[i]
+                        friendInfo.type = "stranger"
+                        event.emit('chatStranger',friendInfo)
+                        that.setData({
+                            friendInfo
+                        })
+                        console.log('friendInfo.type',this.data.friendInfo.type)
+                    }
+               
+                }
+            }
+            
             /*for (var i = 0; i < groupMember.length; i++) {
                 for (var j = 0; j < groupMember[i].list.length; j++) {
                     if (groupMember[i].list[j].openId == openId) {
@@ -190,7 +210,6 @@ Page({
 
     onReady() {
         wx.setNavigationBarTitle({ title: this.data.friendInfo.nickName});
-        if (this.data.type == 'friend') {
             var friendMessage = this.data.friendInfo.messages
             var isMe = false
             console.log("friendMessage",friendMessage)
@@ -205,7 +224,7 @@ Page({
                 }
                 this.pushMessage(createUserMessage(friendMessage[i].content,who,isMe))
             }
-        }
+        
         
         
     },
