@@ -39,7 +39,10 @@ App({
 
         if(this.globalData.userData == null){
             console.log('this.getUser()')
-            this.getUser()
+            //this.getUser()
+        }
+        else{
+            console.log('this.getUser() has something',this.globalData.userData)
         }
 
        /* event.on("addNewGroup",this,function(openId){
@@ -68,9 +71,12 @@ App({
         //this.globalData.login = login
         qcloud.login({
             success(result) {
-                showSuccess('登录成功');
+                //showSuccess('登录成功');
                 console.log('login', result);
                 that.globalData.userInfo = result;
+                if (that.globalData.userData == null) {
+                    that.getUser()
+                }
             },
             fail(error) {
                 showModel('登录失败', error);
@@ -196,6 +202,12 @@ App({
         tunnel.on('offline',offline => {
             if(offline.targetType == "group"){
                  event.emit('groupNumberOffline',offline.data)
+                 var groupMember = that.globalData.groupMember
+                 for (var i = 0; i < groupMember.length; i++) {
+                     if (groupMember[i].openId == offline.data.sourceId) {
+                        groupMember.splice(i,1)
+                     } 
+                 }
             }
             
         })
@@ -258,8 +270,10 @@ App({
                 that.globalData.friendsMessages.push(speak)
                 var friends = that.globalData.friends
                 event.emit('friendMessage',speak)
+                var has = false
                 for (var i = 0; i < friends.length; i++) {
                     if (friends[i].openId == speak.data.sourceId) {
+                        has = true
                         friends[i].messages.push(speak.data)
                         friends[i].nearestMessage = speak.data
                         friends[i].lastTime = util.getTime(speak.data.date)
@@ -268,12 +282,52 @@ App({
                         }
                     }
                 }
+                if (has == false) {
+                    var onhas = false
+                    var stranger = that.globalData.stranger
+                    //console.log()
+                    for (var i = 0; i < stranger.length; i++) {
+                        if(stranger[i].openId == speak.data.sourceId){
+                            onhas = true
+                            stranger[i].lastTime = util.getTime(speak.data.date)
+                            stranger[i].nearestMessage = speak.data
+                            stranger[i].messages.push(speak.data)
+                            if (speak.data.sourceId != that.globalData.enterOpenId) {
+                                stranger[i].newMessages.push(speak.data)
+                            }
+                            console.log("friendMessage stranger",speak)
+                        }
+                    }
+                    if (onhas == false) {
+                        var strangerPerson = {
+                            avatarUrl:speak.data.avatarUrl,
+                            nickName:speak.data.sourceName,
+                            openId:speak.data.sourceId,
+                            type:"stranger",
+                            messages:[speak.data],
+                            nearestMessage:speak.data,
+                            newMessages:[speak.data],
+                            lastTime:util.getTime(speak.data.date)
+                        }
+                        that.globalData.stranger.unshift(strangerPerson)
+                        console.log('addStranger')
+                        event.emit('addStranger',strangerPerson)
+
+                    }
+                }
             }
             else if (speak.targetType == "friend" && speak.data.sourceId == that.globalData.myId) {
                 var friends = that.globalData.friends
+                var stranger = that.globalData.stranger
                 event.emit('myMessage',speak)
+                console.log('myMessage',speak)
+                console.log('friends',friends)
+                console.log('stranger',stranger)
+                var has = false
                 for (var i = 0; i < friends.length; i++) {
                     if (friends[i].openId == speak.targetId) {
+                        console.log('friend friend friend',speak)
+                        has = true
                         friends[i].messages.push(speak.data)
                         friends[i].nearestMessage = speak.data
                         friends[i].lastTime = util.getTime(speak.data.date)
@@ -282,6 +336,38 @@ App({
                         }
                     }
                 }
+                for (var i = 0; i < stranger.length; i++) {
+                    if (stranger[i].openId == speak.targetId) {
+                        console.log('stranger stranger messages',speak)
+                        has = true
+                        stranger[i].messages.push(speak.data)
+                        stranger[i].nearestMessage = speak.data
+                        stranger[i].lastTime = util.getTime(speak.data.date)
+                        if (speak.targetId != that.globalData.enterOpenId) {
+                            stranger[i].newMessages.push(speak.data)
+                        }
+                    } 
+                }
+                if (has == false) {
+                    var groupMember = that.globalData.groupMember
+                    for (var i = 0; i < groupMember.length; i++) {
+                        if (groupMember[i].openId == speak.targetId) {
+                            var strangerPerson = {
+                                avatarUrl:groupMember[i].avatarUrl,
+                                nickName:groupMember[i].nickName,
+                                openId:groupMember[i].openId,
+                                type:"stranger",
+                                messages:[speak.data],
+                                nearestMessage:speak.data,
+                                newMessages:[speak.data],
+                                lastTime:util.getTime(speak.data.date)
+                        }
+                        that.globalData.stranger.unshift(strangerPerson)
+                        } groupMember[i]
+                    }
+                   
+                }
+
             }
             else if(speak.targetType == "group"){
                 that.globalData.groupsInfo.nearestMessage = speak.data
@@ -294,6 +380,7 @@ App({
                 //that.globalData.groupMessage.push(speak)
                 event.emit('groupMessage',speak)
             }
+           
 
             //that.globalData.messages.push(speak)
            
@@ -310,12 +397,15 @@ App({
         }else{
             qcloud.login({
                 success(result) {
-                    showSuccess('登录成功');
+                   // showSuccess('登录成功');
                     console.log('登录成功', result);
                     
                     that.globalData.userInfo = result;
                     if(that.globalData.userData == null)
-                        that.getUser()
+                        {
+                            that.getUser()
+                            console.log('that.getUser() 继续执行下去了', that.getUser())
+                        }
 
                     typeof arg=="function" && arg(that.globalData.userInfo)
             },
@@ -334,6 +424,7 @@ App({
         friendsMessages:[],
         groupMessage:[],
         friends:[],  //openId  nickName  avatarUrl gender... nearestMessage{} newMessages[]
+        stranger:[],
         tunnel:null,
         userData:null,
         groupsInfo:null, //openId groupName groupSign avatarUrl nearestMessage newMessages

@@ -149,10 +149,21 @@ Page({
             //添加好友 确认还未处理先添加进来
             //需要维护一个好友列表，不然所有的人都是一样的呢
             var verifyList = that.data.verifyList
-            verifyList.unshift(friend)
-            that.setData({
-                verifyList
-            })
+            var has = false
+            console.log('friend',friend)
+            for (var i = 0; i < verifyList.length; i++) {
+                if (verifyList[i].openId == friend.openId) {
+                    has = true
+                    break
+                } 
+            }
+            if (has == false) {
+                verifyList.unshift(friend)
+                that.setData({
+                    verifyList
+                })
+            }
+            
         })
 
         event.on('deleteFriend',this,function(friend){
@@ -247,6 +258,7 @@ Page({
                             console.log("pushmessage",friendsList[i].newMessages)    
                         }
                         //时间处理
+                        console.log('friendMessage zhixingle ')
                         var temp = friendsList[i]
                         friendsList.splice(i,1)
                         friendsList.unshift(temp)
@@ -339,6 +351,16 @@ Page({
                 friendsInfo
             })
         })
+        event.on('addStranger',this,function(stranger){
+            console.log("addStranger",stranger)
+            var friendsInfo = that.data.friendsInfo
+            friendsInfo.unshift(stranger)
+            console.log('addStranger zhixingle ')
+            this.setData({
+                friendsInfo
+            })
+            console.log(friendsInfo)
+        })
 
         if (this.data.friendsInfo.length == 0 && appInstance.globalData.groupsInfo) {
             var friendsInfo = this.data.friendsInfo
@@ -360,9 +382,10 @@ Page({
             */
         }
 
-        if (this.data.friendsInfo.length == 0 && appInstance.globalData.friends.length != 0) {
+        if (this.data.friendsInfo.length == 0) {
             var friendsInfo = that.data.friendsInfo
             var list = appInstance.globalData.friends
+            var stranger = appInstance.globalData.stranger
             var time
            // var time, hour, minute
             for (var i = 0; i < list.length; i++) {
@@ -379,8 +402,14 @@ Page({
                 list[i].messages = list[i].newMessages
                 list[i].type = "friend"          
                 friendsInfo.push(list[i])
+
+            }
+            for (var i = 0; i < stranger.length; i++) {
+                friendsInfo.unshift(stranger[i])
             }
             
+            console.log('stranger',stranger)
+            console.log('friendsInfo',friendsInfo)
             that.setData({
                 friendsInfo
             })
@@ -420,6 +449,7 @@ Page({
         event.remove('enterPersonalChat',this);
         event.remove('deleteStranger',this);
         event.remove('chatStranger',this);
+        event.remove('addStranger',this);
         //this.tunnel.close()
     },
 
@@ -504,6 +534,7 @@ Page({
      * 点击「聊天室」按钮，跳转到聊天室综合 Demo 的页面
      */
     openChat(args) {
+        console.log("friendsInfo",this.data.friendsInfo)
         var openId = args.currentTarget.dataset.openId
         var type = args.currentTarget.dataset.type
         console.log("openIdOpenChat",openId)

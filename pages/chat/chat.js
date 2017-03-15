@@ -126,6 +126,11 @@ Page({
         }
         if (appInstance.globalData.tunnel) {
             this.tunnel = appInstance.globalData.tunnel
+            console.log('this.tunnel',this.tunnel)
+        }else{
+            //appInstance.login() //测试使用
+            //appInstance.getUser()
+            console.log('yiyi')
         }
         //this.tunnel = appInstance.globalData.tunnel
         this.me = appInstance.globalData.userData
@@ -178,7 +183,17 @@ Page({
         })
 
         event.on('groupNumberOffline',this,function(offline){
-
+            console.log('offline',offline)
+            var groupNumber = that.data.groupNumber
+            for (var i = 0; i < groupNumber.length; i++) {
+                if(groupNumber[i].openId == offline.sourceId){
+                    groupNumber.splice(i,1)
+                    console.log('我删掉了',groupNumber)
+                }
+            }
+            that.setData({
+                groupNumber
+            })
         })
 
         event.on('addGroup',this,function(add){
@@ -235,7 +250,7 @@ Page({
                 }else{
                     var who = {
                     "nickName":speakData.sourceName,
-                    "avatarUrl":speakData.sourceAvatar,
+                    "avatarUrl":speakData.avatarUrl,
                     }
                     that.pushMessage(createUserMessage(speakData.content,who,isMe))
                 }

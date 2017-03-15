@@ -48,11 +48,12 @@ Page({
         console.log(options)
         var that = this
         var openId = options.openId
+        console.log("options.openId",options.openId)
         appInstance.globalData.enterOpenId = openId
         var friends = appInstance.globalData.friends
         appInstance.globalData.enterOpenId = openId
         console.log("friendsfriendsfriendsfriendsfriends",friends)
-        var friendInfo
+        var friendInfo = null
         if (options.type == "friend") {
             console.log("friend")
             for (var i = 0; i < friends.length; i++) {
@@ -62,6 +63,7 @@ Page({
                     that.setData({
                         friendInfo
                     })
+                    console.log('friendInfo.type',this.data.friendInfo.type)
                 }
             }
             that.setData({
@@ -72,18 +74,38 @@ Page({
 
         if (options.type == "stranger") {
             var groupMember = appInstance.globalData.groupMember
+            var stranger = appInstance.globalData.stranger
             console.log('appInstance.globalData.groupMember',appInstance.globalData.groupMember)
-            for (var i = 0; i < groupMember.length; i++) {
-                if (groupMember[i].openId == openId) {
-                    friendInfo = groupMember[i]
-                    friendInfo.type = "stranger"
+            var has = false
+            console.log('stranger',stranger)
+            console.log('groupMember',groupMember)
+            console.log('openId',openId)
+            for (var i = 0; i < stranger.length; i++) {
+                if (stranger[i].openId == openId) {
+                    has = true
+                    friendInfo = stranger[i]
                     event.emit('chatStranger',friendInfo)
                     that.setData({
-                            friendInfo
+                        friendInfo
                     })
-                }
-               
+                    console.log(that.data.friendInfo)
+                } 
             }
+            if (has == false) {
+                for (var i = 0; i < groupMember.length; i++) {
+                    if (groupMember[i].openId == openId) {
+                        friendInfo = groupMember[i]
+                        friendInfo.type = "stranger"
+                        event.emit('chatStranger',friendInfo)
+                        that.setData({
+                            friendInfo
+                        })
+                        console.log('friendInfo.type',this.data.friendInfo.type)
+                    }
+               
+                }
+            }
+            
             /*for (var i = 0; i < groupMember.length; i++) {
                 for (var j = 0; j < groupMember[i].list.length; j++) {
                     if (groupMember[i].list[j].openId == openId) {
@@ -124,7 +146,7 @@ Page({
            var friendInfo = this.data.friendInfo
            console.log('add',add)
            if (add.openId == friendInfo.openId) {
-                this.showVerifyInfo()
+                this.showVerifyInfo(add.openId)
             }  
         })
 
@@ -188,22 +210,22 @@ Page({
 
     onReady() {
         wx.setNavigationBarTitle({ title: this.data.friendInfo.nickName});
-        if (this.data.type == 'friend') {
             var friendMessage = this.data.friendInfo.messages
             var isMe = false
             console.log("friendMessage",friendMessage)
-            for (var i = 0; i < friendMessage.length; i++) {
-                isMe = false
-                if (friendMessage[i].sourceId == appInstance.globalData.myId) {
-                    isMe = true
-                }
-                var who = {
-                    "nickName":friendMessage[i].sourceName,
-                    "avatarUrl":friendMessage[i].avatarUrl,
-                }
+            if (friendMessage) {
+                for (var i = 0; i < friendMessage.length; i++) {
+                    isMe = false
+                    if (friendMessage[i].sourceId == appInstance.globalData.myId) {
+                        isMe = true
+                    }
+                    var who = {
+                        "nickName":friendMessage[i].sourceName,
+                        "avatarUrl":friendMessage[i].avatarUrl,
+                    }
                 this.pushMessage(createUserMessage(friendMessage[i].content,who,isMe))
+                }
             }
-        }
         
         
     },
@@ -231,9 +253,10 @@ Page({
         })
         //删除对方好友
     },
-    showVerifyInfo(){
+    showVerifyInfo(openId){
         var that = this
-        wx.showModal({
+        if (appInstance.globalData.enterOpenId == openId) {
+            wx.showModal({
             title:"对方请求添加好友",
             content: "  添加好友以后还可以继续愉快的聊天哦",
             showCancel: true,
@@ -255,6 +278,8 @@ Page({
                 }
             }
         });
+        }
+        
     },
 
     verifyFriend(){
@@ -263,7 +288,7 @@ Page({
         var sourceName = appInstance.globalData.userData.nickName
         var avatarUrl = appInstance.globalData.userData.avatarUrl
         this.tunnel.emit('add2',{
-                    "targetType":"friend",
+                    "targetType":'friend',
                     "targetId":this.data.friendInfo.openId,
                     "data":{
                         "sourceId":sourceId,
@@ -272,6 +297,21 @@ Page({
                         "result":true
                     }
                 })
+        var stranger = appInstance.globalData.stranger
+        var friends = appInstance.globalData.friends
+        for (var i = 0; i < stranger.length; i++) {
+            if (stranger[i].openId == this.data.friendInfo.openId) {
+                var friend = stranger[i]
+                friend.type = 'friend'
+                stranger.splice(i,1)
+                friends.unshift(friend)
+                console.log('cao ni ma',friend);
+                this.setData({
+                    friendInfo:friend
+                })
+            } 
+        }
+
         this.pushMessage(createSystemMessage('对方已经是你好友'))
     },
 
@@ -331,7 +371,7 @@ Page({
             this.pushMessage(createSystemMessage('对不起对方已经将你删除，你不能向对方发消息'));
             return;
         }
-
+        console.log("sendMessage")
         setTimeout(() => {
             if (this.data.inputContent && this.tunnel) {
                 //this.tunnel.emit('speak', { word: this.data.inputContent });
@@ -342,9 +382,9 @@ Page({
                 }
                 this.pushMessage(createUserMessage(this.data.inputContent, who, isMe))
                 var date = Date.now()
-                console.log(this.tunnel)
+                console.log('this.tunnel',this.tunnel)
                 this.tunnel.emit('speak',{
-                    "targetType":"friend",
+                    "targetType":'friend',
                     "targetId":this.data.friendInfo.openId,
                     "data":{
                         "sourceId":appInstance.globalData.myId,
