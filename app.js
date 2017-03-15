@@ -320,8 +320,14 @@ App({
                 var friends = that.globalData.friends
                 var stranger = that.globalData.stranger
                 event.emit('myMessage',speak)
+                console.log('myMessage',speak)
+                console.log('friends',friends)
+                console.log('stranger',stranger)
+                var has = false
                 for (var i = 0; i < friends.length; i++) {
                     if (friends[i].openId == speak.targetId) {
+                        console.log('friend friend friend',speak)
+                        has = true
                         friends[i].messages.push(speak.data)
                         friends[i].nearestMessage = speak.data
                         friends[i].lastTime = util.getTime(speak.data.date)
@@ -332,6 +338,8 @@ App({
                 }
                 for (var i = 0; i < stranger.length; i++) {
                     if (stranger[i].openId == speak.targetId) {
+                        console.log('stranger stranger messages',speak)
+                        has = true
                         stranger[i].messages.push(speak.data)
                         stranger[i].nearestMessage = speak.data
                         stranger[i].lastTime = util.getTime(speak.data.date)
@@ -339,6 +347,25 @@ App({
                             stranger[i].newMessages.push(speak.data)
                         }
                     } 
+                }
+                if (has == false) {
+                    var groupMember = that.globalData.groupMember
+                    for (var i = 0; i < groupMember.length; i++) {
+                        if (groupMember[i].openId == speak.targetId) {
+                            var strangerPerson = {
+                                avatarUrl:groupMember[i].avatarUrl,
+                                nickName:groupMember[i].nickName,
+                                openId:groupMember[i].openId,
+                                type:"stranger",
+                                messages:[speak.data],
+                                nearestMessage:speak.data,
+                                newMessages:[speak.data],
+                                lastTime:util.getTime(speak.data.date)
+                        }
+                        that.globalData.stranger.unshift(strangerPerson)
+                        } groupMember[i]
+                    }
+                   
                 }
 
             }

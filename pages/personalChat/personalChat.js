@@ -213,18 +213,19 @@ Page({
             var friendMessage = this.data.friendInfo.messages
             var isMe = false
             console.log("friendMessage",friendMessage)
-            for (var i = 0; i < friendMessage.length; i++) {
-                isMe = false
-                if (friendMessage[i].sourceId == appInstance.globalData.myId) {
-                    isMe = true
-                }
-                var who = {
-                    "nickName":friendMessage[i].sourceName,
-                    "avatarUrl":friendMessage[i].avatarUrl,
-                }
+            if (friendMessage) {
+                for (var i = 0; i < friendMessage.length; i++) {
+                    isMe = false
+                    if (friendMessage[i].sourceId == appInstance.globalData.myId) {
+                        isMe = true
+                    }
+                    var who = {
+                        "nickName":friendMessage[i].sourceName,
+                        "avatarUrl":friendMessage[i].avatarUrl,
+                    }
                 this.pushMessage(createUserMessage(friendMessage[i].content,who,isMe))
+                }
             }
-        
         
         
     },
