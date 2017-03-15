@@ -274,7 +274,6 @@ App({
                 for (var i = 0; i < friends.length; i++) {
                     if (friends[i].openId == speak.data.sourceId) {
                         has = true
-                        
                         friends[i].messages.push(speak.data)
                         friends[i].nearestMessage = speak.data
                         friends[i].lastTime = util.getTime(speak.data.date)
@@ -319,6 +318,7 @@ App({
             }
             else if (speak.targetType == "friend" && speak.data.sourceId == that.globalData.myId) {
                 var friends = that.globalData.friends
+                var stranger = that.globalData.stranger
                 event.emit('myMessage',speak)
                 for (var i = 0; i < friends.length; i++) {
                     if (friends[i].openId == speak.targetId) {
@@ -330,6 +330,17 @@ App({
                         }
                     }
                 }
+                for (var i = 0; i < stranger.length; i++) {
+                    if (stranger[i].openId == speak.targetId) {
+                        stranger[i].messages.push(speak.data)
+                        stranger[i].nearestMessage = speak.data
+                        stranger[i].lastTime = util.getTime(speak.data.date)
+                        if (speak.targetId != that.globalData.enterOpenId) {
+                            stranger[i].newMessages.push(speak.data)
+                        }
+                    } 
+                }
+
             }
             else if(speak.targetType == "group"){
                 that.globalData.groupsInfo.nearestMessage = speak.data
