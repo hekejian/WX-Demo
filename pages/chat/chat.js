@@ -313,7 +313,7 @@ Page({
 
                 var who = {
                         "nickName":groupMessage[i].sourceName,
-                        "avatarUrl":groupMessage[i].sourceAvatar,
+                        "avatarUrl":groupMessage[i].avatarUrl,
                     // "avatarUrl":avatarUrl
                  }
                 this.pushMessage(createUserMessage(groupMessage[i].content,who,isMe))
@@ -430,7 +430,7 @@ Page({
                     "data":{
                         "sourceId":appInstance.globalData.myId,
                         "sourceName":appInstance.globalData.userInfo.nickName,
-                        "sourceAvatar":appInstance.globalData.userInfo.avatarUrl,
+                        "avatarUrl":appInstance.globalData.userInfo.avatarUrl,
                         "date":Date.now(),
                         "content":this.data.inputContent
                     }

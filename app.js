@@ -115,6 +115,7 @@ App({
                     var list = response.data.data.list
                     for (var i = 0; i < list.length; i++) {
                         list[i].messages = list[i].newMessages
+                        console.log("list[i].newMessages",list[i].newMessages)
                     }
                     that.globalData.friends = list;
                     console.log('requestFriends',that.globalData.friends) //接口无
