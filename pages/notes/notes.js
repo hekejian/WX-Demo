@@ -243,6 +243,7 @@ onHide: function() {
         wx.request({
           header:{
               'content-type':'application/x-www-form-urlencoded;;charset=UTF-8;',
+              'Accept':'application/json'
 
             },
           url: `https://${config.service.host}/share/new`,
@@ -294,6 +295,9 @@ onHide: function() {
             url: `https://${config.service.host}/share/upload`,
             name:"file",
             filePath:image,
+            header:{
+              'Accept':'application/json'
+            },
             formData:{
               'openId': appInstance.globalData.myId,
               'shareId':shareId,

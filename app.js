@@ -290,6 +290,12 @@ App({
                     for (var i = 0; i < stranger.length; i++) {
                         if(stranger[i].openId == speak.data.sourceId){
                             onhas = true
+                            stranger[i].lastTime = util.getTime(speak.data.date)
+                            stranger[i].nearestMessage = speak.data
+                            stranger[i].messages.push(speak.data)
+                            if (speak.data.sourceId != that.globalData.enterOpenId) {
+                                stranger[i].newMessages.push(speak.data)
+                            }
                             console.log("friendMessage stranger",speak)
                         }
                     }
