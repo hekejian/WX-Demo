@@ -56,6 +56,7 @@ Page({
         lastMessageId: 'none',
         scrollTop:99999,
         groupNumber:[], //list
+        long:false,
         show:false,
     },
    
@@ -64,7 +65,12 @@ Page({
         var that = this
         addgroup = false
         var getInfo = false
+<<<<<<< HEAD
         //var groupOpenId = options.openId
+=======
+        var long  = this.long
+       // var groupOpenId = options.openId
+>>>>>>> afca5729a090136e809b90413e8772bfa83d39e0
        var groupOpenId = '58afeeed834b87fc515f9f35'
         appInstance.globalData.enterOpenId = groupOpenId
         /*if (appInstance.globalData.groupsInfo) {
@@ -97,10 +103,14 @@ Page({
                 addgroup = true 
                 var groupInfo = appInstance.globalData.groupsInfo
                 var groupNumber = appInstance.globalData.groupMember
-                
+                if(groupNumber.length > 6){
+                    long = true
+                }
+
                 that.setData({
                         groupInfo,
-                        groupNumber
+                        groupNumber,
+                        long,
                        // groupMember
                        // messages : groupInfo.newMessages
                     })
@@ -152,8 +162,12 @@ Page({
         event.on('getGroupNumber',this,function(groupList){
             //获得群成员
             if(groupList.openId == groupOpenId){
+                if(groupList.list.length > 6){
+                    long = true
+                }
                 that.setData({
-                    groupNumber:groupList.list
+                    groupNumber:groupList.list,
+                    long
                 })
             }
         })

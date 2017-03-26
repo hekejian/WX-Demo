@@ -56,7 +56,6 @@
           <text class="time-big">{{formatedRecordTime}}</text>
         </view>
         <view class="page-body-buttons">
-          <view class="page-body-button"></view>
           <view class="page-body-button" bindtap="stopRecord">
             <image class="button-stop-record" src="../materials/stop.png"></image>
           </view>
@@ -67,13 +66,17 @@
           <text class="time-big">{{formatedPlayTime}}</text>
           <text class="time-small">{{formatedRecordTime}}</text>
         </view>
-        <view class="page-body-button" bindtap="playVoice">
+        <view class ="record-btns">
+          <view class="page-body-button" bindtap="playVoice">
             <image src="../materials/play1.png"></image>
-        </view>
-        <view class="page-body-button" bindtap="clear">
+          </view>
+          <view class = "ensure-btn" bindtap="ensure"><p class= "btn-info">确定</p></view>
+          <view class="page-body-button" bindtap="clear">
             <image src="../materials/trash1.png"></image>
+          </view>
+          
         </view>
-        <view class = "ensure-btn" bindtap="ensure"></view>
+        
       </block>
 
     </view>
