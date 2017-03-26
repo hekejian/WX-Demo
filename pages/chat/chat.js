@@ -52,7 +52,7 @@ Page({
     data: {
         groupInfo:null, // openId  groupName  groupSign avatarUrl nearestMessage newMessages
         messages: [],
-        inputContent: '大家好啊',
+        inputContent: '大家难得相遇，相聚就是缘啊',
         lastMessageId: 'none',
         scrollTop:99999,
         groupNumber:[], //list
@@ -64,7 +64,7 @@ Page({
         var that = this
         addgroup = false
         var getInfo = false
-       // var groupOpenId = options.openId
+        //var groupOpenId = options.openId
        var groupOpenId = '58afeeed834b87fc515f9f35'
         appInstance.globalData.enterOpenId = groupOpenId
         /*if (appInstance.globalData.groupsInfo) {
@@ -486,5 +486,8 @@ Page({
         wx.switchTab({
             url:url
         })
+    },
+    onPullDownRefresh: function(){
+        wx.stopPullDownRefresh()
     }    
 });

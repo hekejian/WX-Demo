@@ -22,7 +22,8 @@ Page({
             // var  重新拉取群数据 有待测试
             var groupInfo = add
             var openId = add.openId
-            that.refreshData(openId)
+            // that.refreshData(openId)
+            that.onPullDownRefresh(openId)
             that.setData({
                 groupInfo
             })
@@ -51,26 +52,35 @@ Page({
 
         event.on('addStory',this,function(story){
             var imageList = that.data.imageList
-            imageList.unshift = story.imageList
+            console.log('story.imageList',story)
+            console.log('imageList before',imageList)
+            imageList.unshift(story.imageList) 
+            console.log('imageList after',imageList)
             var groupStorys = that.data.groupStorys
+            var userData = appInstance.globalData.userData
             var date = Date.now()
             var time = util.formatTime(date)
             var story1 = {
+                images : story.imageList,
                 content:story.text,
                 date:date,
                 groupId:that.data.groupInfo.openId,
-                source:that.data.userData,
+                source:userData,
                 time:time,
+                openId:userData.openId,
                 videos:null,
                 voices:null
 
                 //后续补上videos voices
             }
+            console.log('story1',story1)
+            console.log('groupStorys before',groupStorys)
             groupStorys.unshift(story1)
             that.setData({
                 groupStorys,
                 imageList
             })
+            console.log('groupStorys after',groupStorys)
             //that.imageList.unshift()
         })
 
@@ -122,6 +132,7 @@ Page({
                 }
                 imageList[i] = imagestemp
             }
+            wx.stopPullDownRefresh()
             that.setData({
                 groupStorys:list,
                 imageList
@@ -132,16 +143,22 @@ Page({
     })
   },
 
-  refreshData(openId){
-    this.requstStory(openId)
-  },
+    refreshData(openId){
+        this.requstStory(openId)
+    },
 
-   note(args){
+    note(args){
         wx.navigateTo({
           url: '../notes/notes',
           success: function(res){
             // success
           },
         })
+    },
+    onPullDownRefresh: function(){
+        //下拉刷新
+        var groupId = this.data.groupInfo.openId
+        this.requstStory(groupId)
     }
+
 })

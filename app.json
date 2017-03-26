@@ -15,7 +15,8 @@
         "backgroundTextStyle": "black",
         "navigationBarBackgroundColor": "#6C5BB7",
         "navigationBarTitleText": "Brief Encounter",
-        "navigationBarTextStyle": "white"
+        "navigationBarTextStyle": "white",
+        "enablePullDownRefresh":true
     },
     "tabBar": {
     "color": "#7A7E83", 

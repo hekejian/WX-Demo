@@ -42,8 +42,9 @@ var appInstance = getApp()
 
 Page({
      data: {
-        text:"",
+        text:"遇见美好",
         imageList: [],
+        imageListCopy: [],
         groupInfo:null,
         countIndex: 8,
         count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -61,6 +62,7 @@ Page({
         playTime: 0,
         formatedRecordTime: '00:00:00',
         formatedPlayTime: '00:00:00',
+
         
   },
 
@@ -85,6 +87,13 @@ Page({
     }
   },
 
+   onReady:function() {
+        if (this.data.groupInfo) {
+            wx.setNavigationBarTitle({ title: this.data.groupInfo.groupName});
+        }
+        //console.log("好开心啊啊，我执行了耶",this.data.groupInfo)
+   },
+
   bindTextAreaBlur: function(e){
     console.log(e.detail.value)
     this.setData({
@@ -101,7 +110,8 @@ Page({
       success: function (res) {
         console.log(res)
         that.setData({
-          imageList: res.tempFilePaths
+          imageList: res.tempFilePaths,
+          imageListCopy: res.tempFilePaths
         })
       }
     })
@@ -280,7 +290,7 @@ onHide: function() {
        
   },
 
-  uploadImage(shareId){
+  uploadImage: function(shareId){
     //var imageList = this.data.imageList
     var that = this
     if (this.data.imageList.length > 0) {
@@ -321,15 +331,22 @@ onHide: function() {
       })
       var story = {
         text:that.data.text,
-        imageList:that.data.imageList
+        imageList:that.data.imageListCopy
         //图片和音频后续加上
       }
       event.emit('addStory',story)
+      appInstance.globalData.imageList = []
       wx.switchTab({
         url:'../story/story'
       })
     }
-  }
+  },
+  onUnload:function(){
+   
+  },
+  onPullDownRefresh: function(){
+        wx.stopPullDownRefresh()
+    } 
   //uploadImage()
 
 })

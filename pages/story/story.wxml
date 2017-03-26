@@ -5,7 +5,7 @@
         <image class="groupAvatar" src="{{groupInfo.avatarUrl}}"></image>
     </view>
     <scroll-view class="story-container" scroll-y scroll-top="9999999">
-        <block class="storyGroup" wx:for="{{groupStorys}}" wx:for-item="story" wx:for-index="groupIndex" wx:key="shareId">
+        <block class="storyGroup" wx:for="{{groupStorys}}" wx:for-item="story" wx:for-index="groupIndex">
             <view class="story" style="background:{{color[groupIndex%7]}}">
                 <view class="storyAuthor">
                     <image class="avatar1" src="{{story.source.avatarUrl}}"></image>

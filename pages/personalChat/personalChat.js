@@ -40,7 +40,7 @@ Page({
          messages: [],
          friendInfo:null,
          lastMessageId:'none',
-         inputContent: '大家好啊',
+         inputContent: '美女，你坐在我前面，好漂亮啊',
          type:null
     },
 
@@ -405,5 +405,8 @@ Page({
         wx.switchTab({
             url:url
         })
-    } 
+    },
+    onPullDownRefresh: function(){
+        wx.stopPullDownRefresh()
+    }  
 })

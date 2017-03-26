@@ -585,5 +585,8 @@ Page({
             // success
           },
         })
-    }
+    },
+    onPullDownRefresh: function(){
+        wx.stopPullDownRefresh()
+    } 
 });
